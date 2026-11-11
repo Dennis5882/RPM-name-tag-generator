@@ -8,6 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
 <style>
 :root{--bg:#F2F4F6;--sf:#fff;--sf2:#F9FAFB;--bd:#E5E8EB;--bds:#D1D6DB;--pr:#3182F6;--prh:#1B6EF3;--prw:#E8F0FE;--er:#F04452;--t1:#191F28;--t2:#4E5968;--t3:#8B95A1;--t4:#B0B8C1;--r16:16px;--r12:12px;--r8:8px;--r6:6px;}
@@ -22,8 +23,8 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 .sec{padding:14px 16px;border-bottom:1px solid var(--bd);display:flex;flex-direction:column;gap:10px;}
 .sec-lbl{font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.01em;text-transform:none;display:flex;align-items:center;gap:6px;}
 .sec-lbl::before{content:'';width:3px;height:12px;background:var(--pr);border-radius:2px;display:block;}
-.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.mode-card{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border:1.5px solid var(--bd);border-radius:var(--r8);cursor:pointer;background:var(--sf);transition:all .15s;color:var(--t3);}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.mode-card{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:6px;padding:10px 6px;border:1.5px solid var(--bd);border-radius:var(--r8);cursor:pointer;background:var(--sf);transition:all .15s;color:var(--t3);}
 .mode-card:hover{border-color:var(--pr);background:var(--prw);color:var(--pr);} .mode-card.active{border-color:var(--pr);background:var(--prw);color:var(--pr);}
 .mode-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:50%;background:#E5E8EB;color:#8B95A1;transition:background .15s,color .15s;}
 .mode-card.active .mode-icon,.mode-card:hover:not(.disabled) .mode-icon{background:var(--pr);color:#fff;}
@@ -65,6 +66,116 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 .lc{padding:8px;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .ln{text-align:center;font-weight:700;color:var(--t3);}
 .list-empty{padding:20px;text-align:center;font-size:12px;color:var(--t3);}
+/* ── 명단 가져오기 (구글 시트 / 파일) ── */
+.imp-btn{height:36px;padding:0 14px;border:none;border-radius:var(--r8);background:var(--pr);color:#fff;font-size:12px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;flex-shrink:0;transition:background .15s;}
+.imp-btn:hover{background:var(--prh);}
+.imp-hint{font-size:11px;line-height:1.5;color:var(--t3);margin-top:6px;}
+.imp-hint b{color:var(--t2);font-weight:600;}
+#sheet-status,#file-status{margin-top:6px;}
+.drop-zone{display:flex;flex-direction:column;align-items:center;gap:4px;padding:18px 12px;border:1.5px dashed var(--bds);border-radius:var(--r12);background:var(--sf2);cursor:pointer;text-align:center;transition:all .15s;color:var(--t3);}
+.drop-zone:hover,.drop-zone.over{border-color:var(--pr);background:var(--prw);color:var(--pr);}
+.dz-t{font-size:12px;font-weight:700;color:var(--t2);}
+.drop-zone:hover .dz-t,.drop-zone.over .dz-t{color:var(--pr);}
+.dz-s{font-size:11px;color:var(--t4);}
+.imp-tpl{margin-top:4px;width:100%;padding:6px;border:none;background:transparent;color:var(--t3);font-size:11px;font-weight:600;font-family:'Pretendard',sans-serif;cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.imp-tpl:hover{color:var(--pr);}
+.imp-box{margin-top:10px;border:1px solid var(--bd);border-radius:var(--r12);padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--sf);}
+.imp-hd{display:flex;align-items:center;gap:6px;}
+.imp-src{flex:1;min-width:0;font-size:12px;font-weight:700;color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.imp-map{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;}
+.imp-map label{font-size:11px;font-weight:700;color:var(--t3);}
+.imp-sel{height:30px;min-width:0;width:100%;padding:0 6px;border:1.5px solid var(--bd);border-radius:var(--r6);font-size:12px;font-family:'Pretendard',sans-serif;color:var(--t1);background:var(--sf);outline:none;}
+.imp-hd .imp-sel{width:auto;max-width:55%;}
+.imp-sel:focus{border-color:var(--pr);}
+.imp-stat{font-size:12px;color:var(--t2);}
+.imp-stat b{color:var(--pr);}
+.imp-w{font-size:11px;line-height:1.45;padding:6px 8px;border-radius:var(--r6);background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;}
+.imp-prev{border:1px solid var(--bd);border-radius:var(--r8);overflow:hidden;}
+.imp-prev table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:11px;}
+.imp-prev th{background:var(--sf2);color:var(--t3);font-weight:700;text-align:left;padding:5px 8px;}
+.imp-prev td{padding:5px 8px;border-top:1px solid var(--bd);color:var(--t1);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.imp-more{font-size:11px;color:var(--t3);padding:5px 8px;border-top:1px solid var(--bd);background:var(--sf2);}
+.imp-apply{height:38px;border:none;border-radius:var(--r8);background:var(--pr);color:#fff;font-size:13px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;transition:background .15s;}
+.imp-apply:hover{background:var(--prh);}
+.imp-apply:disabled{background:var(--bd);color:var(--t4);cursor:not-allowed;}
+.imp-note{font-size:11px;color:var(--t3);text-align:center;margin-top:-2px;}
+/* ── 사용 가이드 ── */
+.preview-area{position:relative;}
+.help-btn{position:absolute;top:20px;right:24px;display:flex;align-items:center;gap:6px;height:36px;padding:0 14px 0 10px;border:1.5px solid var(--bd);border-radius:999px;background:var(--sf);color:var(--t2);font-size:13px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.05);transition:all .15s;z-index:5;}
+.help-btn:hover{border-color:var(--pr);color:var(--pr);background:var(--prw);}
+.help-btn .hb-ic{width:20px;height:20px;border-radius:50%;background:var(--pr);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;}
+.help-btn .hb-dot{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--er);border:2px solid var(--bg);display:none;}
+.help-btn.new .hb-dot{display:block;}
+.help-btn.new{animation:hbPulse 2s ease-in-out 3;}
+@keyframes hbPulse{0%,100%{box-shadow:0 0 0 0 rgba(49,130,246,0);}50%{box-shadow:0 0 0 6px rgba(49,130,246,.18);}}
+.gd-box{position:relative;background:var(--sf);border-radius:var(--r16);width:min(780px,94vw);height:min(600px,90vh);display:grid;grid-template-columns:200px 1fr;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.18);transform:translateY(8px) scale(.98);transition:transform .2s;}
+.mo.show .gd-box{transform:none;}
+.gd-nav{background:var(--sf2);border-right:1px solid var(--bd);padding:20px 12px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.gd-nav-title{font-size:15px;font-weight:800;color:var(--t1);padding:0 8px 2px;}
+.gd-nav-sub{font-size:11px;color:var(--t3);padding:0 8px 14px;}
+.gd-nav-item{display:flex;align-items:center;gap:8px;padding:9px 8px;border:none;background:transparent;border-radius:var(--r8);font-size:13px;font-weight:600;font-family:'Pretendard',sans-serif;color:var(--t2);cursor:pointer;text-align:left;transition:all .12s;}
+.gd-nav-item:hover{background:var(--sf);color:var(--t1);}
+.gd-nav-item.on{background:var(--prw);color:var(--pr);font-weight:700;}
+.gd-num{width:20px;height:20px;border-radius:50%;background:#E5E8EB;color:var(--t3);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.gd-nav-item.on .gd-num{background:var(--pr);color:#fff;}
+.gd-nav-item.done .gd-num{background:#CFE0FC;color:var(--pr);}
+.gd-main{display:flex;flex-direction:column;min-width:0;min-height:0;}
+.gd-body{flex:1;overflow-y:auto;padding:28px 28px 12px;}
+.gd-step-lbl{font-size:12px;font-weight:700;color:var(--pr);margin-bottom:4px;}
+.gd-h{font-size:20px;font-weight:800;color:var(--t1);margin:0 0 6px;letter-spacing:-.01em;}
+.gd-lead{font-size:13px;line-height:1.6;color:var(--t2);margin:0 0 16px;}
+.gd-ill{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r12);padding:16px;margin-bottom:16px;}
+.gd-list{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:10px;}
+.gd-list li{display:grid;grid-template-columns:22px 1fr;gap:8px;font-size:13px;line-height:1.55;color:var(--t2);}
+.gd-list li b{color:var(--t1);}
+.gd-li-ic{width:22px;height:22px;border-radius:6px;background:var(--prw);color:var(--pr);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:-1px;}
+.gd-tip{display:flex;gap:8px;font-size:12px;line-height:1.55;color:#0B5A3C;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:var(--r8);padding:10px 12px;margin-bottom:8px;}
+.gd-tip.warn{color:#9A3412;background:#FFF7ED;border-color:#FED7AA;}
+.gd-tip b{font-weight:700;}
+.gd-goto{display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:8px 12px;border:1.5px solid var(--pr);border-radius:var(--r8);background:var(--sf);color:var(--pr);font-size:12px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;transition:all .15s;}
+.gd-goto:hover{background:var(--prw);}
+.gd-foot{display:flex;align-items:center;gap:8px;padding:14px 28px;border-top:1px solid var(--bd);}
+.gd-dots{flex:1;display:flex;gap:5px;}
+.gd-dot{width:6px;height:6px;border-radius:3px;background:var(--bd);transition:all .2s;}
+.gd-dot.on{width:18px;background:var(--pr);}
+.gd-prev,.gd-next{height:38px;padding:0 18px;border-radius:999px;font-size:13px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;}
+.gd-prev{border:1.5px solid var(--bd);background:var(--sf);color:var(--t2);}
+.gd-prev:disabled{opacity:.4;cursor:default;}
+.gd-next{border:none;background:var(--pr);color:#fff;min-width:96px;}
+.gd-next:hover{background:var(--prh);}
+.gd-x{position:absolute;top:14px;right:14px;width:32px;height:32px;border:none;border-radius:50%;background:transparent;color:var(--t3);font-size:18px;cursor:pointer;z-index:2;}
+.gd-x:hover{background:var(--sf2);color:var(--t1);}
+/* 가이드 일러스트 */
+.gi-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.gi-flow-i{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r8);padding:12px 8px;text-align:center;position:relative;}
+.gi-flow-i:not(:last-child)::after{content:'›';position:absolute;right:-8px;top:50%;transform:translate(50%,-50%);color:var(--t4);font-size:16px;font-weight:700;}
+.gi-flow-n{width:22px;height:22px;margin:0 auto 6px;border-radius:50%;background:var(--pr);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.gi-flow-t{font-size:12px;font-weight:700;color:var(--t1);}
+.gi-flow-s{font-size:10.5px;color:var(--t3);margin-top:2px;line-height:1.4;}
+.gi-chips{display:flex;gap:6px;margin-bottom:10px;}
+.gi-chip{flex:1;text-align:center;padding:8px 4px;border:1.5px solid var(--bd);border-radius:var(--r8);background:var(--sf);font-size:11.5px;font-weight:700;color:var(--t3);}
+.gi-chip.on{border-color:var(--pr);background:var(--prw);color:var(--pr);}
+.gi-tbl{width:100%;border-collapse:collapse;font-size:11px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r8);overflow:hidden;}
+.gi-tbl th{background:var(--sf2);color:var(--t3);font-weight:700;text-align:left;padding:5px 8px;}
+.gi-tbl td{padding:5px 8px;border-top:1px solid var(--bd);color:var(--t1);}
+.gi-tbl .hl td{background:#FEF9C3;}
+.gi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.gi-card{background:#0B1220;border-radius:6px;aspect-ratio:105/148;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;gap:3px;position:relative;overflow:hidden;max-height:170px;margin:0 auto;}
+.gi-card.g{background:radial-gradient(ellipse at center,#0B1220 55%,#10B981 100%);}
+.gi-card .ev{position:absolute;top:10%;font-size:8px;font-weight:600;opacity:.9;}
+.gi-card .nm{font-size:17px;font-weight:800;line-height:1.05;text-align:center;}
+.gi-card .af{font-size:8px;opacity:.85;margin-top:4px;}
+.gi-card .lg{position:absolute;bottom:8%;font-size:7px;font-weight:800;letter-spacing:.06em;}
+.gi-cap{font-size:11px;color:var(--t3);text-align:center;margin-top:6px;}
+.gi-swatches{display:flex;gap:6px;justify-content:center;}
+.gi-sw{width:34px;height:48px;border-radius:4px;background:#0B1220;box-shadow:inset 0 0 0 4px var(--c);}
+.gi-sw.on{outline:2px solid var(--pr);outline-offset:2px;}
+.gi-sheet{display:flex;gap:8px;align-items:center;justify-content:center;}
+.gi-page{background:var(--sf);border:1px solid var(--bds);border-radius:3px;display:flex;gap:2px;padding:6px;align-items:center;justify-content:center;}
+.gi-mini{width:30px;height:42px;border-radius:2px;background:radial-gradient(ellipse at center,#0B1220 55%,#10B981 100%);}
+.sec.sec-spot{animation:secSpot 1.8s ease-out;}
+@keyframes secSpot{0%,40%{background:var(--prw);box-shadow:inset 3px 0 0 var(--pr);}100%{background:transparent;box-shadow:inset 3px 0 0 transparent;}}
+@media (max-width:640px){.gd-box{grid-template-columns:1fr;grid-template-rows:auto 1fr;}.gd-nav{flex-direction:row;overflow-x:auto;padding:12px;border-right:none;border-bottom:1px solid var(--bd);}.gd-nav-title,.gd-nav-sub{display:none;}#gd-nav-items{display:flex;gap:2px;padding-right:36px;}.gd-nav-item{white-space:nowrap;}.gd-body{padding:20px 16px 8px;}.gd-foot{padding:12px 16px;}.gi-flow{grid-template-columns:1fr 1fr;}}
 .ev-row{display:flex;gap:8px;align-items:flex-start;}
 .ev-inp{flex:1;height:38px;min-height:38px;padding:8px 10px;box-sizing:border-box;border:1.5px solid var(--bd);border-radius:var(--r8);font-size:13px;font-family:'Pretendard',sans-serif;color:var(--t1);outline:none;transition:border-color .15s;resize:vertical;line-height:1.4;}
 .ev-inp:focus{border-color:var(--pr);}.ev-inp::placeholder{color:var(--t4);}
@@ -298,15 +409,16 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
   <div class="up-btns"><label class="up-check"><input type="checkbox" id="up-dismiss">오늘 다시 보지 않기</label><button class="mo-close" onclick="closeUpdateModal()">확인</button></div>
 </div></div>
 <div class="mo" id="pdf-modal"><div class="mo-box"><div class="mo-title">PDF 생성</div><div class="mo-desc">생성할 명찰을 선택하세요</div><div class="mo-opts"><div class="mo-opt sel" id="opt-cur" onclick="selOpt('cur')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M63 14C66.3 14 69 16.7 69 20V72C69 75.3 66.3 78 63 78H28C24.7 78 22 75.3 22 72V20C22 16.7 24.7 14 28 14H63ZM40 19C38.9 19 38 19.9 38 21C38 22.1 38.9 23 40 23H51C52.1 23 53 22.1 53 21C53 19.9 52.1 19 51 19H40Z" fill="white"/></svg></div><div><div class="mo-lbl">현재 명찰</div><div class="mo-sub" id="opt-cur-sub">선택된 1명</div></div></div><div class="mo-opt" id="opt-all" onclick="selOpt('all')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M70 26C73.3 26 76 28.7 76 32V74C76 77.3 73.3 80 70 80H40C36.7 80 34 77.3 34 74V32C34 28.7 36.7 26 40 26H70Z" fill="white" opacity=".45"/><path d="M52 14C55.3 14 58 16.7 58 20V62C58 65.3 55.3 68 52 68H22C18.7 68 16 65.3 16 62V20C16 16.7 18.7 14 22 14H52ZM32 19C30.9 19 30 19.9 30 21C30 22.1 30.9 23 32 23H42C43.1 23 44 22.1 44 21C44 19.9 43.1 19 42 19H32Z" fill="white"/></svg></div><div><div class="mo-lbl">전체 명찰</div><div class="mo-sub" id="opt-all-sub">전체 명 일괄 생성</div></div></div></div><div class="mo-sub-wrap" id="all-sub-opts"><div class="mo-sub-inner"><div class="mo-sub-pad"><div class="mo-sub-lbl">출력 레이아웃</div><div class="mo-sub-grid"><button class="mo-sub-opt sel" id="layout-single" onclick="selLayout('single')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="45" y="14" width="30" height="52" fill="#E5E8EB"/><rect x="52" y="22" width="16" height="2.5" rx="1" fill="#C5CDD4"/><rect x="50" y="32" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="48" y="38" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="55" y="58" width="10" height="2" rx="1" fill="#C5CDD4"/><g stroke="#3182F6" stroke-width="1.4" stroke-linecap="round"><line x1="40" y1="14" x2="48" y2="14"/><line x1="45" y1="9" x2="45" y2="17"/><line x1="72" y1="14" x2="80" y2="14"/><line x1="75" y1="9" x2="75" y2="17"/><line x1="40" y1="66" x2="48" y2="66"/><line x1="45" y1="63" x2="45" y2="71"/><line x1="72" y1="66" x2="80" y2="66"/><line x1="75" y1="63" x2="75" y2="71"/></g></svg></div>하나씩 출력</button><button class="mo-sub-opt" id="layout-duo" onclick="selLayout('duo')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="60" rx="1" stroke="#3182F6" stroke-width="1.5" fill="none"/><rect x="22" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="30" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="26" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="28" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="34" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/><rect x="62" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="70" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="66" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="68" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="74" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/></svg></div>A4에 두 개씩 출력</button></div></div></div></div><div class="mo-btns"><button class="mo-cancel" onclick="closeModal()">취소</button><button class="mo-confirm" onclick="confirmExport()">생성하기</button></div></div></div>
+<div class="mo" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="gd-h"><div class="gd-box"><button class="gd-x" onclick="closeGuide()" aria-label="닫기">✕</button><nav class="gd-nav"><div class="gd-nav-title">사용 가이드</div><div class="gd-nav-sub">처음이라면 순서대로 따라 해 보세요</div><div id="gd-nav-items"></div></nav><div class="gd-main"><div class="gd-body" id="gd-body"></div><div class="gd-foot"><div class="gd-dots" id="gd-dots"></div><button class="gd-prev" id="gd-prev" onclick="guideGo(gdIdx-1)">이전</button><button class="gd-next" id="gd-next" onclick="guideNext()">다음</button></div></div></div></div>
 <div id="toast"></div>
 <div class="app">
 <aside class="sidebar">
   <div class="s-hdr"><div class="s-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABKhJREFUeAHVWs1vE0cU/83a+SbUadOWQz+M4IDaQxIJiV7ahlsvoYnUQ6UeoFdUKe21l6z/g+RQruTSMyZcUCQgiAsIpDgXuARhEIgPgWISILbj3eG99drsxuvdnckmMT9pd53ZN7Pvzfxm5r03EUgAk+ZaxqKHgDEiILMSGKXijHs1UBR0SYiChH09BRTy5lARO4SAJlylzxgQv5LC49ADGSPnyJglXWOUDWDFbWFMQ8q/4e/hHUFAzAvYOVVDlAw4lXs9k7TiLRDCXJj5JBdbPI4Q9XrWhriAOrf3AkUD8mSc0Yg0YCq3ftqS9iwUev3TAxLHj9q+sht3U9isQgUlmh9/XjKH8mFCoQa4lDGhiCOHJM7+UvOVnbucxv1nGmtGBKWMdi90lU8cpIOjSxsEGjBhrk12hPINkC5M5aBXLWPqTthlRHB+8oTE99+mPB/50FpXysZgz5ZPfqPSha2aYEr46xBur9pYXEYUSjSxx7ZP7PR2KVL+WpTyf/wM/PbTQRhGMAM3y1t48vy1r+zYN/3o6+0KlD9+zMbnB9/g/+sSIci4K+GYt9Cngcu1LCIwcaK7rfIvSjaurLQuN1cLVeddELitiR+60d+DKIyeMtdMb0FzBBzqxOD98CB5M6L9ajKX38T9pzX8+J3fwDurW1gpAv/+PhBYj1vs75Z4V4laqcQ06TpLVCr5DJAwZpqkDEGUxECfcNb7xUIKuwSiEtgbMPkPx1x34j6IU/szGoH/zvYSn3sD3zNN2lHl8KEUBnqDe3izXMZf58p4uRFrr+AJfZhHwRkB8irH1baY9tJfZAznUkb04HvheML0nDXq6ohpldq0LiNpSKjZwG6882T6QNFJS159dXAMwq69Ye2dh5k4OAo0hH40te8g3UfJADECVewGh/TazKZljJ037Fvlqo3VR29Qs9Q0ONCfxtGvBwLbjA8xwstoVqXK9g+VNqp4WVKLVBjliuUzQBM6C/buQJOVmTRUIf0fG870UE9KZQplBls9U53tJS2c2FM/y5BOCXz1ZR/2CzyJ2atTMiCspx4/J3+mVAl8N5zpbm+sHoeKvA8UkCj2bp/mVCWNgHyomqALU5F7WIdSOmaT7iuG1BmBTnCG4ISTSwaFHXl0AKTU6peCwUEBEWgJHxmEm5534wF5MW5F2bztL0jnOX42duJ5UV9OY6FDfLklvjkGMI2ka9HHAD5LaCS4mr4Q/ZhVGYWkIRViSj4IafxuGhB3FMpVAcuykTQs8qXW3sbZj6TvFMfnjS6YQ2bUzsw5n4VbVVRryRnBbV26VYmU452XdfSWpVuF5BTdl8McvAs3BV6tr2PsSDLe+L1HFhZXwttiepNuJwPKW0HR/hlKdJ1HB4ESWVP5gNOaQLNJcJ65ho6Bw/tAjyH8iMnJBIsZ7CtkbjvvvYic9kSnScpHn99J0KMDl/P/1NkQKhcNzt6REdd0Mhg64JVQ1DlfjCEbH7tNqXp4K+fCKBNQRw31VDzn5sVpJISG4uwNNA4uFOrqwU0KjxO1pqVmfpXdeNcTnldV3NPGztHIcNvOOYMYcedK1vMRznxw3MH/nfKQo0AOpHSV9uI92GXKmgYuozMAAAAASUVORK5CYII=" alt="icon"></div><div><div class="s-title">명찰 생성기</div><div class="s-sub">RPM 추진실 - 디자인팀</div></div></div>
   <div class="sec"><div class="sec-lbl">데이터 목록</div><div class="mode-grid"><div class="mode-card active" id="mode-direct" onclick="switchMode('direct')"><div class="mode-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M8.42329 14.25H6.125V11.9517L12.319 5.75771C12.4205 5.65617 12.5583 5.59912 12.7019 5.59912C12.8455 5.59912 12.9833 5.65617 13.0849 5.75771L14.6173 7.29009C14.7188 7.39167 14.7758 7.52942 14.7758 7.67305C14.7758 7.81668 14.7188 7.95443 14.6173 8.05601L8.42329 14.25ZM6.125 15.3333H15.875V16.4166H6.125V15.3333Z" fill="currentColor"/>
-</svg></div><div class="mode-label">직접 입력</div></div><div class="mode-card disabled" id="mode-sheet" title="개발 중입니다"><div class="mode-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+</svg></div><div class="mode-label">직접 입력</div></div><div class="mode-card" id="mode-sheet" onclick="switchMode('sheet')"><div class="mode-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M9.9167 7.75V8.83333H7.2083V14.7917H13.1667V12.0833H14.25V15.3333C14.25 15.477 14.1929 15.6148 14.0914 15.7164C13.9898 15.8179 13.852 15.875 13.7083 15.875H6.6667C6.523 15.875 6.3852 15.8179 6.2837 15.7164C6.1821 15.6148 6.125 15.477 6.125 15.3333V8.29167C6.125 8.14801 6.1821 8.01023 6.2837 7.90865C6.3852 7.80707 6.523 7.75 6.6667 7.75H9.9167ZM15.875 6.125V10.4583H14.7917V7.97371L10.5705 12.1955L9.8045 11.4295L14.0252 7.20833H11.5417V6.125H15.875Z" fill="currentColor"/>
-</svg></div><div class="mode-label">구글 시트 (개발중)</div></div></div><div id="panel-direct"><div class="dt-wrap"><table class="dt"><thead><tr><th class="cn">#</th><th>이름</th><th>성</th><th>소속</th><th class="cx"></th></tr></thead><tbody id="dt-body"></tbody></table></div><div class="row-btns"><button class="add-row" onclick="addRow()">+ 행 추가</button><button class="reset-row" onclick="resetRows()">초기화</button></div></div><div id="panel-sheet" style="display:none"><div class="sh-row"><input class="sh-inp" id="sheet-url" type="text" placeholder="구글 시트 URL 붙여넣기"><button class="btn-ic" onclick="loadSheet()">&#8635;</button></div><div id="sheet-status" class="sh-st"></div><div class="list-wrap"><div class="list-hdr"><div>#</div><div>이름</div><div>성</div><div>소속</div></div><div class="list-body" id="list-body"><div class="list-empty">시트 URL을 입력하고 ↻ 버튼을 눌러주세요</div></div></div></div></div>
+</svg></div><div class="mode-label">구글 시트</div></div><div class="mode-card" id="mode-file" onclick="switchMode('file')"><div class="mode-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.46 14.5V8.07L8.06 10.47L7.29 9.7L11 5.99L14.71 9.7L13.94 10.47L11.54 8.07V14.5H10.46ZM6.125 15.33H15.875V16.42H6.125V15.33Z" fill="currentColor"/></svg></div><div class="mode-label">파일 업로드</div></div></div><div id="panel-direct"><div class="dt-wrap"><table class="dt"><thead><tr><th class="cn">#</th><th>이름</th><th>성</th><th>소속</th><th class="cx"></th></tr></thead><tbody id="dt-body"></tbody></table></div><div class="row-btns"><button class="add-row" onclick="addRow()">+ 행 추가</button><button class="reset-row" onclick="resetRows()">초기화</button></div></div><div id="panel-sheet" style="display:none"><div class="sh-row"><input class="sh-inp" id="sheet-url" type="text" placeholder="구글 시트 공유 링크 붙여넣기" onkeydown="if(event.key==='Enter')loadSheet()"><button class="imp-btn" onclick="loadSheet()">불러오기</button></div><div class="imp-hint">시트 공유 설정을 <b>‘링크가 있는 모든 사용자 · 뷰어’</b>로 바꿔주세요. 원하는 탭을 연 상태에서 링크를 복사하면 그 탭을 불러옵니다.</div><div id="sheet-status" class="sh-st"></div></div><div id="panel-file" style="display:none"><label class="drop-zone" id="drop-zone"><input type="file" id="imp-file" accept=".xlsx,.xls,.xlsm,.csv,.tsv,.txt" style="display:none" onchange="handleImpFile(this.files[0]);this.value=''"><svg width="26" height="26" viewBox="0 0 22 22" fill="none"><path d="M10.46 14.5V8.07L8.06 10.47L7.29 9.7L11 5.99L14.71 9.7L13.94 10.47L11.54 8.07V14.5H10.46ZM6.125 15.33H15.875V16.42H6.125V15.33Z" fill="currentColor"/></svg><div class="dz-t">엑셀·CSV 파일을 끌어다 놓거나 클릭</div><div class="dz-s">.xlsx · .xls · .csv</div></label><button class="imp-tpl" onclick="downloadTemplate()">양식 파일 받기 (성 · 이름 · 소속)</button><div id="file-status" class="sh-st"></div></div><div id="imp-box" class="imp-box" style="display:none"></div></div>
   <div class="sec"><div class="sec-lbl">표기 방식</div>
     <div class="mode-tabs"><button class="mode-tab active" id="ns-foreign" onclick="switchNameStyle('foreign')">외국어</button><button class="mode-tab" id="ns-kr" onclick="switchNameStyle('kr')">국문</button></div>
     <div id="ns-panel-foreign" class="panel-collapse open"><div class="panel-inner"><button class="name-order-btn" id="name-order-btn" onclick="toggleNameOrder()">이름 배치 변경</button></div></div>
@@ -352,6 +464,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 </aside>
 
 <main class="preview-area">
+  <button class="help-btn" id="help-btn" onclick="openGuide()" title="처음 사용하시나요? 사용 방법을 단계별로 안내합니다"><span class="hb-ic">?</span>사용 가이드<span class="hb-dot"></span></button>
   <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
     <div class="pv-lbl">미리보기</div>
     <div class="sz-badge" id="sz-badge">105 × 148 mm (298 × 420 px)</div>
@@ -585,11 +698,12 @@ function closeUpdateModal(){
 
 function switchMode(m){
   mode=m;
-  document.getElementById('mode-direct').classList.toggle('active',m==='direct');
-  document.getElementById('mode-sheet').classList.toggle('active',m==='sheet');
-  document.getElementById('panel-direct').style.display=m==='direct'?'':'none';
-  document.getElementById('panel-sheet').style.display=m==='sheet'?'':'none';
-  if(m==='direct')syncRows();else render();
+  ['direct','sheet','file'].forEach(k=>{
+    document.getElementById('mode-'+k).classList.toggle('active',m===k);
+    document.getElementById('panel-'+k).style.display=m===k?'':'none';
+  });
+  updImpBox();
+  if(m==='direct')renderDir();
 }
 
 // 표기 방식에 따른 더미/플레이스홀더
@@ -655,29 +769,230 @@ function doPaste(txt,sr,sf){
 }
 function syncRows(){const ev=getEv();rows=dir.map(r=>({event:ev,first:r.first||'',last:r.last||'',affil:r.affil||''}));if(ci>=rows.length)ci=Math.max(0,rows.length-1);render();updNav();}
 
-async function loadSheet(){
-  const urlE=document.getElementById('sheet-url');
-  const url=urlE.value.trim();
-  if(!url){showSt('URL을 입력해주세요','err');return;}
-  const m=url.match(/\/d\/([\w-]+)/);
-  if(!m){showSt('올바른 구글 시트 URL이 아닙니다','err');return;}
-  showSt('불러오는 중...','info');
-  try{
-    const res=await fetch(APPS+'?id='+m[1]);
-    if(!res.ok)throw new Error('서버 오류');
-    const data=await res.json();
-    if(!data||data.length<2)throw new Error('데이터 없음');
-    const hdrs=data[0].map(h=>String(h));
-    const find=kws=>hdrs.findIndex(h=>kws.some(k=>h.includes(k)));
-    const ei=find(['행사','event']),fi=find(['이름','first']),li=find(['성','last']),ai=find(['소속','affil','company']);
-    const ev=getEv();
-    rows=data.slice(1).filter(r=>r.some(c=>String(c).trim())).map(r=>({event:String(r[ei<0?0:ei]||'').trim()||ev,first:String(r[fi<0?1:fi]||'').trim(),last:String(r[li<0?2:li]||'').trim(),affil:String(r[ai<0?3:ai]||'').trim()}));
-    const shEv=rows.find(r=>r.event)?.event||ev;
-    rows=rows.map(r=>({...r,event:r.event||shEv}));
-    ci=0;renderList();render();updNav();showSt('✓ '+rows.length+'명 불러옴','ok');
-  }catch(e){showSt('❌ '+e.message,'err');}
+// ── 참석자 명단 가져오기 (구글 시트 링크 / 엑셀·CSV 파일) ──
+// 불러온 데이터는 열 매핑을 거쳐 '직접 입력' 표(dir)로 들어가므로, 넣은 뒤에도 표에서 바로 수정할 수 있다.
+let imp=null; // {src,label,wb,sheet,aoa,r0,c0,hdr,map:{first,last,affil,event}}
+const escH=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const colLetter=i=>{let s='';i++;while(i>0){const r=(i-1)%26;s=String.fromCharCode(65+r)+s;i=Math.floor((i-1)/26);}return s;};
+const normH=h=>String(h??'').toLowerCase().replace(/[\s_\-.()\[\]:*·/]/g,'');
+
+// 제목 셀 → 필드 종류 추정
+function classifyHeader(h){
+  const n=normH(h);if(!n)return null;
+  if(/^성(영문|국문|한글|eng|kor)?$/.test(n)||/^(lastname|surname|familyname|last)/.test(n))return 'last';
+  if(/^(성명|성함|fullname|name$|참석자|이름성명)/.test(n))return 'full';
+  if(/^이름/.test(n)||/^(firstname|givenname|first)/.test(n))return 'first';
+  if(/(소속|회사|기관|단체|학교|company|affil|organi|institution)/.test(n))return 'affil';
+  if(/(행사|event)/.test(n))return 'event';
+  return null;
 }
-function showSt(msg,type){const el=document.getElementById('sheet-status');el.textContent=msg;el.className='sh-st '+type;}
+// 같은 종류의 열이 여러 개면(예: 이름(국문)/이름(영문)) 현재 표기 방식에 맞는 쪽을 고른다
+function pickCol(types,hdrs,t){
+  const c=types.map((x,i)=>x===t?i:-1).filter(i=>i>=0);
+  if(!c.length)return -1;
+  if(c.length>1&&['first','last','full'].includes(t)){
+    const eng=i=>/영문|eng/.test(normH(hdrs[i]));
+    const p=c.find(i=>nameStyle==='foreign'?eng(i):!eng(i));
+    if(p!=null)return p;
+  }
+  return c[0];
+}
+function impDetect(aoa){
+  let best=-1,bestScore=0;
+  for(let r=0;r<Math.min(aoa.length,15);r++){
+    const s=new Set((aoa[r]||[]).map(classifyHeader).filter(Boolean)).size;
+    if(s>bestScore){bestScore=s;best=r;}
+  }
+  const nCol=Math.max(0,...aoa.map(r=>r.length));
+  if(best<0){ // 제목 행이 없으면 A·B·C열을 성·이름·소속으로 가정
+    if(nCol>=3)return {hdr:-1,map:{last:0,first:1,affil:2,event:-1}};
+    return {hdr:-1,map:{first:0,last:'split',affil:nCol>1?1:-1,event:-1}};
+  }
+  const hdrs=aoa[best].map(x=>String(x??'').trim()),types=hdrs.map(classifyHeader);
+  let first=pickCol(types,hdrs,'first'),last=pickCol(types,hdrs,'last');
+  const full=pickCol(types,hdrs,'full');
+  if(last<0){ // 성 열이 없으면 이름(또는 성명) 열에서 성을 분리
+    if(full>=0)first=full;
+    last=first>=0?'split':-1;
+  }
+  return {hdr:best,map:{first,last,affil:pickCol(types,hdrs,'affil'),event:pickCol(types,hdrs,'event')}};
+}
+// "손흥민" → 손/흥민, "남궁민수" → 남궁/민수, "Heung Min Son" → Heung Min/Son, "Son, Heung Min" → Heung Min/Son
+const KR_DOUBLE=['남궁','황보','제갈','사공','선우','서문','독고','동방','어금','망절'];
+function splitName(s){
+  s=String(s||'').replace(/\s+/g,' ').trim();
+  if(!s)return {first:'',last:''};
+  if(s.includes(',')){const [l,...f]=s.split(',');return {last:l.trim(),first:f.join(',').trim()};}
+  if(/^[가-힣]/.test(s)){
+    if(s.includes(' ')){const p=s.split(' ');return {last:p[0],first:p.slice(1).join(' ')};}
+    if(s.length>=4&&KR_DOUBLE.some(d=>s.startsWith(d)))return {last:s.slice(0,2),first:s.slice(2)};
+    if(s.length>=2)return {last:s[0],first:s.slice(1)};
+    return {first:s,last:''};
+  }
+  const p=s.split(' ');
+  return p.length>1?{first:p.slice(0,-1).join(' '),last:p[p.length-1]}:{first:s,last:''};
+}
+function impBuild(){
+  const {aoa,hdr,map,r0}=imp,out=[];
+  const g=(row,i)=>(typeof i==='number'&&i>=0)?String(row[i]??'').replace(/\s+/g,' ').trim():'';
+  for(let r=hdr+1;r<aoa.length;r++){
+    const row=aoa[r]||[];
+    let first=g(row,map.first),last=map.last==='split'?'':g(row,map.last);
+    if(map.last==='split'){const s=splitName(first);first=s.first;last=s.last;}
+    const affil=g(row,map.affil),event=g(row,map.event);
+    if(!first&&!last&&!affil)continue;
+    out.push({first,last,affil,event,line:r0+r+1});
+  }
+  return out;
+}
+function sheetAoa(ws){
+  if(!ws||!ws['!ref'])return {aoa:[],r0:0,c0:0};
+  const rg=XLSX.utils.decode_range(ws['!ref']);
+  return {aoa:XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,blankrows:true}),r0:rg.s.r,c0:rg.s.c};
+}
+function impLoadWorkbook(wb,label,src){
+  const names=wb.SheetNames;
+  imp={src,label,wb,sheet:null,aoa:[],r0:0,c0:0,hdr:-1,map:{}};
+  // 시트가 여러 개면 성·이름·소속 제목이 가장 잘 인식되는 시트를 먼저 연다 (예: '안내' 시트 건너뛰기)
+  let pick=names[0],bestScore=-1;
+  names.forEach(n=>{
+    const {aoa}=sheetAoa(wb.Sheets[n]);if(!aoa.length)return;
+    const d=impDetect(aoa),m=d.map;
+    const score=d.hdr<0?0:1+['first','last','affil'].filter(k=>m[k]!==-1).length;
+    if(score>bestScore){bestScore=score;pick=n;}
+  });
+  impSelectSheet(pick);
+}
+function impSelectSheet(n){
+  const s=sheetAoa(imp.wb.Sheets[n]);
+  Object.assign(imp,{sheet:n,aoa:s.aoa,r0:s.r0,c0:s.c0});
+  const d=impDetect(imp.aoa);imp.hdr=d.hdr;imp.map=d.map;
+  impRender();
+}
+function impSetMap(k,v){imp.map[k]=v==='split'?'split':+v;impRender();}
+function updImpBox(){document.getElementById('imp-box').style.display=(imp&&imp.src===mode)?'':'none';}
+function impRender(){
+  const box=document.getElementById('imp-box');
+  if(!imp){box.innerHTML='';updImpBox();return;}
+  const {aoa,hdr,map,c0}=imp;
+  const nCol=Math.max(1,...aoa.map(r=>r.length));
+  const hdrs=hdr>=0?aoa[hdr]:[];
+  const sample=i=>{for(let r=hdr+1;r<aoa.length;r++){const v=String(aoa[r]?.[i]??'').trim();if(v)return v;}return '';};
+  const colOpts=sel=>{
+    let h=`<option value="-1"${sel===-1?' selected':''}>(사용 안 함)</option>`;
+    for(let i=0;i<nCol;i++){
+      const nm=String(hdrs[i]??'').trim()||colLetter(c0+i)+'열',sm=sample(i);
+      h+=`<option value="${i}"${sel===i?' selected':''}>${escH(nm)}${sm&&sm!==nm?' · '+escH(sm.slice(0,14)):''}</option>`;
+    }
+    return h;
+  };
+  const lastOpts=colOpts(map.last).replace('</option>',`</option><option value="split"${map.last==='split'?' selected':''}>이름 열에서 분리 (예: 손흥민 → 손 / 흥민)</option>`);
+  const recs=impBuild();
+  const noName=recs.filter(r=>!r.first&&!r.last);
+  const seen=new Set(),dup=[];
+  recs.forEach(r=>{const k=(r.last+'|'+r.first+'|'+r.affil).toLowerCase();if(seen.has(k))dup.push(r);else seen.add(k);});
+  const lines=a=>a.slice(0,6).map(r=>r.line).join(', ')+(a.length>6?' 외':'');
+  let warn='';
+  if(hdr<0)warn+=`<div class="imp-w">제목 행(성·이름·소속)을 찾지 못해 A·B·C열 순서로 가정했어요. 아래 열 지정을 확인해 주세요.</div>`;
+  if(noName.length)warn+=`<div class="imp-w">이름이 비어 있는 행 ${noName.length}개 — ${lines(noName)}행</div>`;
+  if(dup.length)warn+=`<div class="imp-w">중복으로 보이는 행 ${dup.length}개 — ${lines(dup)}행</div>`;
+  const prev=recs.slice(0,4).map(r=>`<tr><td>${escH(r.first)}</td><td>${escH(r.last)}</td><td>${escH(r.affil)}</td></tr>`).join('');
+  const names=imp.wb.SheetNames;
+  const sheetSel=names.length>1?`<select class="imp-sel" onchange="impSelectSheet(this.value)">${names.map(n=>`<option${n===imp.sheet?' selected':''}>${escH(n)}</option>`).join('')}</select>`:'';
+  box.innerHTML=`
+    <div class="imp-hd"><div class="imp-src">${escH(imp.label)}</div>${sheetSel}</div>
+    <div class="imp-map">
+      <label>이름</label><select class="imp-sel" onchange="impSetMap('first',this.value)">${colOpts(map.first)}</select>
+      <label>성</label><select class="imp-sel" onchange="impSetMap('last',this.value)">${lastOpts}</select>
+      <label>소속</label><select class="imp-sel" onchange="impSetMap('affil',this.value)">${colOpts(map.affil)}</select>
+      <label>행사명</label><select class="imp-sel" onchange="impSetMap('event',this.value)">${colOpts(map.event)}</select>
+    </div>
+    <div class="imp-stat"><b>${recs.length}명</b> 인식${warn?'':' · 확인된 문제 없음'}</div>${warn}
+    ${recs.length?`<div class="imp-prev"><table><thead><tr><th>이름</th><th>성</th><th>소속</th></tr></thead><tbody>${prev}</tbody></table>${recs.length>4?`<div class="imp-more">외 ${recs.length-4}명</div>`:''}</div>`:''}
+    <button class="imp-apply"${recs.length?'':' disabled'} onclick="impApply()">명단에 넣기 (${recs.length}명)</button>
+    <div class="imp-note">지금 입력된 명단은 이 데이터로 바뀝니다. 넣은 뒤에도 표에서 수정할 수 있어요.</div>`;
+  updImpBox();
+}
+function impApply(){
+  const recs=impBuild();if(!recs.length)return;
+  dir=recs.map(r=>({first:r.first,last:r.last,affil:r.affil}));
+  // 행사명 열이 있으면 가장 많이 쓰인 값을 행사명 칸에 넣는다
+  const cnt={};recs.forEach(r=>{if(r.event)cnt[r.event]=(cnt[r.event]||0)+1;});
+  const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
+  if(top)document.getElementById('ev-inp').value=top;
+  ci=0;switchMode('direct');syncRows();
+  // 명단 대부분이 한글 이름이면 국문, 아니면 외국어 표기로 맞춘다
+  const named=recs.filter(r=>r.first||r.last);
+  const krRatio=named.length?named.filter(r=>/[가-힣]/.test(r.first+r.last)).length/named.length:0;
+  const want=krRatio>=0.5?'kr':'foreign';
+  let msg=recs.length+'명을 명단에 넣었어요';
+  if(named.length&&want!==nameStyle){switchNameStyle(want);msg+=want==='kr'?' · 국문 표기로 전환':' · 외국어 표기로 전환';}
+  toast(msg);
+}
+
+function parseSheetUrl(u){
+  const gid=(u.match(/[#&?]gid=(\d+)/)||[])[1]||'',q=gid?'&gid='+gid:'';
+  let m=u.match(/\/spreadsheets\/d\/e\/([\w-]+)/);
+  if(m)return [`https://docs.google.com/spreadsheets/d/e/${m[1]}/pub?output=csv${q}`];
+  m=u.match(/\/spreadsheets\/d\/([\w-]+)/);
+  if(!m)return null;
+  const base='https://docs.google.com/spreadsheets/d/'+m[1];
+  return [`${base}/gviz/tq?tqx=out:csv&headers=0${q}`,`${base}/export?format=csv${q}`];
+}
+async function loadSheet(){
+  const url=document.getElementById('sheet-url').value.trim();
+  if(!url){showSt('구글 시트 링크를 붙여넣어 주세요','err');return;}
+  if(!window.XLSX){showSt('파일 처리 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요','err');return;}
+  const urls=parseSheetUrl(url);
+  if(!urls){showSt('구글 시트 링크가 아닌 것 같아요 (docs.google.com/spreadsheets/…)','err');return;}
+  // HTML 파일을 더블클릭해 연 상태(file://)에서는 구글이 요청을 막는다
+  if(location.protocol==='file:'){showSt('PC에 저장된 HTML 파일로 열면 구글 시트를 불러올 수 없어요. 배포된 웹 주소에서 사용하거나, 시트를 엑셀로 내려받아 ‘파일 업로드’를 이용해 주세요','err');return;}
+  showSt('불러오는 중…','info');
+  let text=null;
+  for(const u of urls){
+    try{const res=await fetch(u);if(!res.ok)continue;const t=await res.text();if(/^\s*</.test(t))continue;text=t;break;}catch(e){}
+  }
+  if(text==null){imp=null;impRender();showSt('시트를 읽지 못했어요. 공유 설정이 ‘링크가 있는 모든 사용자 · 뷰어’인지 확인해 주세요','err');return;}
+  impLoadWorkbook(XLSX.read(text.replace(/^﻿/,''),{type:'string',raw:true}),'구글 시트','sheet');
+  if(!imp.aoa.length){showSt('시트가 비어 있어요','err');return;}
+  showSt('✓ 불러왔어요. 열 지정을 확인하고 명단에 넣어주세요','ok');
+}
+async function handleImpFile(file){
+  if(!file)return;
+  const st=(m,t)=>showSt(m,t,'file-status');
+  if(!window.XLSX){st('파일 처리 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요','err');return;}
+  const ext=(file.name.split('.').pop()||'').toLowerCase();
+  if(!['xlsx','xls','xlsm','csv','tsv','txt'].includes(ext)){st('엑셀(.xlsx, .xls) 또는 CSV 파일만 올릴 수 있어요','err');return;}
+  st('읽는 중…','info');
+  try{
+    const buf=await file.arrayBuffer();
+    let wb;
+    if(['csv','tsv','txt'].includes(ext)){
+      // 엑셀에서 저장한 한글 CSV는 EUC-KR(CP949)인 경우가 많다
+      let t;try{t=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch(e){t=new TextDecoder('euc-kr').decode(buf);}
+      wb=XLSX.read(t.replace(/^﻿/,''),{type:'string',raw:true});
+    }else wb=XLSX.read(buf,{type:'array'});
+    impLoadWorkbook(wb,file.name,'file');
+    if(!imp.aoa.length)throw new Error('비어 있는 파일이에요');
+    st('✓ '+file.name,'ok');
+  }catch(e){imp=null;impRender();st('파일을 읽지 못했어요: '+e.message,'err');}
+}
+function downloadTemplate(){
+  const csv='﻿성,이름,소속\r\n손,흥민,마이다스아이티\r\nSon,Heung Min,MIDAS IT\r\n';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='명단_양식.csv';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+(function initDropZone(){
+  const z=document.getElementById('drop-zone');if(!z)return;
+  ['dragenter','dragover'].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.remove('over');}));
+  z.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleImpFile(f);});
+  // 영역 밖에 떨어뜨려도 브라우저가 파일을 열어버리지 않게
+  ['dragover','drop'].forEach(ev=>window.addEventListener(ev,e=>e.preventDefault()));
+})();
+function showSt(msg,type,id='sheet-status'){const el=document.getElementById(id);el.textContent=msg;el.className='sh-st '+type;}
 function renderList(){
   const body=document.getElementById('list-body');
   if(!rows.length){body.innerHTML='<div class="list-empty">데이터 없음</div>';return;}
@@ -958,7 +1273,7 @@ function toggleNameOrder(){nmOrd=nmOrd==='fl'?'lf':'fl';document.getElementById(
 function calcEvFs(txt){const m=document.getElementById('ME');m.style.fontFamily="'Pretendard',sans-serif";m.style.fontWeight='600';m.style.lineHeight='0.95';let fs=13;while(fs>8){m.style.fontSize=fs+'px';m.textContent=txt;if(m.offsetHeight<=fs*0.95*2+2)break;fs-=0.5;}return fs;}
 
 function updNav(){const n=rows.length;document.getElementById('nav-pill').textContent=n?(ci+1)+' / '+n:'- / -';document.getElementById('prev-btn').disabled=ci<=0;document.getElementById('next-btn').disabled=ci>=n-1||n===0;}
-function goNav(d){ci=Math.max(0,Math.min(rows.length-1,ci+d));render();updNav();if(mode==='direct')renderDir();else renderList();}
+function goNav(d){ci=Math.max(0,Math.min(rows.length-1,ci+d));render();updNav();if(mode==='direct')renderDir();}
 
 function openModal(){if(!rows.length){toast('먼저 데이터를 입력하세요');return;}selOpt('cur');selLayout('single');document.getElementById('opt-cur-sub').textContent=rows[ci].first+' '+rows[ci].last;document.getElementById('opt-all-sub').textContent='전체 '+rows.length+'명 일괄 생성';document.getElementById('pdf-modal').classList.add('show');}
 function closeModal(){document.getElementById('pdf-modal').classList.remove('show');}
@@ -968,6 +1283,7 @@ async function confirmExport(){closeModal();const btn=document.getElementById('e
 document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 document.getElementById('update-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeUpdateModal();});
 
+function setProg(k,n){const b=document.getElementById('export-btn');if(b)b.textContent='생성 중… '+k+' / '+n;}
 async function exportPDF(all=false, layout='single'){
   const {jsPDF}=window.jspdf;
   if(all && layout==='duo'){
@@ -982,7 +1298,7 @@ async function exportPDF(all=false, layout='single'){
     for(let k=0;k<rows.length;k++){
       const slot=k%perPage;
       if(k>0 && slot===0) pdf.addPage();
-      const img=await renderCanvasImage(rows[k]);
+      setProg(k+1,rows.length);const img=await renderCanvasImage(rows[k]);
       const x=x0+slot*(cWm+gap);
       pdf.addImage(img,'PNG',x,y0,cWm,cHm);
     }
@@ -992,7 +1308,7 @@ async function exportPDF(all=false, layout='single'){
     const pdf=new jsPDF({unit:'mm',format:[cWm,cHm],orientation:'portrait'});
     for(let k=0;k<rows.length;k++){
       if(k>0) pdf.addPage();
-      const img=await renderCanvasImage(rows[k]);
+      setProg(k+1,rows.length);const img=await renderCanvasImage(rows[k]);
       pdf.addImage(img,'PNG',0,0,cWm,cHm);
     }
     pdf.save('badges_all.pdf');
@@ -1184,6 +1500,106 @@ async function renderCanvasImage(r) {
 let tt=null;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1200);}
 init();
+
+// ── 사용 가이드 (오른쪽 상단 버튼) ──
+// target: '이 메뉴로 이동'을 누르면 강조할 왼쪽 섹션 제목
+const GUIDE=[
+{nav:'시작하기',title:'명찰을 네 단계로 만들어요',lead:'명단만 준비되어 있으면 수백 명의 명찰도 몇 분 안에 PDF로 만들 수 있어요. 왼쪽 메뉴를 위에서부터 차례로 채우면 됩니다.',
+ ill:`<div class="gi-flow">
+  <div class="gi-flow-i"><div class="gi-flow-n">1</div><div class="gi-flow-t">명단 넣기</div><div class="gi-flow-s">직접 입력·구글 시트·엑셀 파일</div></div>
+  <div class="gi-flow-i"><div class="gi-flow-n">2</div><div class="gi-flow-t">디자인 고르기</div><div class="gi-flow-s">표기 방식·배경·행사명</div></div>
+  <div class="gi-flow-i"><div class="gi-flow-n">3</div><div class="gi-flow-t">미리보기 확인</div><div class="gi-flow-s">한 명씩 넘겨보기</div></div>
+  <div class="gi-flow-i"><div class="gi-flow-n">4</div><div class="gi-flow-t">PDF 저장</div><div class="gi-flow-s">전체를 한 번에 출력</div></div></div>`,
+ items:[['i','<b>왼쪽</b>은 설정, <b>오른쪽</b>은 실제로 인쇄될 명찰 미리보기예요. 설정을 바꾸면 미리보기에 바로 반영돼요.'],['i','입력한 내용은 서버로 전송되지 않고 지금 보고 있는 브라우저 안에서만 처리돼요.']],
+ tips:[['','이 안내는 언제든 오른쪽 위 <b>사용 가이드</b> 버튼으로 다시 볼 수 있어요.']]},
+{nav:'명단 넣기',title:'1. 참석자 명단 넣기',lead:'‘데이터 목록’에서 명단을 넣는 방법 세 가지 중 편한 것을 고르세요. 표 한 줄이 명찰 한 장이 됩니다.',target:'데이터 목록',
+ ill:`<div class="gi-chips"><div class="gi-chip">직접 입력</div><div class="gi-chip">구글 시트</div><div class="gi-chip on">파일 업로드</div></div>
+  <table class="gi-tbl"><thead><tr><th>이름</th><th>성</th><th>소속</th></tr></thead><tbody><tr><td>흥민</td><td>손</td><td>마이다스아이티</td></tr><tr><td>민재</td><td>김</td><td>MIDAS IT</td></tr><tr class="hl"><td></td><td></td><td>회사2</td></tr></tbody></table>
+  <div class="gi-cap">노란 줄처럼 이름이 비어 있으면 경고로 알려줘요</div>`,
+ items:[['A','<b>직접 입력</b> — 표에 바로 입력해요. 엑셀에서 <b>이름·성·소속</b> 칸을 여러 줄 복사해 표에 붙여넣으면 한 번에 채워져요.'],
+  ['B','<b>구글 시트</b> — 시트의 <b>공유</b> 설정을 ‘링크가 있는 모든 사용자 · 뷰어’로 바꾼 뒤 링크를 붙여넣고 <b>불러오기</b>를 누르세요.'],
+  ['C','<b>파일 업로드</b> — 엑셀(.xlsx, .xls)이나 CSV 파일을 끌어다 놓으세요. 양식이 필요하면 <b>양식 파일 받기</b>를 누르세요.'],
+  ['✓','구글 시트·파일은 성·이름·소속 열을 <b>자동으로 찾아줘요</b>. 맞는지 확인하고 <b>명단에 넣기</b>를 누르면 표로 들어가고, 그 뒤에도 표에서 고칠 수 있어요.']],
+ tips:[['','이름이 ‘손흥민’처럼 한 칸에 있다면 ‘성’ 항목을 <b>이름 열에서 분리</b>로 두세요. 손 / 흥민으로 나눠 줍니다.'],['warn','<b>명단에 넣기</b>를 누르면 기존 표의 명단은 새 명단으로 바뀌어요.']]},
+{nav:'표기 방식',title:'2. 이름 표기 방식 고르기',lead:'영문 이름과 한글 이름은 보기 좋은 배치가 달라요. 명단에 맞는 방식을 고르세요.',target:'표기 방식',
+ ill:`<div class="gi-row"><div><div class="gi-card g" style="width:110px"><div class="nm">Heung Min<br>Son</div><div class="af">MIDAS IT</div></div><div class="gi-cap">외국어 — 이름 / 성 두 줄</div></div>
+  <div><div class="gi-card g" style="width:110px"><div class="nm">손흥민</div><div class="af">마이다스아이티</div></div><div class="gi-cap">국문 — 성이름 한 줄</div></div></div>`,
+ items:[['A','<b>외국어</b> — 이름과 성을 두 줄로 크게 보여줘요. <b>이름 배치 변경</b>을 누르면 ‘성 이름’ 순서의 한 줄로 바뀌어요.'],
+  ['B','<b>국문</b> — 이름·소속의 <b>글자 크기</b>와 <b>위치</b>를 슬라이더로 조절할 수 있어요.'],
+  ['✓','이름이 길면 명찰 폭에 맞게 <b>글자 크기가 자동으로 줄어들어요</b>.']],
+ tips:[['','한글 이름이 대부분인 명단을 불러오면 <b>국문</b>으로 자동 전환돼요.']]},
+{nav:'배경 선택',title:'3. 배경 고르기',lead:'준비된 템플릿을 쓰거나, 디자인한 배경 파일을 직접 올릴 수 있어요.',target:'배경 선택',
+ ill:`<div class="gi-chips"><div class="gi-chip on">템플릿</div><div class="gi-chip">직접 업로드</div></div>
+  <div class="gi-swatches"><div class="gi-sw on" style="--c:#10B981"></div><div class="gi-sw" style="--c:#EAB308"></div><div class="gi-sw" style="--c:#7C3AED"></div><div class="gi-sw" style="--c:#F43F5E"></div><div class="gi-sw" style="--c:#3B82F6"></div><div class="gi-sw" style="--c:#F97316"></div></div>`,
+ items:[['A','<b>템플릿</b> — A~G 묶음 중 하나를 고른 뒤 아래 썸네일에서 색을 선택하세요.'],
+  ['B','<b>직접 업로드</b> — PNG·JPG·PDF 배경을 올려요. 행사명·회사 로고 표시 여부와 글자색(화이트/블랙)을 정할 수 있어요.']],
+ tips:[['','배경 파일은 <b>명찰 사이즈와 같은 비율</b>로 만들어야 잘리거나 늘어나지 않아요. (기본 A6 = 105 × 148 mm)']]},
+{nav:'행사명 · 사이즈',title:'4. 행사명과 명찰 사이즈',lead:'모든 명찰에 똑같이 들어가는 정보예요.',target:'행사명',
+ ill:`<div class="gi-row"><div><div class="gi-card g" style="width:110px"><div class="ev">MIDAS SQUARE 2026</div><div class="nm">Heung Min<br>Son</div><div class="af">MIDAS IT</div><div class="lg">MIDAS</div></div><div class="gi-cap">행사명은 명찰 위쪽에 들어가요</div></div>
+  <div style="display:flex;flex-direction:column;justify-content:center;gap:8px;font-size:12px;color:var(--t2)"><div><b>가로</b> 105 mm</div><div><b>세로</b> 148 mm</div><div style="color:var(--t3);font-size:11px">입력하지 않으면 A6 크기로 만들어요</div></div></div>`,
+ items:[['A','<b>행사명</b> — 입력하고 <b>적용</b>을 누르세요. 불러온 명단에 행사명 열이 있으면 자동으로 채워져요.'],
+  ['B','<b>명찰 사이즈</b> — 가로·세로를 mm로 입력하고 <b>사이즈 수정하기</b>를 누르세요. 인쇄할 명찰 케이스 크기에 맞추면 돼요.']],
+ tips:[]},
+{nav:'확인 · PDF 저장',title:'5. 미리보기 확인하고 PDF로 저장',lead:'인쇄 전에 미리보기로 몇 명을 넘겨보며 확인한 뒤, 전체를 한 번에 PDF로 저장하세요.',target:'내보내기',
+ ill:`<div class="gi-row"><div class="gi-sheet"><div class="gi-page"><div class="gi-mini"></div></div><div class="gi-page"><div class="gi-mini"></div></div><div class="gi-page"><div class="gi-mini"></div></div></div>
+  <div class="gi-sheet"><div class="gi-page" style="width:96px;height:68px"><div class="gi-mini"></div><div class="gi-mini"></div></div></div></div>
+  <div class="gi-row"><div class="gi-cap">하나씩 출력 — 명찰 크기 페이지</div><div class="gi-cap">A4에 두 개씩 출력</div></div>`,
+ items:[['A','미리보기 아래 <b>‹ ›</b> 버튼으로 한 명씩 넘겨볼 수 있어요. 왼쪽 표에서 줄을 클릭해도 그 사람으로 이동해요.'],
+  ['B','<b>PDF 생성하기</b> → <b>현재 명찰</b>(지금 보이는 한 장) 또는 <b>전체 명찰</b>을 고르세요.'],
+  ['C','전체 명찰은 <b>하나씩 출력</b>(명찰 크기 페이지)과 <b>A4에 두 개씩 출력</b> 중에서 고를 수 있어요.']],
+ tips:[['warn','인원이 많으면 생성에 몇 분 걸릴 수 있어요. 버튼에 진행 상황(예: 120 / 300)이 표시되니 <b>끝날 때까지 창을 닫지 마세요</b>.']]},
+{nav:'자주 묻는 질문',title:'자주 묻는 질문',lead:'막히는 부분이 있다면 여기를 먼저 확인해 보세요.',
+ ill:'',
+ items:[['Q','<b>구글 시트를 불러오지 못했다고 나와요.</b><br>시트 공유 설정이 ‘링크가 있는 모든 사용자 · 뷰어’인지 확인하세요. PC에 저장한 HTML 파일을 더블클릭해 열었다면 구글 시트는 불러올 수 없으니, 시트를 엑셀로 내려받아 <b>파일 업로드</b>를 이용하세요.'],
+  ['Q','<b>CSV 파일의 한글이 깨져요.</b><br>대부분 자동으로 인식하지만, 그래도 깨지면 엑셀에서 <b>.xlsx</b>로 저장해서 올려주세요.'],
+  ['Q','<b>성·이름이 엉뚱한 칸에 들어가요.</b><br>불러온 뒤 나오는 이름 / 성 / 소속 선택 상자에서 알맞은 열로 바꾼 다음 <b>명단에 넣기</b>를 누르세요.'],
+  ['Q','<b>빈 명찰이 섞여 나와요.</b><br>이름이 비어 있는 줄이 있어서예요. 표에서 해당 줄 오른쪽의 <b>✕</b>를 눌러 지우세요.'],
+  ['Q','<b>처음부터 다시 하고 싶어요.</b><br>표 아래 <b>초기화</b>를 누르면 명단이 비워져요.']],
+ tips:[]}
+];
+let gdIdx=0;
+function renderGuide(){
+  const g=GUIDE[gdIdx],last=gdIdx===GUIDE.length-1;
+  document.getElementById('gd-nav-items').innerHTML=GUIDE.map((s,i)=>`<button class="gd-nav-item${i===gdIdx?' on':''}${i<gdIdx?' done':''}" onclick="guideGo(${i})"><span class="gd-num">${i===GUIDE.length-1?'?':i}</span>${s.nav}</button>`).join('');
+  const stepLbl=gdIdx===0?'처음 사용하시나요?':(last?'도움말':`STEP ${gdIdx} / ${GUIDE.length-2}`);
+  document.getElementById('gd-body').innerHTML=`
+    <div class="gd-step-lbl">${stepLbl}</div><h2 class="gd-h" id="gd-h">${g.title}</h2><p class="gd-lead">${g.lead}</p>
+    ${g.ill?`<div class="gd-ill">${g.ill}</div>`:''}
+    <ul class="gd-list">${g.items.map(([ic,t])=>`<li><span class="gd-li-ic">${ic}</span><span>${t}</span></li>`).join('')}</ul>
+    ${g.tips.map(([c,t])=>`<div class="gd-tip ${c}"><span>${c==='warn'?'⚠':'💡'}</span><span>${t}</span></div>`).join('')}
+    ${g.target?`<button class="gd-goto" onclick="guideGoto('${g.target}')">왼쪽 ‘${g.target}’ 메뉴 보기 →</button>`:''}`;
+  document.getElementById('gd-body').scrollTop=0;
+  document.getElementById('gd-dots').innerHTML=GUIDE.map((_,i)=>`<span class="gd-dot${i===gdIdx?' on':''}"></span>`).join('');
+  document.getElementById('gd-prev').disabled=gdIdx===0;
+  document.getElementById('gd-next').textContent=gdIdx===0?'시작하기':(last?'닫기':(gdIdx===GUIDE.length-2?'다 했어요':'다음'));
+}
+function guideGo(i){gdIdx=Math.max(0,Math.min(GUIDE.length-1,i));renderGuide();}
+function guideNext(){if(gdIdx===GUIDE.length-1)closeGuide();else guideGo(gdIdx+1);}
+function openGuide(i){
+  if(typeof i==='number')gdIdx=i;
+  renderGuide();
+  document.getElementById('guide-modal').classList.add('show');
+  document.getElementById('help-btn').classList.remove('new');
+  try{localStorage.setItem('badge-guide-seen','1');}catch(e){}
+}
+function closeGuide(){document.getElementById('guide-modal').classList.remove('show');}
+// 가이드를 닫고 왼쪽에서 해당 섹션으로 스크롤 + 잠깐 강조
+function guideGoto(label){
+  closeGuide();
+  const sec=[...document.querySelectorAll('.sidebar .sec')].find(s=>s.querySelector('.sec-lbl')?.textContent.trim().startsWith(label));
+  if(!sec)return;
+  sec.scrollIntoView({behavior:'smooth',block:'start'});
+  sec.classList.remove('sec-spot');void sec.offsetWidth;sec.classList.add('sec-spot');
+}
+document.getElementById('guide-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeGuide();});
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('guide-modal').classList.contains('show'))return;
+  if(e.key==='Escape')closeGuide();
+  else if(e.key==='ArrowRight')guideGo(gdIdx+1);
+  else if(e.key==='ArrowLeft')guideGo(gdIdx-1);
+});
+// 처음 방문한 사람에게는 버튼에 빨간 점으로 알려준다
+(function(){let seen=false;try{seen=!!localStorage.getItem('badge-guide-seen');}catch(e){}if(!seen)document.getElementById('help-btn').classList.add('new');})();
 
 // ── 방문 집계 (Google Sheet로 전송) ──
 (function trackVisit(){
