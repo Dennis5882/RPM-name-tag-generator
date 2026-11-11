@@ -17,6 +17,37 @@
 <script type="application/json" id="release-data">
 [
  {
+  "version": "1.7.0",
+  "date": "2026-11-11",
+  "time": "14:08",
+  "title": "상세 표기: 이름·소속·행사명 따로 조절",
+  "notify": true,
+  "headline": "이름·소속·행사명을 각각 원하는 대로",
+  "sub": "상세 표기에서 요소마다 크기·위치·폰트를 따로 정할 수 있어요",
+  "changes": [
+   {
+    "type": "new",
+    "text": "상세 표기에서 이름·소속·행사명마다 크기, 위치, 폰트를 따로 정할 수 있어요. 예: 행사명·소속은 영문 폰트, 이름은 번체 폰트."
+   },
+   {
+    "type": "new",
+    "text": "행사명도 크기(최대값, 두 줄을 넘으면 자동 축소)와 위치를 조절할 수 있어요."
+   },
+   {
+    "type": "improve",
+    "text": "생성 전 검사가 요소별 폰트를 기준으로 확인하고, 행사명 글자도 검사해요."
+   },
+   {
+    "type": "fix",
+    "text": "영문 폰트에 없는 한자를 ‘있음’으로 잘못 판단해 대체 안내가 빠지던 문제를 고쳤어요 (글자 모양까지 비교)."
+   },
+   {
+    "type": "fix",
+    "text": "상세 패널이 좁은 너비에서 오른쪽으로 잘려 보이던 문제를 고쳤어요."
+   }
+  ]
+ },
+ {
   "version": "1.6.2",
   "date": "2026-11-11",
   "time": "14:00",
@@ -591,7 +622,14 @@ body.sb-dragging{cursor:col-resize;user-select:none;}
 .dt-row-new{animation:rowSlideIn .4s cubic-bezier(0.2,0,0.2,1) both;}
 @keyframes rowSlideIn{from{opacity:0;transform:translateY(-12px);background:var(--prw);} to{opacity:1;transform:translateY(0);background:transparent;}}
 /* 국문 조절 UI */
-#ns-panel-kr > .panel-inner{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px;}
+#ns-panel-kr > .panel-inner{display:flex;flex-direction:column;gap:10px;}
+.kr-group{border:1px solid var(--bd);border-radius:var(--r12);padding:10px 12px 12px;display:flex;flex-direction:column;gap:10px;}
+.kr-ghd{display:flex;align-items:center;gap:8px;}
+.kr-gname{font-size:12px;font-weight:800;color:var(--t1);flex-shrink:0;min-width:40px;}
+.kr-font{height:30px;font-size:11.5px;flex:1;}
+.kr-grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;}
+.kr-group,.kr-grid2>.kr-ctrl{min-width:0;}
+.kr-ghd .kr-font{min-width:0;width:auto;}
 .kr-ctrl{display:flex;flex-direction:column;}
 .kr-lbl-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;gap:4px;}
 .kr-lbl{font-size:11px;font-weight:600;color:var(--t3);display:block;letter-spacing:.01em;}
@@ -754,11 +792,7 @@ body.sb-dragging{cursor:col-resize;user-select:none;}
   <div class="sec"><div class="sec-lbl">표기 방식</div>
     <div class="mode-tabs"><button class="mode-tab active" id="ns-foreign" onclick="switchNameStyle('foreign')">기본</button><button class="mode-tab" id="ns-kr" onclick="switchNameStyle('kr')">상세</button></div>
     <div id="ns-panel-foreign" class="panel-collapse open"><div class="panel-inner"><div class="ft-hint" style="margin-bottom:8px">이름·성을 두 줄로 크게, 글자 크기는 명찰 폭에 맞춰 자동이에요.</div><button class="name-order-btn" id="name-order-btn" onclick="toggleNameOrder()">이름 배치 변경</button></div></div>
-    <div id="ns-panel-kr" class="panel-collapse"><div class="panel-inner"><div class="ft-hint" style="margin-bottom:8px">이름을 한 줄로, 이름·소속의 크기와 위치를 직접 조절해요.</div>
-      <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">이름 크기</label><button class="kr-reset-btn" onclick="resetKrCtrl('nameFs')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="16" max="80" step="1" id="kr-name-fs" oninput="setKrCtrl('nameFs',this.value)"><input type="number" min="16" max="80" id="kr-name-fs-n" oninput="setKrCtrl('nameFs',this.value)"></div></div>
-      <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">소속 크기</label><button class="kr-reset-btn" onclick="resetKrCtrl('affilFs')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="8" max="32" step="1" id="kr-affil-fs" oninput="setKrCtrl('affilFs',this.value)"><input type="number" min="8" max="32" id="kr-affil-fs-n" oninput="setKrCtrl('affilFs',this.value)"></div></div>
-      <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">이름 위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('nameY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-name-y" oninput="setKrCtrl('nameY',this.value)"><input type="number" min="-120" max="120" id="kr-name-y-n" oninput="setKrCtrl('nameY',this.value)"></div></div>
-      <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">소속 위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('affilY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-affil-y" oninput="setKrCtrl('affilY',this.value)"><input type="number" min="-120" max="120" id="kr-affil-y-n" oninput="setKrCtrl('affilY',this.value)"></div></div>
+    <div id="ns-panel-kr" class="panel-collapse"><div class="panel-inner"><div class="ft-hint" style="margin-bottom:8px">이름 한 줄 · 이름·소속·행사명의 크기, 위치, 폰트를 각각 직접 조절해요.</div><div class="kr-group"><div class="kr-ghd"><span class="kr-gname">이름</span><select class="ft-sel kr-font" id="kr-name-font" onchange="setKrFont('nameFont',this.value)" title="이름 폰트"></select></div><div class="kr-grid2"><div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">크기</label><button class="kr-reset-btn" onclick="resetKrCtrl('nameFs')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="16" max="100" step="1" id="kr-name-fs" oninput="setKrCtrl('nameFs',this.value)"><input type="number" min="16" max="100" step="1" id="kr-name-fs-n" oninput="setKrCtrl('nameFs',this.value)"></div></div><div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('nameY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-name-y" oninput="setKrCtrl('nameY',this.value)"><input type="number" min="-120" max="120" step="1" id="kr-name-y-n" oninput="setKrCtrl('nameY',this.value)"></div></div></div></div><div class="kr-group"><div class="kr-ghd"><span class="kr-gname">소속</span><select class="ft-sel kr-font" id="kr-affil-font" onchange="setKrFont('affilFont',this.value)" title="소속 폰트"></select></div><div class="kr-grid2"><div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">크기</label><button class="kr-reset-btn" onclick="resetKrCtrl('affilFs')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="8" max="40" step="1" id="kr-affil-fs" oninput="setKrCtrl('affilFs',this.value)"><input type="number" min="8" max="40" step="1" id="kr-affil-fs-n" oninput="setKrCtrl('affilFs',this.value)"></div></div><div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('affilY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-affil-y" oninput="setKrCtrl('affilY',this.value)"><input type="number" min="-120" max="120" step="1" id="kr-affil-y-n" oninput="setKrCtrl('affilY',this.value)"></div></div></div></div><div class="kr-group"><div class="kr-ghd"><span class="kr-gname">행사명</span><select class="ft-sel kr-font" id="kr-ev-font" onchange="setKrFont('evFont',this.value)" title="행사명 폰트"></select></div><div class="kr-grid2"><div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">크기</label><button class="kr-reset-btn" onclick="resetKrCtrl('evFs')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="8" max="30" step="0.5" id="kr-ev-fs" oninput="setKrCtrl('evFs',this.value)"><input type="number" min="8" max="30" step="0.5" id="kr-ev-fs-n" oninput="setKrCtrl('evFs',this.value)"></div></div><div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('evY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-ev-y" oninput="setKrCtrl('evY',this.value)"><input type="number" min="-120" max="120" step="1" id="kr-ev-y-n" oninput="setKrCtrl('evY',this.value)"></div></div></div></div><div class="ft-hint">폰트를 ‘기본 폰트 따름’으로 두면 위 ‘폰트’ 메뉴를 써요. 행사명 크기는 최대값이고, 두 줄을 넘으면 자동으로 줄어들어요.</div>
     </div></div>
   </div>
   <div class="sec"><div class="sec-lbl">폰트</div><div class="ft-grid"><label for="ft-main">폰트</label><select class="ft-sel" id="ft-main" onchange="setFont('main',this.value)"></select><label for="ft-wt">이름 굵기</label><select class="ft-sel" id="ft-wt" onchange="setFont('weight',+this.value)"></select></div><div class="ft-sample" id="ft-sample"><span>홍길동 Name</span><span>梅西</span></div><div class="ft-hint">고른 폰트에 없는 글자(예: 영문 폰트의 한글, 한글 폰트에 없는 한자)는 Pretendard·Noto Sans TC로 대체돼요. 미리보기와 PDF는 같은 폰트를 써요.</div><div class="ft-actions"><button class="ft-btn" onclick="loadLocalFonts()">PC에 설치된 폰트 불러오기</button></div><div class="ft-manual" id="ft-manual"><input class="sh-inp" id="ft-manual-inp" placeholder="폰트 이름 (예: 맑은 고딕, Malgun Gothic)" onkeydown="if(event.key==='Enter')addManualFont()"><button class="imp-btn" onclick="addManualFont()">추가</button></div><div id="font-status" class="sh-st"></div></div>
@@ -1002,8 +1036,9 @@ let rows=[],dir=[{first:'',last:'',affil:''}];
 let ci=0,mode='direct',bgT='A',bgI=0,font='pretendard',tpl='A',pmode='cur',nmOrd='fl',playout='single';
 let bgMode='template', customBgUrl=null, customShowEvent=true, customShowLogo=true, customTextColor='#fff';
 let nameStyle='foreign';
-const KR_DEFAULTS={nameFs:70, affilFs:15, nameY:0, affilY:0};
-let krCtrl={...KR_DEFAULTS};
+const KR_DEFAULTS={nameFs:70, affilFs:15, nameY:0, affilY:0, evFs:13, evY:0};
+const KR_FONT_DEFAULTS={nameFont:'', affilFont:'', evFont:''}; // '' = 기본 폰트 따름
+let krCtrl={...KR_DEFAULTS,...KR_FONT_DEFAULTS};
 let cW=298,cH=420,cWm=105,cHm=148;
 
 async function init(){
@@ -1688,7 +1723,7 @@ function switchNameStyle(s){
 
 function initKrControls(){
   // UI 값 동기화 (최초 표시 시)
-  for(const k of ['nameFs','affilFs','nameY','affilY']){
+  for(const k of Object.keys(KR_DEFAULTS)){
     const v=krCtrl[k];
     const r=document.getElementById('kr-'+kebab(k));
     const n=document.getElementById('kr-'+kebab(k)+'-n');
@@ -1771,7 +1806,7 @@ function render(){
 function mW(txt,fam,wt,fs,ls){const m=document.getElementById('M');m.style.cssText='font-family:'+fam+';font-weight:'+wt+';font-size:'+fs+'px;letter-spacing:'+ls+';';m.innerHTML=ftHTML(txt);return m.offsetWidth;}
 function calcFs(fn,ln,s,maxW,base){let fs=base;const isLF=nmOrd==='lf';const cmb=isLF?(ln+' '+fn).trim():null;while(fs>12){if(isLF){if(mW(cmb,s.fam,s.wt,fs,s.ls)<=maxW)break;}else{if(mW(fn,s.fam,s.wt,fs,s.ls)<=maxW&&mW(ln,s.fam,s.wt,fs,s.ls)<=maxW)break;}fs--;}return fs;}
 function toggleNameOrder(){nmOrd=nmOrd==='fl'?'lf':'fl';document.getElementById('name-order-btn').classList.toggle('active',nmOrd==='lf');render();toast(nmOrd==='lf'?'성+이름 순서로 변경':'이름+성 순서로 변경');}
-function calcEvFs(txt){const m=document.getElementById('ME');m.style.fontFamily=mainStack();m.style.fontWeight='600';m.style.lineHeight='0.95';let fs=13;while(fs>8){m.style.fontSize=fs+'px';m.innerHTML=ftHTML(txt);if(m.offsetHeight<=fs*0.95*2+2)break;fs-=0.5;}return fs;}
+function calcEvFs(txt,max=13,fam=mainStack(),wt=600){const m=document.getElementById('ME');m.style.fontFamily=fam;m.style.fontWeight=String(wt);m.style.lineHeight='0.95';let fs=max;while(fs>8){m.style.fontSize=fs+'px';m.innerHTML=ftHTML(txt);if(m.offsetHeight<=fs*0.95*2+2)break;fs-=0.5;}return fs;}
 
 function updNav(){const n=rows.length;document.getElementById('nav-pill').textContent=n?(ci+1)+' / '+n:'- / -';document.getElementById('prev-btn').disabled=ci<=0;document.getElementById('next-btn').disabled=ci>=n-1||n===0;}
 function goNav(d){ci=Math.max(0,Math.min(rows.length-1,ci+d));render();updNav();if(mode==='direct')renderDir();}
@@ -1870,7 +1905,7 @@ function showResult(r){
     ['명찰',`<b>${r.count.toLocaleString()}명</b> <small>· ${r.pages.toLocaleString()}페이지${r.layout==='duo'?' (A4 가로에 2장씩)':' (명찰 크기 페이지에 1장씩)'}</small>`],
     ['사이즈',badgeSizeLabel()+(r.layout==='duo'?' <small>· 용지 A4 가로 297 × 210 mm</small>':'')],
     ['해상도',`${pdfDpi} DPI <small>· 명찰 1장 ${w.toLocaleString()} × ${h.toLocaleString()} px</small>`],
-    ['폰트',`<b>${escH(fontCfg.main)}</b> <small>(굵기 ${nameWt()})</small>`+(r.subst.length?`<br><small>폰트에 없는 글자는 Pretendard·Noto Sans TC로 대체 · ${r.subst.length}명 (예: ${escH(r.subst[0].name)} — ${escH(r.subst[0].bad.slice(0,4).join(' '))})</small>`:'')],
+    ['폰트',(nameStyle==='kr'&&(krCtrl.nameFont||krCtrl.affilFont||krCtrl.evFont)?`이름 <b>${escH(elFont('nameFont'))}</b> <small>(굵기 ${nearestWt(elFont('nameFont'),fontCfg.weight)})</small><br>소속 <b>${escH(elFont('affilFont'))}</b> · 행사명 <b>${escH(elFont('evFont'))}</b>`:`<b>${escH(fontCfg.main)}</b> <small>(굵기 ${nameWt()})</small>`)+(r.subst.length?`<br><small>폰트에 없는 글자는 Pretendard·Noto Sans TC로 대체 · ${r.subst.length}명 (예: ${escH(r.subst[0].name)} — ${escH(r.subst[0].bad.slice(0,4).join(' '))})</small>`:'')],
     ['표기 방식',styleLbl],
     ['배경',bgLbl],
     ['행사명',evs.length>1?`${evs.length}종 <small>(${escH(evs.slice(0,3).join(', '))}${evs.length>3?' 외':''})</small>`:escH(evs[0]||'(없음)')],
@@ -1891,12 +1926,15 @@ function showResult(r){
 // [렌더링 로직 통합] 미리보기와 PDF가 100% 동일한 HTML을 사용합니다.
 // -------------------------------------------------------------
 function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey) {
-    const s = {fam:mainStack(), wt:nameWt(), ls:'-0.01em'};
+    const s = {fam:elStack('nameFont'), wt:nearestWt(elFont('nameFont'),fontCfg.weight), ls:'-0.01em'};
     const isKR = nameStyle === 'kr';
     const isLF = !isKR && nmOrd === 'lf';
     // 폰트 크기: 국문 모드는 사용자 지정, 외국어 모드는 자동 계산
     const fs = isKR ? Number(krCtrl.nameFs) : calcFs(firstText, lastText, s, Math.round(W*0.82), 42);
-    const evFs = calcEvFs(evText);
+    const evFam = elStack('evFont'), evWt = nearestWt(elFont('evFont'),600), afFam = elStack('affilFont'), afWt = nearestWt(elFont('affilFont'),500);
+    const evFs = calcEvFs(evText, nameStyle==='kr' ? Number(krCtrl.evFs) : 13, evFam, evWt);
+    const evDy = nameStyle==='kr' ? Number(krCtrl.evY) : 0; // +면 아래로
+    const evT = evDy ? `transform:translateY(${evDy}px);` : '';
     const afFs = isKR ? Number(krCtrl.affilFs) : 13;
     const nyKr = isKR ? Number(krCtrl.nameY)  : 0; // +면 아래로
     const ayKr = isKR ? Number(krCtrl.affilY) : 0;
@@ -1906,8 +1944,8 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
 
     const stFn = `font-family:${s.fam};font-size:${fs}px;font-weight:${s.wt};line-height:1.05;letter-spacing:${s.ls};white-space:nowrap;overflow:visible;padding-bottom:.05em;`;
     const stLn = `${stFn} margin-top:${Y_POS.lastNameGap}px;`;
-    const stAf = `font-size:${afFs}px;font-weight:500;letter-spacing:0em;font-family:${mainStack()};`;
-    const stEv = `width:${Y_POS.evMaxWidth}px;font-size:${evFs}px;font-weight:600;letter-spacing:-0.01em;text-transform:uppercase;line-height:1.2;font-family:${mainStack()};display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;white-space:pre-wrap;`;
+    const stAf = `font-size:${afFs}px;font-weight:${afWt};letter-spacing:0em;font-family:${afFam};`;
+    const stEv = `width:${Y_POS.evMaxWidth}px;font-size:${evFs}px;font-weight:${evWt};letter-spacing:-0.01em;text-transform:uppercase;line-height:1.2;font-family:${evFam};display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;white-space:pre-wrap;`;
     const stLogo = `height:${Y_POS.logoHeight}px;width:auto;flex-shrink:0;`;
 
     // 이름 블록 빌더 — 국문/외국어(이름→성)/외국어(성+이름) 분기
@@ -1934,7 +1972,7 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
         // 행사명 (커스텀 OFF / G 템플릿은 생략)
         const showEvent = !isG && (!isCustom || customShowEvent);
         if(showEvent){
-          html += `<div style="position:absolute;left:50%;top:${Y_POS.A_evTop}px;transform:translateX(-50%);text-align:center;color:${txtRGBA(0.9)};${stEv}">${evH}</div>`;
+          html += `<div style="position:absolute;left:50%;top:${Y_POS.A_evTop}px;transform:translate(-50%,${evDy}px);text-align:center;color:${txtRGBA(0.9)};${stEv}">${evH}</div>`;
         }
         html += `<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);text-align:center;width:${Math.round(W*0.82)}px;display:flex;flex-direction:column;align-items:center;gap:0px;z-index:2;">`;
         html += nameBlock(txtCol, Y_POS.A_lastNameGap);
@@ -1947,7 +1985,7 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
         }
     }
     else if (t === 'B') {
-        html += `<div style="position:absolute;left:${Y_POS.B_leftMargin}px;top:${Y_POS.B_evTop}px;color:rgba(0,0,0,.85);${stEv}">${evH}</div>`;
+        html += `<div style="position:absolute;left:${Y_POS.B_leftMargin}px;top:${Y_POS.B_evTop}px;color:rgba(0,0,0,.85);${stEv}${evT}">${evH}</div>`;
         html += `<img src="${LOGO_URI_BLK}" style="position:absolute;right:${Y_POS.rightMargin}px;top:${Y_POS.B_evTop - 1}px;${stLogo}">`;
 
         html += `<div style="position:absolute;left:${Y_POS.B_leftMargin}px;bottom:${Y_POS.groupBottom}px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;z-index:2;">`;
@@ -1958,7 +1996,7 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
     else if (t === 'C' || t === 'D') {
         html += `<div style="position:absolute;bottom:0;left:0;width:100%;height:${Y_POS.whiteBoxH}px;background:#fff;z-index:1;"></div>`;
         html += `<img src="${LOGO_URI}" style="position:absolute;right:${Y_POS.rightMargin}px;top:30px;${stLogo}z-index:2;">`;
-        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.CD_evBottom}px;color:rgba(255,255,255,.92);${stEv}">${evH}</div>`;
+        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.CD_evBottom}px;color:rgba(255,255,255,.92);${stEv}${evT}">${evH}</div>`;
         // 이름/성: 흰색박스 상단 고정
         const cdWTop = H - Y_POS.whiteBoxH;
         html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;top:${cdWTop + Y_POS.CD_namePadTop}px;display:flex;flex-direction:column;gap:${Y_POS.CD_nameGap}px;z-index:2;">`;
@@ -1971,7 +2009,7 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
         html += `<div style="position:absolute;bottom:0;left:0;width:100%;height:${Y_POS.whiteBoxH}px;background:#fff;z-index:1;"></div>`;
 
         html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;right:${Y_POS.rightMargin}px;bottom:${Y_POS.E_evBottom}px;display:flex;justify-content:space-between;align-items:flex-end;">`;
-        html += `<div style="color:rgba(255,255,255,.92);${stEv}">${evH}</div>`;
+        html += `<div style="color:rgba(255,255,255,.92);${stEv}${evT}">${evH}</div>`;
         html += `<img src="${LOGO_URI}" style="${stLogo}">`;
         html += `</div>`;
 
@@ -1998,7 +2036,7 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
 
         html += `<div style="position:absolute;bottom:0;left:0;right:0;height:${fH}px;display:flex;">`;
         html += `<div style="flex:1;background:${cs.footL};display:flex;align-items:center;padding:0 24px;min-width:0;overflow:hidden;">`;
-        html += `<div style="color:rgba(255,255,255,.92);${stEv}">${evH}</div>`;
+        html += `<div style="color:rgba(255,255,255,.92);${stEv}${evT}">${evH}</div>`;
         html += `</div>`;
         html += `<div style="width:${fRW}px;background:${cs.footR};display:flex;align-items:center;justify-content:center;">`;
         html += `<img src="${LOGO_URI}" style="${stLogo}">`;
@@ -2103,6 +2141,15 @@ const mainStack=()=>[fontCfg.main,...FALLBACK_FONTS.filter(f=>f!==fontCfg.main)]
 // 웹폰트는 실제로 있는 굵기 중 가장 가까운 값을 쓴다 (없는 굵기를 브라우저가 가짜로 두껍게 만들지 않게)
 function nearestWt(n,w){const f=findWeb(n);if(!f)return w;return f.wts.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);}
 const nameWt=()=>nearestWt(fontCfg.main,fontCfg.weight);
+// 요소별 폰트 (상세 표기에서만): '' 이면 기본 폰트
+const elFont=k=>(nameStyle==='kr'&&krCtrl[k])||fontCfg.main;
+const stackOf=f=>[f,...FALLBACK_FONTS.filter(x=>x!==f)].map(qf).join(',')+',sans-serif';
+const elStack=k=>stackOf(elFont(k));
+function setKrFont(k,v){
+  krCtrl[k]=v;fillFontSelects();render();
+  toast(`${{nameFont:'이름',affilFont:'소속',evFont:'행사명'}[k]} 폰트: ${v||'기본 폰트 따름'}`);
+  if(v)ensureFontCss(v);
+}
 const CJK_RUN=/[⺀-⿟々-〇〡-〩぀-ヿㇰ-ㇿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]/;
 // 텍스트 → HTML (특수문자 이스케이프)
 const ftHTML=t=>escH(String(t??''));
@@ -2127,6 +2174,14 @@ function fillFontSelects(){
   const cur=nameWt();
   document.getElementById('ft-wt').innerHTML=wts.map(w=>`<option value="${w}"${w===cur?' selected':''}>${L[w]||w}${w===800?' (기본)':''}</option>`).join('');
   [...document.getElementById('ft-sample').children].forEach(s=>s.style.cssText=`font-family:${mainStack()};font-weight:${cur};`);
+  // 상세 표기의 요소별 폰트 선택
+  ['nameFont','affilFont','evFont'].forEach(k=>{
+    const el=document.getElementById('kr-'+k.replace('Font','')+'-font');if(!el)return;
+    const v=krCtrl[k];
+    const ex=!v||findWeb(v)||localFamilies.includes(v)?'':`<optgroup label="직접 지정">${opt({name:v,label:v+' (PC 폰트)'},v)}</optgroup>`;
+    el.innerHTML=`<option value=""${v?'':' selected'}>기본 폰트 따름 (${escH(fontCfg.main)})</option><optgroup label="웹폰트 (어느 PC에서나 동일)">${WEB_FONTS.map(f=>opt(f,v)).join('')}</optgroup>`
+      +(localFamilies.length?`<optgroup label="PC에 설치된 폰트">${localFamilies.map(n=>opt({name:n},v)).join('')}</optgroup>`:'')+ex;
+  });
 }
 function setFont(k,v){
   fontCfg[k]=v;
@@ -2137,10 +2192,19 @@ function setFont(k,v){
 }
 // 글자가 해당 폰트(묶음)에 실제로 있는지: 끝의 대체 폰트를 바꿔도 폭이 같으면 앞쪽 폰트에 있는 글자
 const glyphCtx=document.createElement('canvas').getContext('2d');
+// 판별: 대체 폰트(monospace·serif·sans-serif)만 바꿔 그려서 폭과 모양(픽셀)이 모두 같으면 앞쪽 폰트에 있는 글자.
+// 한자는 거의 모든 폰트에서 폭이 1em으로 같아서 폭만으로는 판별되지 않으므로 모양까지 비교한다.
+const glyphCan=document.createElement('canvas');glyphCan.width=glyphCan.height=56;
+const glyphPix=glyphCan.getContext('2d',{willReadFrequently:true});
+function glyphSig(font,ch){glyphPix.clearRect(0,0,56,56);glyphPix.font=font;glyphPix.textBaseline='top';glyphPix.fillText(ch,4,4);return glyphPix.getImageData(0,0,56,56).data;}
+function sameSig(a,b){for(let i=3;i<a.length;i+=4)if(a[i]!==b[i])return false;return true;}
 function hasGlyph(stack,wt,ch){
-  const w=fb=>{glyphCtx.font=`${wt} 40px ${stack.replace(/,\s*sans-serif$/,'')},${fb}`;return glyphCtx.measureText(ch).width;};
-  const a=w('monospace'),b=w('serif');
-  return a===b&&a===w('cursive');
+  const base=stack.replace(/,\s*sans-serif$/,'');
+  const f=fb=>`${wt} 40px ${base},${fb}`;
+  const w=fb=>{glyphCtx.font=f(fb);return glyphCtx.measureText(ch).width;};
+  if(w('monospace')!==w('serif')||w('serif')!==w('cursive'))return false;
+  const a=glyphSig(f('serif'),ch);
+  return sameSig(a,glyphSig(f('sans-serif'),ch))&&sameSig(a,glyphSig(f('monospace'),ch));
 }
 function fontInstalled(n){
   const w=fb=>{glyphCtx.font=`400 40px ${qf(n)},${fb}`;return glyphCtx.measureText('가나Abg王').width;};
@@ -2151,20 +2215,29 @@ function fontInstalled(n){
 //  subst: 고른 폰트엔 없지만 대체 웹폰트(Pretendard·Noto Sans TC)로 일정하게 찍히는 글자
 //  pc:    어떤 지정 폰트에도 없어 PC 기본 폰트로 찍히는 글자 (PC마다 달라짐 → 확인 필요)
 async function prepareFontsFor(list){
-  const all=list.map(r=>[r.event,r.first,r.last,r.affil].join(' ')).join(' ');
+  const all=list.map(r=>[r.event,r.first,r.last,r.affil].join(' ')).join(' ')+' '+getEv();
   const wt=nameWt();
-  const loads=[[fontCfg.main,wt],[fontCfg.main,500],[fontCfg.main,600],...FALLBACK_FONTS.flatMap(n=>[[n,nearestWt(n,wt)],[n,500],[n,600]])];
+  const fonts=[...new Set([fontCfg.main,elFont('nameFont'),elFont('affilFont'),elFont('evFont'),...FALLBACK_FONTS])];
+  const loads=fonts.flatMap(n=>[[n,nearestWt(n,wt)],[n,500],[n,600]]);
   await Promise.all(loads.map(([n,w])=>document.fonts.load(`${w} 40px ${qf(n)}`,all).catch(()=>{})));
   await document.fonts.ready;
   const subst=[],pc=[];
   list.forEach((r,i)=>{
-    const chars=[...new Set([...(r.first+r.last+r.affil)].filter(c=>c.trim()))];
-    const notMain=chars.filter(c=>!hasGlyph(qf(fontCfg.main),wt,c));
+    const fields=[[r.first+r.last,'nameFont',nearestWt(elFont('nameFont'),wt)],[r.affil,'affilFont',500],[r.event||getEv(),'evFont',600]];
+    const notMain=[],noFont=[];
+    fields.forEach(([txt,k,w])=>{
+      [...new Set([...String(txt||'')].filter(c=>c.trim()))].forEach(c=>{
+        if(hasGlyph(qf(elFont(k)),w,c))return;
+        notMain.push(c);
+        if(!hasGlyph(elStack(k),w,c))noFont.push(c);
+      });
+    });
     if(!notMain.length)return;
-    const noFont=notMain.filter(c=>!hasGlyph(mainStack(),wt,c));
     const name=(r.last+r.first)||r.affil;
-    if(noFont.length)pc.push({i,name,bad:noFont});
-    if(notMain.length>noFont.length)subst.push({i,name,bad:notMain.filter(c=>!noFont.includes(c))});
+    const u=a=>[...new Set(a)];
+    if(noFont.length)pc.push({i,name,bad:u(noFont)});
+    const sub=u(notMain.filter(c=>!noFont.includes(c)));
+    if(sub.length)subst.push({i,name,bad:sub});
   });
   return {subst,pc};
 }
@@ -2223,7 +2296,7 @@ const GUIDE=[
  ill:`<div class="gi-row"><div><div class="gi-card g" style="width:110px"><div class="nm">Heung Min<br>Son</div><div class="af">MIDAS IT</div></div><div class="gi-cap">기본 — 이름 / 성 두 줄, 크기 자동</div></div>
   <div><div class="gi-card g" style="width:110px"><div class="nm">손흥민</div><div class="af">마이다스아이티</div></div><div class="gi-cap">상세 — 한 줄, 크기·위치 조절</div></div></div>`,
  items:[['A','<b>기본</b> — 이름과 성을 두 줄로 크게 보여주고, 글자 크기는 명찰 폭에 맞춰 자동이에요. <b>이름 배치 변경</b>을 누르면 ‘성 이름’ 순서의 한 줄로 바뀌어요.'],
-  ['B','<b>상세</b> — 이름을 한 줄로 보여주고, 이름·소속의 <b>글자 크기</b>와 <b>위치</b>를 슬라이더로 직접 조절해요. 한글·한자 이름은 ‘손흥민’처럼 붙여서, 영문 이름은 띄어서 보여줘요.'],
+  ['B','<b>상세</b> — 이름을 한 줄로 보여주고, <b>이름·소속·행사명</b>마다 <b>크기·위치·폰트</b>를 따로 조절해요. 예: 행사명·소속은 Montserrat, 이름은 Noto Sans TC. 한글·한자 이름은 ‘손흥민’처럼 붙여서, 영문 이름은 띄어서 보여줘요.'],
   ['✓','이름이 길면 명찰 폭에 맞게 <b>글자 크기가 자동으로 줄어들어요</b>.'],
   ['F','<b>폰트</b> — 명단에 맞는 폰트를 하나 고르세요(번체 중국어는 Noto Sans TC 등). 웹폰트는 어느 PC에서 만들어도 똑같이 나오고, <b>PC에 설치된 폰트</b>도 불러와 쓸 수 있어요. 고른 폰트에 없는 글자는 Pretendard·Noto Sans TC로 대체돼요.']],
  tips:[['','한글·한자 이름이 대부분인 명단을 불러오면 <b>상세</b>로 자동 전환돼요.']]},
