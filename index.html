@@ -17,7 +17,13 @@
 :root{--bg:#F2F4F6;--sf:#fff;--sf2:#F9FAFB;--bd:#E5E8EB;--bds:#D1D6DB;--pr:#3182F6;--prh:#1B6EF3;--prw:#E8F0FE;--er:#F04452;--t1:#191F28;--t2:#4E5968;--t3:#8B95A1;--t4:#B0B8C1;--r16:16px;--r12:12px;--r8:8px;--r6:6px;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px;}
-.app{display:grid;grid-template-columns:400px 1fr;min-height:100vh;}
+.app{display:grid;grid-template-columns:var(--sbw,400px) 1fr;min-height:100vh;}
+/* 왼쪽 패널 너비 조절 손잡이 */
+.sb-resizer{position:fixed;top:0;left:calc(var(--sbw,400px) - 4px);width:9px;height:100vh;cursor:col-resize;z-index:50;touch-action:none;outline:none;}
+.sb-resizer::after{content:'';position:absolute;left:3px;top:0;width:3px;height:100%;background:transparent;transition:background .15s;}
+.sb-resizer:hover::after,.sb-resizer:focus-visible::after,.sb-resizer.drag::after{background:var(--pr);}
+body.sb-dragging{cursor:col-resize;user-select:none;}
+.bg-tab{white-space:nowrap;}
 .sidebar{background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;height:100vh;position:sticky;top:0;overflow-y:auto;}
 .sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
 .s-hdr{padding:18px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-shrink:0;}
@@ -33,7 +39,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 .mode-card.active .mode-icon,.mode-card:hover:not(.disabled) .mode-icon{background:var(--pr);color:#fff;}
 .mode-card.disabled{cursor:not-allowed;opacity:.55;background:var(--sf2);border-color:var(--bd);color:var(--t4);pointer-events:none;}
 .mode-card.disabled .mode-icon{background:#E5E8EB;color:#B0B8C1;}
-.mode-label{font-size:13px;font-weight:700;}
+.mode-label{font-size:13px;font-weight:700;white-space:nowrap;}
 .dt-wrap{border:1px solid var(--bd);border-radius:var(--r12);overflow:hidden;max-height:200px;overflow-y:auto;}
 .dt-wrap::-webkit-scrollbar{width:3px;}.dt-wrap::-webkit-scrollbar-thumb{background:var(--bd);}
 .dt{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed;}
@@ -397,6 +403,7 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 <div class="mo" id="pdf-modal"><div class="mo-box"><div class="mo-title">PDF 생성</div><div class="mo-desc">생성할 명찰을 선택하세요</div><div class="mo-opts"><div class="mo-opt sel" id="opt-cur" onclick="selOpt('cur')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M63 14C66.3 14 69 16.7 69 20V72C69 75.3 66.3 78 63 78H28C24.7 78 22 75.3 22 72V20C22 16.7 24.7 14 28 14H63ZM40 19C38.9 19 38 19.9 38 21C38 22.1 38.9 23 40 23H51C52.1 23 53 22.1 53 21C53 19.9 52.1 19 51 19H40Z" fill="white"/></svg></div><div><div class="mo-lbl">현재 명찰</div><div class="mo-sub" id="opt-cur-sub">선택된 1명</div></div></div><div class="mo-opt" id="opt-all" onclick="selOpt('all')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M70 26C73.3 26 76 28.7 76 32V74C76 77.3 73.3 80 70 80H40C36.7 80 34 77.3 34 74V32C34 28.7 36.7 26 40 26H70Z" fill="white" opacity=".45"/><path d="M52 14C55.3 14 58 16.7 58 20V62C58 65.3 55.3 68 52 68H22C18.7 68 16 65.3 16 62V20C16 16.7 18.7 14 22 14H52ZM32 19C30.9 19 30 19.9 30 21C30 22.1 30.9 23 32 23H42C43.1 23 44 22.1 44 21C44 19.9 43.1 19 42 19H32Z" fill="white"/></svg></div><div><div class="mo-lbl">전체 명찰</div><div class="mo-sub" id="opt-all-sub">전체 명 일괄 생성</div></div></div></div><div class="mo-sub-wrap" id="all-sub-opts"><div class="mo-sub-inner"><div class="mo-sub-pad"><div class="mo-sub-lbl">출력 레이아웃</div><div class="mo-sub-grid"><button class="mo-sub-opt sel" id="layout-single" onclick="selLayout('single')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="45" y="14" width="30" height="52" fill="#E5E8EB"/><rect x="52" y="22" width="16" height="2.5" rx="1" fill="#C5CDD4"/><rect x="50" y="32" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="48" y="38" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="55" y="58" width="10" height="2" rx="1" fill="#C5CDD4"/><g stroke="#3182F6" stroke-width="1.4" stroke-linecap="round"><line x1="40" y1="14" x2="48" y2="14"/><line x1="45" y1="9" x2="45" y2="17"/><line x1="72" y1="14" x2="80" y2="14"/><line x1="75" y1="9" x2="75" y2="17"/><line x1="40" y1="66" x2="48" y2="66"/><line x1="45" y1="63" x2="45" y2="71"/><line x1="72" y1="66" x2="80" y2="66"/><line x1="75" y1="63" x2="75" y2="71"/></g></svg></div>하나씩 출력</button><button class="mo-sub-opt" id="layout-duo" onclick="selLayout('duo')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="60" rx="1" stroke="#3182F6" stroke-width="1.5" fill="none"/><rect x="22" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="30" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="26" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="28" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="34" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/><rect x="62" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="70" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="66" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="68" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="74" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/></svg></div>A4에 두 개씩 출력</button></div></div></div></div><div class="mo-btns"><button class="mo-cancel" onclick="closeModal()">취소</button><button class="mo-confirm" onclick="confirmExport()">생성하기</button></div></div></div>
 <div class="mo" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="gd-h"><div class="gd-box"><button class="gd-x" onclick="closeGuide()" aria-label="닫기">✕</button><nav class="gd-nav"><div class="gd-nav-title">사용 가이드</div><div class="gd-nav-sub">처음이라면 순서대로 따라 해 보세요</div><div id="gd-nav-items"></div></nav><div class="gd-main"><div class="gd-body" id="gd-body"></div><div class="gd-foot"><div class="gd-dots" id="gd-dots"></div><button class="gd-prev" id="gd-prev" onclick="guideGo(gdIdx-1)">이전</button><button class="gd-next" id="gd-next" onclick="guideNext()">다음</button></div></div></div></div>
 <div id="toast"></div>
+<div class="sb-resizer" id="sb-resizer" role="separator" aria-orientation="vertical" aria-label="왼쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 더블클릭하면 기본 너비"></div>
 <div class="app">
 <aside class="sidebar">
   <div class="s-hdr"><div class="s-icon"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABKhJREFUeAHVWs1vE0cU/83a+SbUadOWQz+M4IDaQxIJiV7ahlsvoYnUQ6UeoFdUKe21l6z/g+RQruTSMyZcUCQgiAsIpDgXuARhEIgPgWISILbj3eG99drsxuvdnckmMT9pd53ZN7Pvzfxm5r03EUgAk+ZaxqKHgDEiILMSGKXijHs1UBR0SYiChH09BRTy5lARO4SAJlylzxgQv5LC49ADGSPnyJglXWOUDWDFbWFMQ8q/4e/hHUFAzAvYOVVDlAw4lXs9k7TiLRDCXJj5JBdbPI4Q9XrWhriAOrf3AkUD8mSc0Yg0YCq3ftqS9iwUev3TAxLHj9q+sht3U9isQgUlmh9/XjKH8mFCoQa4lDGhiCOHJM7+UvOVnbucxv1nGmtGBKWMdi90lU8cpIOjSxsEGjBhrk12hPINkC5M5aBXLWPqTthlRHB+8oTE99+mPB/50FpXysZgz5ZPfqPSha2aYEr46xBur9pYXEYUSjSxx7ZP7PR2KVL+WpTyf/wM/PbTQRhGMAM3y1t48vy1r+zYN/3o6+0KlD9+zMbnB9/g/+sSIci4K+GYt9Cngcu1LCIwcaK7rfIvSjaurLQuN1cLVeddELitiR+60d+DKIyeMtdMb0FzBBzqxOD98CB5M6L9ajKX38T9pzX8+J3fwDurW1gpAv/+PhBYj1vs75Z4V4laqcQ06TpLVCr5DJAwZpqkDEGUxECfcNb7xUIKuwSiEtgbMPkPx1x34j6IU/szGoH/zvYSn3sD3zNN2lHl8KEUBnqDe3izXMZf58p4uRFrr+AJfZhHwRkB8irH1baY9tJfZAznUkb04HvheML0nDXq6ohpldq0LiNpSKjZwG6882T6QNFJS159dXAMwq69Ye2dh5k4OAo0hH40te8g3UfJADECVewGh/TazKZljJ037Fvlqo3VR29Qs9Q0ONCfxtGvBwLbjA8xwstoVqXK9g+VNqp4WVKLVBjliuUzQBM6C/buQJOVmTRUIf0fG870UE9KZQplBls9U53tJS2c2FM/y5BOCXz1ZR/2CzyJ2atTMiCspx4/J3+mVAl8N5zpbm+sHoeKvA8UkCj2bp/mVCWNgHyomqALU5F7WIdSOmaT7iuG1BmBTnCG4ISTSwaFHXl0AKTU6peCwUEBEWgJHxmEm5534wF5MW5F2bztL0jnOX42duJ5UV9OY6FDfLklvjkGMI2ka9HHAD5LaCS4mr4Q/ZhVGYWkIRViSj4IafxuGhB3FMpVAcuykTQs8qXW3sbZj6TvFMfnjS6YQ2bUzsw5n4VbVVRryRnBbV26VYmU452XdfSWpVuF5BTdl8McvAs3BV6tr2PsSDLe+L1HFhZXwttiepNuJwPKW0HR/hlKdJ1HB4ESWVP5gNOaQLNJcJ65ho6Bw/tAjyH8iMnJBIsZ7CtkbjvvvYic9kSnScpHn99J0KMDl/P/1NkQKhcNzt6REdd0Mhg64JVQ1DlfjCEbH7tNqXp4K+fCKBNQRw31VDzn5sVpJISG4uwNNA4uFOrqwU0KjxO1pqVmfpXdeNcTnldV3NPGztHIcNvOOYMYcedK1vMRznxw3MH/nfKQo0AOpHSV9uI92GXKmgYuozMAAAAASUVORK5CYII=" alt="icon"></div><div><div class="s-title">명찰 생성기</div><div class="s-sub">RPM 추진실 - 디자인팀</div></div></div>
@@ -1515,7 +1522,7 @@ const GUIDE=[
   <div class="gi-flow-i"><div class="gi-flow-n">2</div><div class="gi-flow-t">디자인 고르기</div><div class="gi-flow-s">표기 방식·배경·행사명</div></div>
   <div class="gi-flow-i"><div class="gi-flow-n">3</div><div class="gi-flow-t">미리보기 확인</div><div class="gi-flow-s">한 명씩 넘겨보기</div></div>
   <div class="gi-flow-i"><div class="gi-flow-n">4</div><div class="gi-flow-t">PDF 저장</div><div class="gi-flow-s">전체를 한 번에 출력</div></div></div>`,
- items:[['i','<b>왼쪽</b>은 설정, <b>오른쪽</b>은 실제로 인쇄될 명찰 미리보기예요. 설정을 바꾸면 미리보기에 바로 반영돼요.'],['i','입력한 내용은 서버로 전송되지 않고 지금 보고 있는 브라우저 안에서만 처리돼요.']],
+ items:[['i','<b>왼쪽</b>은 설정, <b>오른쪽</b>은 실제로 인쇄될 명찰 미리보기예요. 설정을 바꾸면 미리보기에 바로 반영돼요.'],['i','입력한 내용은 서버로 전송되지 않고 지금 보고 있는 브라우저 안에서만 처리돼요.'],['↔','왼쪽 패널과 미리보기 사이 <b>경계선을 끌면</b> 패널 너비를 바꿀 수 있어요. 더블클릭하면 원래 너비로 돌아가요.']],
  tips:[['','이 안내는 언제든 오른쪽 위 <b>사용 가이드</b> 버튼으로 다시 볼 수 있어요.']]},
 {nav:'명단 넣기',title:'1. 참석자 명단 넣기',lead:'‘데이터 목록’에서 명단을 넣는 방법 세 가지 중 편한 것을 고르세요. 표 한 줄이 명찰 한 장이 됩니다.',target:'데이터 목록',
  ill:`<div class="gi-chips"><div class="gi-chip">직접 입력</div><div class="gi-chip">구글 시트</div><div class="gi-chip on">파일 업로드</div></div>
@@ -1603,6 +1610,23 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='ArrowRight')guideGo(gdIdx+1);
   else if(e.key==='ArrowLeft')guideGo(gdIdx-1);
 });
+// ── 왼쪽 패널 너비 조절 (끌기 / 더블클릭 초기화 / 키보드 ← →) ──
+(function initSidebarResize(){
+  const MIN=380,MAX=680,DEF=400,KEY='badge-sidebar-w';
+  const h=document.getElementById('sb-resizer'),root=document.documentElement;
+  let cur=DEF;
+  const set=w=>{cur=Math.round(Math.max(MIN,Math.min(MAX,window.innerWidth-360,w)));root.style.setProperty('--sbw',cur+'px');};
+  const save=()=>{try{localStorage.setItem(KEY,String(cur));}catch(e){}};
+  try{set(+localStorage.getItem(KEY)||DEF);}catch(e){set(DEF);}
+  let drag=false;
+  h.addEventListener('pointerdown',e=>{drag=true;h.setPointerCapture(e.pointerId);h.classList.add('drag');document.body.classList.add('sb-dragging');e.preventDefault();});
+  h.addEventListener('pointermove',e=>{if(drag)set(e.clientX);});
+  const end=()=>{if(!drag)return;drag=false;h.classList.remove('drag');document.body.classList.remove('sb-dragging');save();};
+  h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end);
+  h.addEventListener('dblclick',()=>{set(DEF);try{localStorage.removeItem(KEY);}catch(e){}toast('패널 너비를 기본값으로 되돌렸어요');});
+  h.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){set(cur+(e.key==='ArrowLeft'?-20:20));save();e.preventDefault();}});
+  window.addEventListener('resize',()=>set(cur));
+})();
 // 처음 방문한 사람에게는 버튼에 빨간 점으로 알려준다
 (function(){let seen=false;try{seen=!!localStorage.getItem('badge-guide-seen');}catch(e){}if(!seen)document.getElementById('help-btn').classList.add('new');})();
 
