@@ -17,6 +17,39 @@
 <script type="application/json" id="release-data">
 [
  {
+  "version": "1.7.1",
+  "date": "2026-11-11",
+  "time": "14:21",
+  "title": "코드 리뷰 반영 (안정성·정확도)",
+  "notify": false,
+  "changes": [
+   {
+    "type": "fix",
+    "text": "행사명이 길면 두 줄 안에 들어가도록 글자 크기가 자동으로 줄어들어요 (이전에는 줄지 않고 잘렸어요)."
+   },
+   {
+    "type": "fix",
+    "text": "제목이 Name / Surname / Company인 명단에서 이름이 비던 문제를 고쳤어요."
+   },
+   {
+    "type": "fix",
+    "text": "엑셀 셀 안에 줄바꿈(Alt+Enter)이 있으면 붙여넣을 때 행이 쪼개지던 문제를 고쳤어요."
+   },
+   {
+    "type": "fix",
+    "text": "제목 행 없이 붙여넣을 때 성·이름 순서를 내용으로 추정해요 (한 글자 성이 있는 열 = 성)."
+   },
+   {
+    "type": "fix",
+    "text": "‘현재 명찰’ PDF의 생성 전 검사에서 행 번호가 항상 1번으로 나오던 문제를 고쳤어요."
+   },
+   {
+    "type": "improve",
+    "text": "많은 인원의 생성 전 검사를 빠르게 했고, 600 DPI로 대량 생성할 때 메모리 경고를 보여줘요."
+   }
+  ]
+ },
+ {
   "version": "1.7.0",
   "date": "2026-11-11",
   "time": "14:08",
@@ -1028,12 +1061,8 @@ const BGS={
   F:{imgs:BGF,tpl:'F'},
   G:{imgs:BGG,tpl:'G'},
 };
-const FONTS={
-  pretendard:{fam:"'Pretendard',sans-serif",wt:'800',base:42,ls:'-0.01em',lh:'1.05'},
-  bebas:{fam:"'Bebas Neue',sans-serif",wt:'400',base:50,ls:'-0.02em',lh:'0.88'},
-};
 let rows=[],dir=[{first:'',last:'',affil:''}];
-let ci=0,mode='direct',bgT='A',bgI=0,font='pretendard',tpl='A',pmode='cur',nmOrd='fl',playout='single';
+let ci=0,mode='direct',bgT='A',bgI=0,tpl='A',pmode='cur',nmOrd='fl',playout='single';
 let bgMode='template', customBgUrl=null, customShowEvent=true, customShowLogo=true, customTextColor='#fff';
 let nameStyle='foreign';
 const KR_DEFAULTS={nameFs:70, affilFs:15, nameY:0, affilY:0, evFs:13, evY:0};
@@ -1155,9 +1184,20 @@ function delRow(i){if(dir.length<=1)dir=[{first:'',last:'',affil:''}];else dir.s
 function selDir(i){ci=i;document.querySelectorAll('#dt-body tr').forEach((tr,j)=>tr.classList.toggle('sel',j===i));render();updNav();}
 // 엑셀 복사 형식(행=줄바꿈, 칸=탭)을 2차원 배열로. 쉼표는 이름의 일부일 수 있으므로 구분자로 쓰지 않는다
 function tsvToAoa(text){
-  const t=String(text||'').replace(/\r\n?/g,'\n').replace(/\n+$/,'');
-  if(!t.trim())return [];
-  return t.split('\n').map(line=>line.split('\t').map(c=>c.replace(/^"([\s\S]*)"$/,'$1').replace(/""/g,'"')));
+  // 엑셀은 셀 안에 줄바꿈(Alt+Enter)·탭·따옴표가 있으면 "..."로 감싸고 "는 ""로 적는다
+  const t=String(text||'').replace(/\r\n?/g,'\n');
+  const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<t.length;i++){
+    const c=t[i];
+    if(q){if(c==='"'){if(t[i+1]==='"'){cell+='"';i++;}else q=false;}else cell+=c;continue;}
+    if(c==='"'&&cell===''){q=true;continue;}
+    if(c==='\t'){row.push(cell);cell='';continue;}
+    if(c==='\n'){row.push(cell);rows.push(row);row=[];cell='';continue;}
+    cell+=c;
+  }
+  if(cell!==''||row.length){row.push(cell);rows.push(row);}
+  while(rows.length&&rows[rows.length-1].every(c=>!c.trim()))rows.pop();
+  return rows.map(r=>r.map(c=>c.replace(/\s*\n\s*/g,' ')));
 }
 // 클립보드에서 표 읽기: 일반 텍스트 → (없으면) 엑셀이 함께 넣는 HTML 표
 function clipToAoa(cd){
@@ -1253,8 +1293,12 @@ function impDetect(aoa){
     if(s>bestScore){bestScore=s;best=r;}
   }
   const nCol=maxLen(aoa);
-  if(best<0){ // 제목 행이 없으면 A·B·C열을 성·이름·소속으로 가정
-    if(nCol>=3)return {hdr:-1,map:{last:0,first:1,affil:2,event:-1}};
+  if(best<0){ // 제목 행이 없으면: 한 글자(한글·한자)가 대부분인 열을 성으로, 아니면 직접 입력 표와 같은 이름·성·소속 순서
+    if(nCol>=3){
+      const body=aoa.filter(r=>r&&r.some(c=>String(c??'').trim()));
+      const oneChar=i=>{const v=body.map(r=>String(r[i]??'').trim()).filter(Boolean);return v.length>0&&v.filter(x=>/^[가-힣\u4e00-\u9fff]$/.test(x)).length/v.length>=0.6;};
+      return oneChar(0)&&!oneChar(1)?{hdr:-1,map:{last:0,first:1,affil:2,event:-1}}:{hdr:-1,map:{first:0,last:1,affil:2,event:-1}};
+    }
     return {hdr:-1,map:{first:0,last:'split',affil:nCol>1?1:-1,event:-1}};
   }
   const hdrs=aoa[best].map(x=>String(x??'').trim()),types=hdrs.map(classifyHeader);
@@ -1263,7 +1307,7 @@ function impDetect(aoa){
   if(last<0){ // 성 열이 없으면 이름(또는 성명) 열에서 성을 분리
     if(full>=0)first=full;
     last=first>=0?'split':-1;
-  }
+  }else if(first<0&&full>=0)first=full; // 예: Name / Surname → Name이 이름
   return {hdr:best,map:{first,last,affil:pickCol(types,hdrs,'affil'),event:pickCol(types,hdrs,'event')}};
 }
 // "손흥민" → 손/흥민, "남궁민수" → 남궁/민수, "Heung Min Son" → Heung Min/Son, "Son, Heung Min" → Heung Min/Son
@@ -1357,7 +1401,7 @@ function impRender(){
   recs.forEach(r=>{const k=(r.last+'|'+r.first+'|'+r.affil).toLowerCase();if(seen.has(k))dup.push(r);else seen.add(k);});
   const lines=a=>a.slice(0,6).map(r=>r.line).join(', ')+(a.length>6?' 외':'');
   let warn='';
-  if(hdr<0)warn+=`<div class="imp-w">제목 행(성·이름·소속)을 찾지 못해 A·B·C열 순서로 가정했어요. 아래 열 지정을 확인해 주세요.</div>`;
+  if(hdr<0)warn+=`<div class="imp-w">제목 행(성·이름·소속)을 찾지 못해 열 순서를 추정했어요. 아래 열 지정을 확인해 주세요.</div>`;
   if(noName.length)warn+=`<div class="imp-w">이름이 비어 있는 행 ${noName.length}개 — ${lines(noName)}행</div>`;
   if(dup.length)warn+=`<div class="imp-w">중복으로 보이는 행 ${dup.length}개 — ${lines(dup)}행</div>`;
   const evKinds=new Set(recs.map(r=>r.event).filter(Boolean));
@@ -1794,19 +1838,19 @@ function render(){
     // 빈 미리보기: 모든 요소 표시(체크박스 토글 무시) → CSS가 회색톤 적용
     const prev={se:customShowEvent, sl:customShowLogo};
     customShowEvent=true; customShowLogo=true;
-    inner.innerHTML = buildCardHTML(d.event, d.first, d.last, d.affil, cW, cH, tpl, font);
+    inner.innerHTML = buildCardHTML(d.event, d.first, d.last, d.affil, cW, cH, tpl);
     customShowEvent=prev.se; customShowLogo=prev.sl;
     inner.classList.add('preview-placeholder');
   } else {
-    inner.innerHTML = buildCardHTML(d.event, d.first, d.last, d.affil, cW, cH, tpl, font);
+    inner.innerHTML = buildCardHTML(d.event, d.first, d.last, d.affil, cW, cH, tpl);
     inner.classList.remove('preview-placeholder');
   }
 }
 
-function mW(txt,fam,wt,fs,ls){const m=document.getElementById('M');m.style.cssText='font-family:'+fam+';font-weight:'+wt+';font-size:'+fs+'px;letter-spacing:'+ls+';';m.innerHTML=ftHTML(txt);return m.offsetWidth;}
+function mW(txt,fam,wt,fs,ls){const m=document.getElementById('M');m.style.cssText='font-family:'+fam+';font-weight:'+wt+';font-size:'+fs+'px;letter-spacing:'+ls+';';m.textContent=txt;return m.offsetWidth;}
 function calcFs(fn,ln,s,maxW,base){let fs=base;const isLF=nmOrd==='lf';const cmb=isLF?(ln+' '+fn).trim():null;while(fs>12){if(isLF){if(mW(cmb,s.fam,s.wt,fs,s.ls)<=maxW)break;}else{if(mW(fn,s.fam,s.wt,fs,s.ls)<=maxW&&mW(ln,s.fam,s.wt,fs,s.ls)<=maxW)break;}fs--;}return fs;}
 function toggleNameOrder(){nmOrd=nmOrd==='fl'?'lf':'fl';document.getElementById('name-order-btn').classList.toggle('active',nmOrd==='lf');render();toast(nmOrd==='lf'?'성+이름 순서로 변경':'이름+성 순서로 변경');}
-function calcEvFs(txt,max=13,fam=mainStack(),wt=600){const m=document.getElementById('ME');m.style.fontFamily=fam;m.style.fontWeight=String(wt);m.style.lineHeight='0.95';let fs=max;while(fs>8){m.style.fontSize=fs+'px';m.innerHTML=ftHTML(txt);if(m.offsetHeight<=fs*0.95*2+2)break;fs-=0.5;}return fs;}
+function calcEvFs(txt,max=13,fam=mainStack(),wt=600){const m=document.getElementById('ME');m.style.display='block';m.style.webkitLineClamp='unset';m.style.overflow='visible';m.style.fontFamily=fam;m.style.fontWeight=String(wt);m.style.lineHeight='0.95';let fs=max;while(fs>8){m.style.fontSize=fs+'px';m.textContent=txt;if(m.offsetHeight<=fs*0.95*2+2)break;fs-=0.5;}return fs;}
 
 function updNav(){const n=rows.length;document.getElementById('nav-pill').textContent=n?(ci+1)+' / '+n:'- / -';document.getElementById('prev-btn').disabled=ci<=0;document.getElementById('next-btn').disabled=ci>=n-1||n===0;}
 function goNav(d){ci=Math.max(0,Math.min(rows.length-1,ci+d));render();updNav();if(mode==='direct')renderDir();}
@@ -1828,7 +1872,7 @@ function selDpi(d,silent){
   pdfDpi=d;try{localStorage.setItem(DPI_KEY,String(d));}catch(e){}
   document.querySelectorAll('.dpi-opt').forEach(b=>b.classList.toggle('sel',+b.dataset.dpi===d));
   const [w,h]=dpiPx();
-  document.getElementById('dpi-hint').textContent=`명찰 1장 = ${w.toLocaleString()} × ${h.toLocaleString()} px`+(d===600?' · 인원이 많으면 생성이 오래 걸려요':'');
+  document.getElementById('dpi-hint').textContent=`명찰 1장 = ${w.toLocaleString()} × ${h.toLocaleString()} px`+(d===600?(rows.length>150?` · ${rows.length}명을 600 DPI로 만들면 메모리가 부족할 수 있어요. 300 DPI를 권장해요`:' · 인원이 많으면 생성이 오래 걸려요'):'');
 }
 let lastPdf=null; // {url,name}
 const fmtBytes=b=>b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
@@ -1840,6 +1884,7 @@ async function confirmExport(){
     const list=pmode==='all'?rows:[rows[ci]];
     // 생성 전 검사: 폰트 로딩 + 없는 글자 + 이름이 빈 명찰
     const {subst,pc:missing}=await prepareFontsFor(list);
+    if(pmode!=='all')[...subst,...missing].forEach(m=>m.i=ci); // 현재 명찰: 실제 행 번호로
     const noName=list.map((r,i)=>({r,i:pmode==='all'?i:ci})).filter(x=>!(x.r.first||'').trim()&&!(x.r.last||'').trim());
     const warns=[];
     if(missing.length){
@@ -1925,7 +1970,7 @@ function showResult(r){
 // -------------------------------------------------------------
 // [렌더링 로직 통합] 미리보기와 PDF가 100% 동일한 HTML을 사용합니다.
 // -------------------------------------------------------------
-function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey) {
+function buildCardHTML(evText, firstText, lastText, affilText, W, H, t) {
     const s = {fam:elStack('nameFont'), wt:nearestWt(elFont('nameFont'),fontCfg.weight), ls:'-0.01em'};
     const isKR = nameStyle === 'kr';
     const isLF = !isKR && nmOrd === 'lf';
@@ -2049,7 +2094,7 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
 
 async function renderCanvasImage(r) {
   const evText = r.event || getEv() || 'MIDAS SQUARE 1991';
-  const htmlStr = buildCardHTML(evText, r.first, r.last, r.affil, cW, cH, tpl, font);
+  const htmlStr = buildCardHTML(evText, r.first, r.last, r.affil, cW, cH, tpl);
   
   const wrap = document.createElement('div');
   wrap.style.cssText = 'position:fixed;left:-9999px;top:0;width:' + cW + 'px;height:' + cH + 'px;overflow:hidden;background:#fff;';
@@ -2137,20 +2182,19 @@ try{localFamilies=JSON.parse(localStorage.getItem(FONT_KEY+'-local')||'[]');}cat
 
 const qf=n=>`'${String(n).replace(/'/g,"\\'")}'`;
 const findWeb=n=>WEB_FONTS.find(f=>f.name===n);
-const mainStack=()=>[fontCfg.main,...FALLBACK_FONTS.filter(f=>f!==fontCfg.main)].map(qf).join(',')+',sans-serif';
+const stackOf=f=>[f,...FALLBACK_FONTS.filter(x=>x!==f)].map(qf).join(',')+',sans-serif';
+const mainStack=()=>stackOf(fontCfg.main);
 // 웹폰트는 실제로 있는 굵기 중 가장 가까운 값을 쓴다 (없는 굵기를 브라우저가 가짜로 두껍게 만들지 않게)
 function nearestWt(n,w){const f=findWeb(n);if(!f)return w;return f.wts.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);}
 const nameWt=()=>nearestWt(fontCfg.main,fontCfg.weight);
 // 요소별 폰트 (상세 표기에서만): '' 이면 기본 폰트
 const elFont=k=>(nameStyle==='kr'&&krCtrl[k])||fontCfg.main;
-const stackOf=f=>[f,...FALLBACK_FONTS.filter(x=>x!==f)].map(qf).join(',')+',sans-serif';
 const elStack=k=>stackOf(elFont(k));
 function setKrFont(k,v){
   krCtrl[k]=v;fillFontSelects();render();
   toast(`${{nameFont:'이름',affilFont:'소속',evFont:'행사명'}[k]} 폰트: ${v||'기본 폰트 따름'}`);
   if(v)ensureFontCss(v);
 }
-const CJK_RUN=/[⺀-⿟々-〇〡-〩぀-ヿㇰ-ㇿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]/;
 // 텍스트 → HTML (특수문자 이스케이프)
 const ftHTML=t=>escH(String(t??''));
 const loadedCss=new Set();
@@ -2198,7 +2242,13 @@ const glyphCan=document.createElement('canvas');glyphCan.width=glyphCan.height=5
 const glyphPix=glyphCan.getContext('2d',{willReadFrequently:true});
 function glyphSig(font,ch){glyphPix.clearRect(0,0,56,56);glyphPix.font=font;glyphPix.textBaseline='top';glyphPix.fillText(ch,4,4);return glyphPix.getImageData(0,0,56,56).data;}
 function sameSig(a,b){for(let i=3;i<a.length;i+=4)if(a[i]!==b[i])return false;return true;}
+const glyphCache=new Map();
 function hasGlyph(stack,wt,ch){
+  const key=stack+'|'+wt+'|'+ch;
+  if(glyphCache.has(key))return glyphCache.get(key);
+  const r=hasGlyphRaw(stack,wt,ch);glyphCache.set(key,r);return r;
+}
+function hasGlyphRaw(stack,wt,ch){
   const base=stack.replace(/,\s*sans-serif$/,'');
   const f=fb=>`${wt} 40px ${base},${fb}`;
   const w=fb=>{glyphCtx.font=f(fb);return glyphCtx.measureText(ch).width;};
@@ -2216,14 +2266,14 @@ function fontInstalled(n){
 //  pc:    어떤 지정 폰트에도 없어 PC 기본 폰트로 찍히는 글자 (PC마다 달라짐 → 확인 필요)
 async function prepareFontsFor(list){
   const all=list.map(r=>[r.event,r.first,r.last,r.affil].join(' ')).join(' ')+' '+getEv();
-  const wt=nameWt();
   const fonts=[...new Set([fontCfg.main,elFont('nameFont'),elFont('affilFont'),elFont('evFont'),...FALLBACK_FONTS])];
-  const loads=fonts.flatMap(n=>[[n,nearestWt(n,wt)],[n,500],[n,600]]);
+  const loads=fonts.flatMap(n=>[[n,nearestWt(n,fontCfg.weight)],[n,500],[n,600]]);
   await Promise.all(loads.map(([n,w])=>document.fonts.load(`${w} 40px ${qf(n)}`,all).catch(()=>{})));
   await document.fonts.ready;
+  glyphCache.clear(); // 폰트를 새로 받았으니 이전 판별 결과는 버린다
   const subst=[],pc=[];
   list.forEach((r,i)=>{
-    const fields=[[r.first+r.last,'nameFont',nearestWt(elFont('nameFont'),wt)],[r.affil,'affilFont',500],[r.event||getEv(),'evFont',600]];
+    const fields=[[r.first+r.last,'nameFont',nearestWt(elFont('nameFont'),fontCfg.weight)],[r.affil,'affilFont',500],[r.event||getEv(),'evFont',600]];
     const notMain=[],noFont=[];
     fields.forEach(([txt,k,w])=>{
       [...new Set([...String(txt||'')].filter(c=>c.trim()))].forEach(c=>{
