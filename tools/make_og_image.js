@@ -1,6 +1,7 @@
 // 링크 미리보기 이미지(og-image.jpg, 1200x630) 생성: 앱의 실제 명찰 렌더러로 3장을 그려 합성한다.
 // 사용: npm i playwright-core  →  node tools/make_og_image.js "file:///<경로>/index.html" og-image.jpg
 // (Edge 설치 필요. 디자인·문구를 바꾸면 다시 실행하고 커밋)
+const {chromium}=require('playwright-core');const fs=require('fs');
 (async()=>{const b=await chromium.launch({channel:'msedge',headless:true});const p=await b.newPage({viewport:{width:1280,height:900}});
   await p.goto(process.argv[2]);await p.waitForTimeout(2500);await p.evaluate(()=>{try{closeUpdateModal()}catch(e){}});
   const url=await p.evaluate(async()=>{
