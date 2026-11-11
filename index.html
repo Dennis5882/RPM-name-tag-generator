@@ -181,6 +181,18 @@ body.sb-dragging{cursor:col-resize;user-select:none;}
 .gi-sheet{display:flex;gap:8px;align-items:center;justify-content:center;}
 .gi-page{background:var(--sf);border:1px solid var(--bds);border-radius:3px;display:flex;gap:2px;padding:6px;align-items:center;justify-content:center;}
 .gi-mini{width:30px;height:42px;border-radius:2px;background:radial-gradient(ellipse at center,#0B1220 55%,#10B981 100%);}
+.ft-grid{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;align-items:center;}
+.ft-grid label{font-size:11px;font-weight:700;color:var(--t3);white-space:nowrap;}
+.ft-sel{height:34px;min-width:0;width:100%;padding:0 8px;border:1.5px solid var(--bd);border-radius:var(--r8);font-size:12px;font-family:'Pretendard',sans-serif;color:var(--t1);background:var(--sf);outline:none;}
+.ft-sel:focus{border-color:var(--pr);}
+.ft-hint{font-size:11px;line-height:1.5;color:var(--t3);}
+.ft-actions{display:flex;gap:6px;}
+.ft-btn{flex:1;padding:8px;border:1.5px solid var(--bd);border-radius:var(--r8);background:var(--sf2);color:var(--t2);font-size:12px;font-weight:600;font-family:'Pretendard',sans-serif;cursor:pointer;transition:all .15s;}
+.ft-btn:hover{border-color:var(--pr);color:var(--pr);background:var(--prw);}
+.ft-manual{display:none;gap:6px;}
+.ft-manual.show{display:flex;}
+.ft-sample{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;border:1px dashed var(--bd);border-radius:var(--r8);font-size:18px;line-height:1.2;color:var(--t1);overflow:hidden;white-space:nowrap;}
+#font-status{margin-top:0;}
 .sec.sec-spot{animation:secSpot 1.8s ease-out;}
 @keyframes secSpot{0%,40%{background:var(--prw);box-shadow:inset 3px 0 0 var(--pr);}100%{background:transparent;box-shadow:inset 3px 0 0 transparent;}}
 @media (max-width:640px){.gd-box{grid-template-columns:1fr;grid-template-rows:auto 1fr;}.gd-nav{flex-direction:row;overflow-x:auto;padding:12px;border-right:none;border-bottom:1px solid var(--bd);}.gd-nav-title,.gd-nav-sub{display:none;}#gd-nav-items{display:flex;gap:2px;padding-right:36px;}.gd-nav-item{white-space:nowrap;}.gd-body{padding:20px 16px 8px;}.gd-foot{padding:12px 16px;}.gi-flow{grid-template-columns:1fr 1fr;}}
@@ -430,7 +442,8 @@ body.sb-dragging{cursor:col-resize;user-select:none;}
       <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">소속 위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('affilY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-affil-y" oninput="setKrCtrl('affilY',this.value)"><input type="number" min="-120" max="120" id="kr-affil-y-n" oninput="setKrCtrl('affilY',this.value)"></div></div>
     </div></div>
   </div>
-  <div class="sec"><div class="sec-lbl">배경 선택</div>
+  <div class="sec"><div class="sec-lbl">폰트</div><div class="ft-grid"><label for="ft-main">한글·영문</label><select class="ft-sel" id="ft-main" onchange="setFont('main',this.value)"></select><label for="ft-cjk">한자</label><select class="ft-sel" id="ft-cjk" onchange="setFont('cjk',this.value)"></select><label for="ft-wt">이름 굵기</label><select class="ft-sel" id="ft-wt" onchange="setFont('weight',+this.value)"></select></div><div class="ft-sample" id="ft-sample"><span>홍길동 Name</span><span>梅西</span></div><div class="ft-hint">한자(중국어·일본어)는 ‘한자’ 폰트로, 나머지는 ‘한글·영문’ 폰트로 출력돼요. 미리보기와 PDF는 같은 폰트를 써요.</div><div class="ft-actions"><button class="ft-btn" onclick="loadLocalFonts()">PC에 설치된 폰트 불러오기</button></div><div class="ft-manual" id="ft-manual"><input class="sh-inp" id="ft-manual-inp" placeholder="폰트 이름 (예: 맑은 고딕, Malgun Gothic)" onkeydown="if(event.key==='Enter')addManualFont()"><button class="imp-btn" onclick="addManualFont()">추가</button></div><div id="font-status" class="sh-st"></div></div>
+<div class="sec"><div class="sec-lbl">배경 선택</div>
     <div class="mode-tabs"><button class="mode-tab active" id="bgm-template" onclick="switchBgMode('template')">템플릿</button><button class="mode-tab" id="bgm-custom" onclick="switchBgMode('custom')">직접 업로드</button></div>
     <div id="bg-panel-template" class="panel-collapse open"><div class="panel-inner">
       <div class="bg-tabs" style="margin-bottom:8px;"><button class="bg-tab active" id="bgt-A" onclick="switchBgType('A')">A</button><button class="bg-tab" id="bgt-B" onclick="switchBgType('B')">B</button><button class="bg-tab" id="bgt-C" onclick="switchBgType('C')">C</button><button class="bg-tab" id="bgt-D" onclick="switchBgType('D')">D</button><button class="bg-tab" id="bgt-E" onclick="switchBgType('E')">E</button><button class="bg-tab" id="bgt-F" onclick="switchBgType('F')">F</button><button class="bg-tab" id="bgt-G" onclick="switchBgType('G')">G(임시)</button></div>
@@ -676,6 +689,8 @@ let cW=298,cH=420,cWm=105,cHm=148;
 
 async function init(){
   LOGO=LOGO_URI;
+  ensureFontCss('main',fontCfg.main);ensureFontCss('cjk',fontCfg.cjk);fillFontSelects();
+  if(document.fonts)document.fonts.addEventListener('loadingdone',()=>render());
   renderDir(); syncRows(); initGrid(); selBg(0,true); setTpl('A');
   document.getElementById('ev-inp').value='MIDAS SQUARE 1991';
   applyEv(true); render(); updNav();
@@ -1347,10 +1362,10 @@ function render(){
   }
 }
 
-function mW(txt,fam,wt,fs,ls){const m=document.getElementById('M');m.style.cssText='font-family:'+fam+';font-weight:'+wt+';font-size:'+fs+'px;letter-spacing:'+ls+';';m.textContent=txt;return m.offsetWidth;}
+function mW(txt,fam,wt,fs,ls){const m=document.getElementById('M');m.style.cssText='font-family:'+fam+';font-weight:'+wt+';font-size:'+fs+'px;letter-spacing:'+ls+';';m.innerHTML=ftHTML(txt);return m.offsetWidth;}
 function calcFs(fn,ln,s,maxW,base){let fs=base;const isLF=nmOrd==='lf';const cmb=isLF?(ln+' '+fn).trim():null;while(fs>12){if(isLF){if(mW(cmb,s.fam,s.wt,fs,s.ls)<=maxW)break;}else{if(mW(fn,s.fam,s.wt,fs,s.ls)<=maxW&&mW(ln,s.fam,s.wt,fs,s.ls)<=maxW)break;}fs--;}return fs;}
 function toggleNameOrder(){nmOrd=nmOrd==='fl'?'lf':'fl';document.getElementById('name-order-btn').classList.toggle('active',nmOrd==='lf');render();toast(nmOrd==='lf'?'성+이름 순서로 변경':'이름+성 순서로 변경');}
-function calcEvFs(txt){const m=document.getElementById('ME');m.style.fontFamily="'Pretendard',sans-serif";m.style.fontWeight='600';m.style.lineHeight='0.95';let fs=13;while(fs>8){m.style.fontSize=fs+'px';m.textContent=txt;if(m.offsetHeight<=fs*0.95*2+2)break;fs-=0.5;}return fs;}
+function calcEvFs(txt){const m=document.getElementById('ME');m.style.fontFamily=mainStack();m.style.fontWeight='600';m.style.lineHeight='0.95';let fs=13;while(fs>8){m.style.fontSize=fs+'px';m.innerHTML=ftHTML(txt);if(m.offsetHeight<=fs*0.95*2+2)break;fs-=0.5;}return fs;}
 
 function updNav(){const n=rows.length;document.getElementById('nav-pill').textContent=n?(ci+1)+' / '+n:'- / -';document.getElementById('prev-btn').disabled=ci<=0;document.getElementById('next-btn').disabled=ci>=n-1||n===0;}
 function goNav(d){ci=Math.max(0,Math.min(rows.length-1,ci+d));render();updNav();if(mode==='direct')renderDir();}
@@ -1359,7 +1374,20 @@ function openModal(){if(!rows.length){toast('먼저 데이터를 입력하세요
 function closeModal(){document.getElementById('pdf-modal').classList.remove('show');}
 function selOpt(m){pmode=m;document.getElementById('opt-cur').classList.toggle('sel',m==='cur');document.getElementById('opt-all').classList.toggle('sel',m==='all');const sub=document.getElementById('all-sub-opts');sub.classList.toggle('show',m==='all');if(m==='all')animatePanel(sub.querySelector('.mo-sub-grid'));}
 function selLayout(l){playout=l;document.getElementById('layout-single').classList.toggle('sel',l==='single');document.getElementById('layout-duo').classList.toggle('sel',l==='duo');}
-async function confirmExport(){closeModal();const btn=document.getElementById('export-btn');btn.disabled=true;btn.textContent='생성 중...';await exportPDF(pmode==='all',playout);btn.disabled=false;btn.textContent='PDF 생성하기';}
+async function confirmExport(){
+  closeModal();const btn=document.getElementById('export-btn');btn.disabled=true;btn.textContent='폰트 확인 중...';
+  try{
+    const list=pmode==='all'?rows:[rows[ci]];
+    const missing=await prepareFontsFor(list);
+    if(missing.length){
+      const lines=missing.slice(0,8).map(m=>`· ${m.i+1}번 ${m.name}: ${m.bad.join(' ')}`).join('\n')+(missing.length>8?`\n· 외 ${missing.length-8}명`:'');
+      const ok=confirm(`지정한 폰트에 없는 글자가 있어요. 이 글자들은 PC 기본 폰트로 대체되어 인쇄돼요.\n\n${lines}\n\n그래도 PDF를 만들까요? (취소하고 ‘폰트’에서 다른 폰트를 고를 수 있어요)`);
+      if(!ok)return;
+    }
+    btn.textContent='생성 중...';
+    await exportPDF(pmode==='all',playout);
+  }finally{btn.disabled=false;btn.textContent='PDF 생성하기';}
+}
 document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 document.getElementById('update-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeUpdateModal();});
 
@@ -1380,7 +1408,7 @@ async function exportPDF(all=false, layout='single'){
       if(k>0 && slot===0) pdf.addPage();
       setProg(k+1,rows.length);const img=await renderCanvasImage(rows[k]);
       const x=x0+slot*(cWm+gap);
-      pdf.addImage(img,'PNG',x,y0,cWm,cHm);
+      pdf.addImage(img,'PNG',x,y0,cWm,cHm,undefined,'FAST');
     }
     pdf.save('badges_all_A4.pdf');
   } else if(all){
@@ -1389,13 +1417,13 @@ async function exportPDF(all=false, layout='single'){
     for(let k=0;k<rows.length;k++){
       if(k>0) pdf.addPage();
       setProg(k+1,rows.length);const img=await renderCanvasImage(rows[k]);
-      pdf.addImage(img,'PNG',0,0,cWm,cHm);
+      pdf.addImage(img,'PNG',0,0,cWm,cHm,undefined,'FAST');
     }
     pdf.save('badges_all.pdf');
   } else {
     const pdf=new jsPDF({unit:'mm',format:[cWm,cHm],orientation:'portrait'});
     const img=await renderCanvasImage(rows[ci]);
-    pdf.addImage(img,'PNG',0,0,cWm,cHm);
+    pdf.addImage(img,'PNG',0,0,cWm,cHm,undefined,'FAST');
     pdf.save('badge_'+rows[ci].first+'.pdf');
   }
 }
@@ -1404,7 +1432,7 @@ async function exportPDF(all=false, layout='single'){
 // [렌더링 로직 통합] 미리보기와 PDF가 100% 동일한 HTML을 사용합니다.
 // -------------------------------------------------------------
 function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey) {
-    const s = FONTS[fontKey];
+    const s = {fam:mainStack(), wt:nameWt(), ls:'-0.01em'};
     const isKR = nameStyle === 'kr';
     const isLF = !isKR && nmOrd === 'lf';
     // 폰트 크기: 국문 모드는 사용자 지정, 외국어 모드는 자동 계산
@@ -1413,24 +1441,25 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
     const afFs = isKR ? Number(krCtrl.affilFs) : 13;
     const nyKr = isKR ? Number(krCtrl.nameY)  : 0; // +면 아래로
     const ayKr = isKR ? Number(krCtrl.affilY) : 0;
-    const krCombined = `${lastText}${firstText}`; // 국문: 성+이름 (간격없음)
+    const krCombined = ftHTML(`${lastText}${firstText}`); // 국문: 성+이름 (간격없음)
+    const fnH = ftHTML(firstText), lnH = ftHTML(lastText), evH = ftHTML(evText), afH = ftHTML(affilText);
 
     const stFn = `font-family:${s.fam};font-size:${fs}px;font-weight:${s.wt};line-height:1.05;letter-spacing:${s.ls};white-space:nowrap;overflow:visible;padding-bottom:.05em;`;
     const stLn = `${stFn} margin-top:${Y_POS.lastNameGap}px;`;
-    const stAf = `font-size:${afFs}px;font-weight:500;letter-spacing:0em;font-family:'Pretendard',sans-serif;`;
-    const stEv = `width:${Y_POS.evMaxWidth}px;font-size:${evFs}px;font-weight:600;letter-spacing:-0.01em;text-transform:uppercase;line-height:1.2;font-family:'Pretendard',sans-serif;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;white-space:pre-wrap;`;
+    const stAf = `font-size:${afFs}px;font-weight:500;letter-spacing:0em;font-family:${mainStack()};`;
+    const stEv = `width:${Y_POS.evMaxWidth}px;font-size:${evFs}px;font-weight:600;letter-spacing:-0.01em;text-transform:uppercase;line-height:1.2;font-family:${mainStack()};display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all;white-space:pre-wrap;`;
     const stLogo = `height:${Y_POS.logoHeight}px;width:auto;flex-shrink:0;`;
 
     // 이름 블록 빌더 — 국문/외국어(이름→성)/외국어(성+이름) 분기
     const nameBlock = (color, lnExtraGap) => {
       const mt = nyKr ? `margin-top:${nyKr}px;` : '';
       if(isKR) return `<div style="${stFn} color:${color}; ${mt}">${krCombined}</div>`;
-      if(isLF) return `<div style="${stFn} color:${color}; ${mt}">${`${lastText} ${firstText}`.trim()}</div>`;
+      if(isLF) return `<div style="${stFn} color:${color}; ${mt}">${ftHTML(`${lastText} ${firstText}`.trim())}</div>`;
       // 이름·성 중 하나만 있으면(예: 성 칸에 성명 전체) 두 줄로 나누지 않고 한 줄로
-      if(!firstText||!lastText) return `<div style="${stFn} color:${color}; ${mt}">${firstText||lastText}</div>`;
+      if(!firstText||!lastText) return `<div style="${stFn} color:${color}; ${mt}">${fnH||lnH}</div>`;
       const lnStyle = lnExtraGap!==undefined ? `${stFn} margin-top:${lnExtraGap}px;` : stFn;
-      return `<div style="${stFn} color:${color}; ${mt}">${firstText}</div>`
-        + `<div style="${lnStyle} color:${color};">${lastText}</div>`;
+      return `<div style="${stFn} color:${color}; ${mt}">${fnH}</div>`
+        + `<div style="${lnStyle} color:${color};">${lnH}</div>`;
     };
 
     let html = '';
@@ -1445,11 +1474,11 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
         // 행사명 (커스텀 OFF / G 템플릿은 생략)
         const showEvent = !isG && (!isCustom || customShowEvent);
         if(showEvent){
-          html += `<div style="position:absolute;left:50%;top:${Y_POS.A_evTop}px;transform:translateX(-50%);text-align:center;color:${txtRGBA(0.9)};${stEv}">${evText}</div>`;
+          html += `<div style="position:absolute;left:50%;top:${Y_POS.A_evTop}px;transform:translateX(-50%);text-align:center;color:${txtRGBA(0.9)};${stEv}">${evH}</div>`;
         }
         html += `<div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);text-align:center;width:${Math.round(W*0.82)}px;display:flex;flex-direction:column;align-items:center;gap:0px;z-index:2;">`;
         html += nameBlock(txtCol, Y_POS.A_lastNameGap);
-        html += `<div style="${stAf} margin-top:${Y_POS.A_affilGap + ayKr}px; color:${txtRGBA(0.82)};">${affilText}</div>`;
+        html += `<div style="${stAf} margin-top:${Y_POS.A_affilGap + ayKr}px; color:${txtRGBA(0.82)};">${afH}</div>`;
         html += `</div>`;
         // 로고 (커스텀 OFF / G 템플릿은 생략)
         const showLogo = !isG && (!isCustom || customShowLogo);
@@ -1458,31 +1487,31 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
         }
     }
     else if (t === 'B') {
-        html += `<div style="position:absolute;left:${Y_POS.B_leftMargin}px;top:${Y_POS.B_evTop}px;color:rgba(0,0,0,.85);${stEv}">${evText}</div>`;
+        html += `<div style="position:absolute;left:${Y_POS.B_leftMargin}px;top:${Y_POS.B_evTop}px;color:rgba(0,0,0,.85);${stEv}">${evH}</div>`;
         html += `<img src="${LOGO_URI_BLK}" style="position:absolute;right:${Y_POS.rightMargin}px;top:${Y_POS.B_evTop - 1}px;${stLogo}">`;
 
         html += `<div style="position:absolute;left:${Y_POS.B_leftMargin}px;bottom:${Y_POS.groupBottom}px;display:flex;flex-direction:column;align-items:flex-start;text-align:left;z-index:2;">`;
         html += nameBlock('#000');
-        html += `<div style="${stAf} margin-top:${Y_POS.affilGap + ayKr}px; margin-left:2px; color:rgba(0,0,0,.7);">${affilText}</div>`;
+        html += `<div style="${stAf} margin-top:${Y_POS.affilGap + ayKr}px; margin-left:2px; color:rgba(0,0,0,.7);">${afH}</div>`;
         html += `</div>`;
     }
     else if (t === 'C' || t === 'D') {
         html += `<div style="position:absolute;bottom:0;left:0;width:100%;height:${Y_POS.whiteBoxH}px;background:#fff;z-index:1;"></div>`;
         html += `<img src="${LOGO_URI}" style="position:absolute;right:${Y_POS.rightMargin}px;top:30px;${stLogo}z-index:2;">`;
-        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.CD_evBottom}px;color:rgba(255,255,255,.92);${stEv}">${evText}</div>`;
+        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.CD_evBottom}px;color:rgba(255,255,255,.92);${stEv}">${evH}</div>`;
         // 이름/성: 흰색박스 상단 고정
         const cdWTop = H - Y_POS.whiteBoxH;
         html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;top:${cdWTop + Y_POS.CD_namePadTop}px;display:flex;flex-direction:column;gap:${Y_POS.CD_nameGap}px;z-index:2;">`;
         html += nameBlock('#000');
         html += `</div>`;
         // 소속: 흰색박스 하단 (양수 ayKr는 아래로 = bottom 감소)
-        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.groupBottom - ayKr}px;${stAf} color:rgba(0,0,0,.65);z-index:2;">${affilText}</div>`;
+        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.groupBottom - ayKr}px;${stAf} color:rgba(0,0,0,.65);z-index:2;">${afH}</div>`;
     }
     else if (t === 'E') {
         html += `<div style="position:absolute;bottom:0;left:0;width:100%;height:${Y_POS.whiteBoxH}px;background:#fff;z-index:1;"></div>`;
 
         html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;right:${Y_POS.rightMargin}px;bottom:${Y_POS.E_evBottom}px;display:flex;justify-content:space-between;align-items:flex-end;">`;
-        html += `<div style="color:rgba(255,255,255,.92);${stEv}">${evText}</div>`;
+        html += `<div style="color:rgba(255,255,255,.92);${stEv}">${evH}</div>`;
         html += `<img src="${LOGO_URI}" style="${stLogo}">`;
         html += `</div>`;
 
@@ -1490,7 +1519,7 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
         html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;top:${eWTop + Y_POS.CD_namePadTop}px;display:flex;flex-direction:column;gap:${Y_POS.CD_nameGap}px;z-index:2;">`;
         html += nameBlock('#000');
         html += `</div>`;
-        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.groupBottom - ayKr}px;${stAf} color:rgba(0,0,0,.65);z-index:2;">${affilText}</div>`;
+        html += `<div style="position:absolute;left:${Y_POS.leftMargin}px;bottom:${Y_POS.groupBottom - ayKr}px;${stAf} color:rgba(0,0,0,.65);z-index:2;">${afH}</div>`;
     }
     else if (t === 'F') {
         const cs = F_COLOR_SETS[bgI];
@@ -1504,12 +1533,12 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
         html += `<div style="display:flex;flex-direction:column;gap:${Y_POS.F_nameGap}px;">`;
         html += nameBlock('#000');
         html += `</div>`;
-        html += `<div style="${stAf} text-align:right;color:rgba(0,0,0,0.65); margin-top:${ayKr}px;">${affilText}</div>`;
+        html += `<div style="${stAf} text-align:right;color:rgba(0,0,0,0.65); margin-top:${ayKr}px;">${afH}</div>`;
         html += `</div></div>`;
 
         html += `<div style="position:absolute;bottom:0;left:0;right:0;height:${fH}px;display:flex;">`;
         html += `<div style="flex:1;background:${cs.footL};display:flex;align-items:center;padding:0 24px;min-width:0;overflow:hidden;">`;
-        html += `<div style="color:rgba(255,255,255,.92);${stEv}">${evText}</div>`;
+        html += `<div style="color:rgba(255,255,255,.92);${stEv}">${evH}</div>`;
         html += `</div>`;
         html += `<div style="width:${fRW}px;background:${cs.footR};display:flex;align-items:center;justify-content:center;">`;
         html += `<img src="${LOGO_URI}" style="${stLogo}">`;
@@ -1573,12 +1602,146 @@ async function renderCanvasImage(r) {
   // SVG DOM 렌더링을 보장하기 위해 딜레이를 살짝 줌
   await new Promise(res => setTimeout(res, 300)); 
   
-  const cvs = await html2canvas(wrap, { scale: 2, useCORS: true, backgroundColor: null });
+  // 인쇄용 300dpi: 명찰 실제 크기(mm) 기준으로 배율 계산
+  const scale = Math.max(2, (cWm / 25.4 * 300) / cW);
+  const cvs = await html2canvas(wrap, { scale, useCORS: true, backgroundColor: null });
   document.body.removeChild(wrap);
   
   return cvs.toDataURL('image/png');
 }
 
+
+// ── 폰트 선택 ──
+// 글자를 종류별로 나눠 한자·가나 구간에는 '한자' 폰트를, 나머지에는 '한글·영문' 폰트를 지정한다.
+// (폰트 순서만으로는 Noto Sans KR처럼 한자를 한국식 자형으로 가진 폰트가 먼저 잡히기 때문)
+// PDF는 화면에 그린 명찰을 이미지로 굳히므로, 여기서 지정한 폰트가 그대로 인쇄된다.
+const WEB_FONTS={
+  main:[
+    {name:'Pretendard',label:'Pretendard (기본)',wts:[400,500,600,700,800,900]},
+    {name:'Noto Sans KR',label:'Noto Sans KR (본고딕)',g:'Noto+Sans+KR:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+    {name:'IBM Plex Sans KR',label:'IBM Plex Sans KR',g:'IBM+Plex+Sans+KR:wght@400;500;600;700',wts:[400,500,600,700]},
+    {name:'Gothic A1',label:'Gothic A1',g:'Gothic+A1:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+    {name:'Nanum Gothic',label:'나눔고딕',g:'Nanum+Gothic:wght@400;700;800',wts:[400,700,800]},
+    {name:'Nanum Myeongjo',label:'나눔명조',g:'Nanum+Myeongjo:wght@400;700;800',wts:[400,700,800]},
+    {name:'Montserrat',label:'Montserrat (영문 전용)',g:'Montserrat:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+    {name:'Inter',label:'Inter (영문 전용)',g:'Inter:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+    {name:'Bebas Neue',label:'Bebas Neue (영문 전용)',g:'Bebas+Neue',wts:[400]},
+  ],
+  cjk:[
+    {name:'Noto Sans TC',label:'Noto Sans TC · 번체 (思源黑體)',g:'Noto+Sans+TC:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
+    {name:'Noto Sans SC',label:'Noto Sans SC · 간체',g:'Noto+Sans+SC:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
+    {name:'Noto Sans JP',label:'Noto Sans JP · 일본어',g:'Noto+Sans+JP:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
+    {name:'Noto Serif TC',label:'Noto Serif TC · 번체 명조',g:'Noto+Serif+TC:wght@400;500;700;900',wts:[400,500,700,900]},
+  ]
+};
+const FONT_KEY='badge-font-v1';
+let fontCfg={main:'Pretendard',cjk:'Noto Sans TC',weight:800};
+let localFamilies=[]; // PC에 설치된 폰트 (불러온 경우)
+try{const s=JSON.parse(localStorage.getItem(FONT_KEY)||'null');if(s)fontCfg={...fontCfg,...s};}catch(e){}
+try{localFamilies=JSON.parse(localStorage.getItem(FONT_KEY+'-local')||'[]');}catch(e){}
+
+const qf=n=>`'${String(n).replace(/'/g,"\\'")}'`;
+const findWeb=(kind,n)=>WEB_FONTS[kind].find(f=>f.name===n);
+const mainStack=()=>`${qf(fontCfg.main)},'Pretendard',sans-serif`;
+const cjkStack=()=>`${qf(fontCfg.cjk)},${qf(fontCfg.main)},sans-serif`;
+// 웹폰트는 실제로 있는 굵기 중 가장 가까운 값을 쓴다 (없는 굵기를 브라우저가 가짜로 두껍게 만들지 않게)
+function nearestWt(kind,n,w){const f=findWeb(kind,n);if(!f)return w;return f.wts.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);}
+const nameWt=()=>nearestWt('main',fontCfg.main,fontCfg.weight);
+const CJK_RUN=/([⺀-⿟々-〇〡-〩぀-ヿㇰ-ㇿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]+)/;
+// 텍스트 → HTML: 특수문자 이스케이프 + 한자·가나 구간만 한자 폰트로 감싼다
+function ftHTML(t){
+  return String(t??'').split(CJK_RUN).map((part,i)=>{
+    if(!part)return '';
+    const e=escH(part);
+    return i%2?`<span style="font-family:${cjkStack()};font-weight:${nearestWt('cjk',fontCfg.cjk,fontCfg.weight)};">${e}</span>`:e;
+  }).join('');
+}
+const loadedCss=new Set();
+function ensureFontCss(kind,n){
+  const f=findWeb(kind,n);if(!f||!f.g||loadedCss.has(f.g))return;
+  loadedCss.add(f.g);
+  const l=document.createElement('link');l.rel='stylesheet';
+  l.href=`https://fonts.googleapis.com/css2?family=${f.g}&display=block`;
+  l.onload=()=>document.fonts.ready.then(()=>render());
+  document.head.appendChild(l);
+}
+function fillFontSelects(){
+  const opt=(f,sel)=>`<option value="${escH(f.name)}"${f.name===sel?' selected':''}>${escH(f.label||f.name)}</option>`;
+  const localGrp=sel=>localFamilies.length?`<optgroup label="PC에 설치된 폰트">${localFamilies.map(n=>opt({name:n,label:n},sel)).join('')}</optgroup>`:'';
+  // 저장된 값이 목록에 없으면(다른 PC 등) 그대로 보이게 추가
+  const extra=(kind,sel)=>findWeb(kind,sel)||localFamilies.includes(sel)?'':`<optgroup label="직접 지정">${opt({name:sel,label:sel+' (PC 폰트)'},sel)}</optgroup>`;
+  document.getElementById('ft-main').innerHTML=`<optgroup label="웹폰트 (어느 PC에서나 동일)">${WEB_FONTS.main.map(f=>opt(f,fontCfg.main)).join('')}</optgroup>`+localGrp(fontCfg.main)+extra('main',fontCfg.main);
+  document.getElementById('ft-cjk').innerHTML=`<optgroup label="웹폰트 (어느 PC에서나 동일)">${WEB_FONTS.cjk.map(f=>opt(f,fontCfg.cjk)).join('')}</optgroup>`+localGrp(fontCfg.cjk)+extra('cjk',fontCfg.cjk);
+  const f=findWeb('main',fontCfg.main),wts=f?f.wts:[400,500,600,700,800,900];
+  const L={400:'400 보통',500:'500',600:'600',700:'700 굵게',800:'800',900:'900 아주 굵게'};
+  const cur=nameWt();
+  document.getElementById('ft-wt').innerHTML=wts.map(w=>`<option value="${w}"${w===cur?' selected':''}>${L[w]||w}${w===800?' (기본)':''}</option>`).join('');
+  const sm=document.getElementById('ft-sample');
+  sm.children[0].style.cssText=`font-family:${mainStack()};font-weight:${cur};`;
+  sm.children[1].style.cssText=`font-family:${cjkStack()};font-weight:${nearestWt('cjk',fontCfg.cjk,fontCfg.weight)};`;
+}
+function setFont(k,v){
+  fontCfg[k]=v;
+  try{localStorage.setItem(FONT_KEY,JSON.stringify(fontCfg));}catch(e){}
+  ensureFontCss('main',fontCfg.main);ensureFontCss('cjk',fontCfg.cjk);
+  fillFontSelects();render();
+  if(k!=='weight')toast(`${k==='main'?'한글·영문':'한자'} 폰트: ${v}`);
+}
+// 글자가 해당 폰트 묶음에 실제로 있는지: 끝의 대체 폰트를 바꿔도 폭이 같으면 앞쪽 폰트에 있는 글자
+const glyphCtx=document.createElement('canvas').getContext('2d');
+function hasGlyph(stack,wt,ch){
+  const w=fb=>{glyphCtx.font=`${wt} 40px ${stack.replace(/,\s*sans-serif$/,'')},${fb}`;return glyphCtx.measureText(ch).width;};
+  const a=w('monospace'),b=w('serif');
+  return a===b&&a===w('cursive');
+}
+function fontInstalled(n){
+  const w=fb=>{glyphCtx.font=`400 40px ${qf(n)},${fb}`;return glyphCtx.measureText('가나Abg王').width;};
+  const base=fb=>{glyphCtx.font=`400 40px ${fb}`;return glyphCtx.measureText('가나Abg王').width;};
+  return w('monospace')!==base('monospace')||w('serif')!==base('serif');
+}
+// PDF 생성 전: 폰트를 실제로 내려받고, 지정 폰트에 없는 글자를 찾는다
+async function prepareFontsFor(list){
+  const all=list.map(r=>[r.event,r.first,r.last,r.affil].join(' ')).join(' ');
+  const cjkWt=nearestWt('cjk',fontCfg.cjk,fontCfg.weight);
+  const loads=[[fontCfg.main,nameWt()],[fontCfg.main,500],[fontCfg.main,600],['Pretendard',nameWt()],['Pretendard',500],[fontCfg.cjk,cjkWt]];
+  await Promise.all(loads.map(([n,w])=>document.fonts.load(`${w} 40px ${qf(n)}`,all).catch(()=>{})));
+  await document.fonts.ready;
+  const missing=[];
+  list.forEach((r,i)=>{
+    const chars=new Set([...(r.first+r.last+r.affil)].filter(c=>c.trim()));
+    const bad=[...chars].filter(c=>CJK_RUN.test(c)?!hasGlyph(cjkStack(),cjkWt,c):!hasGlyph(mainStack(),nameWt(),c));
+    CJK_RUN.lastIndex=0;
+    if(bad.length)missing.push({i,name:(r.last+r.first)||r.affil,bad});
+  });
+  return missing;
+}
+async function loadLocalFonts(){
+  const st=(m,t)=>showSt(m,t,'font-status');
+  if(!('queryLocalFonts' in window)){
+    document.getElementById('ft-manual').classList.add('show');
+    st('이 브라우저는 PC 폰트 목록을 지원하지 않아요(Edge·크롬에서 가능). 위 칸에 폰트 이름을 직접 입력해 주세요.','info');return;
+  }
+  try{
+    const fonts=await window.queryLocalFonts();
+    localFamilies=[...new Set(fonts.map(f=>f.family))].sort((a,b)=>a.localeCompare(b,'ko'));
+    if(!localFamilies.length)throw new Error('empty');
+    try{localStorage.setItem(FONT_KEY+'-local',JSON.stringify(localFamilies));}catch(e){}
+    fillFontSelects();
+    st(`✓ PC 폰트 ${localFamilies.length}개를 불러왔어요. 폰트 목록 아래쪽 ‘PC에 설치된 폰트’에서 고르세요. PC 폰트는 PDF를 만드는 PC에 그 폰트가 설치돼 있어야 해요.`,'ok');
+  }catch(e){
+    document.getElementById('ft-manual').classList.add('show');
+    st('PC 폰트 목록을 가져오지 못했어요(권한 거부 또는 회사 정책). 위 칸에 폰트 이름을 직접 입력해 주세요.','err');
+  }
+}
+function addManualFont(){
+  const inp=document.getElementById('ft-manual-inp'),n=inp.value.trim();if(!n)return;
+  const st=(m,t)=>showSt(m,t,'font-status');
+  if(!fontInstalled(n)){st(`‘${n}’ 폰트를 이 PC에서 찾지 못했어요. 영문 이름(예: Malgun Gothic)으로도 입력해 보세요.`,'err');return;}
+  if(!localFamilies.includes(n))localFamilies.push(n);
+  try{localStorage.setItem(FONT_KEY+'-local',JSON.stringify(localFamilies));}catch(e){}
+  inp.value='';fillFontSelects();
+  st(`✓ ‘${n}’을(를) 목록에 추가했어요. 한글·영문 또는 한자 폰트에서 고르세요.`,'ok');
+}
 let tt=null;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1200);}
 init();
@@ -1608,7 +1771,8 @@ const GUIDE=[
   <div><div class="gi-card g" style="width:110px"><div class="nm">손흥민</div><div class="af">마이다스아이티</div></div><div class="gi-cap">국문 — 성이름 한 줄</div></div></div>`,
  items:[['A','<b>외국어</b> — 이름과 성을 두 줄로 크게 보여줘요. <b>이름 배치 변경</b>을 누르면 ‘성 이름’ 순서의 한 줄로 바뀌어요.'],
   ['B','<b>국문</b> — 이름·소속의 <b>글자 크기</b>와 <b>위치</b>를 슬라이더로 조절할 수 있어요.'],
-  ['✓','이름이 길면 명찰 폭에 맞게 <b>글자 크기가 자동으로 줄어들어요</b>.']],
+  ['✓','이름이 길면 명찰 폭에 맞게 <b>글자 크기가 자동으로 줄어들어요</b>.'],
+  ['F','<b>폰트</b> — ‘한글·영문’과 ‘한자’ 폰트를 따로 고를 수 있어요. 웹폰트는 어느 PC에서 만들어도 똑같이 나오고, <b>PC에 설치된 폰트</b>도 불러와 쓸 수 있어요. PDF를 만들기 전에 폰트에 없는 글자가 있으면 알려줘요.']],
  tips:[['','한글 이름이 대부분인 명단을 불러오면 <b>국문</b>으로 자동 전환돼요.']]},
 {nav:'배경 선택',title:'3. 배경 고르기',lead:'준비된 템플릿을 쓰거나, 디자인한 배경 파일을 직접 올릴 수 있어요.',target:'배경 선택',
  ill:`<div class="gi-chips"><div class="gi-chip on">템플릿</div><div class="gi-chip">직접 업로드</div></div>
