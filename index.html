@@ -17,6 +17,26 @@
 <script type="application/json" id="release-data">
 [
  {
+  "version": "1.6.0",
+  "date": "2026-11-11",
+  "title": "PDF 해상도 선택과 생성 결과 요약",
+  "notify": false,
+  "changes": [
+   {
+    "type": "new",
+    "text": "PDF를 만들 때 해상도(DPI)를 고를 수 있어요. 150 · 300(추천, 인쇄용) · 600 중에서 선택하고, 고른 값은 기억돼요."
+   },
+   {
+    "type": "new",
+    "text": "PDF를 다 만들면 인원·페이지 수·사이즈·DPI·폰트·표기 방식·배경·행사명·파일 크기를 한눈에 보여줘요. ‘다시 다운로드’도 할 수 있어요."
+   },
+   {
+    "type": "improve",
+    "text": "생성 전 검사에 ‘이름이 비어 있는 명찰’ 확인을 추가했어요."
+   }
+  ]
+ },
+ {
   "version": "1.5.0",
   "date": "2026-11-11",
   "title": "버전 표시와 릴리즈 노트",
@@ -403,6 +423,28 @@ body.sb-dragging{cursor:col-resize;user-select:none;}
 .rel-tag.fix{background:#FFF7ED;color:#C2410C;}
 .up-all{display:block;margin:-8px auto 16px;padding:0;border:none;background:none;font-size:12px;font-weight:600;font-family:'Pretendard',sans-serif;color:var(--t3);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
 .up-all:hover{color:var(--pr);}
+.mo-dpi{margin:-4px 0 16px;}
+.dpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
+.dpi-opt{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px;border:1.5px solid var(--bd);border-radius:var(--r8);background:var(--sf);font-family:'Pretendard',sans-serif;cursor:pointer;transition:all .15s;color:var(--t2);}
+.dpi-opt b{font-size:14px;font-weight:800;}
+.dpi-opt span{font-size:10.5px;color:var(--t3);}
+.dpi-opt:hover{border-color:var(--pr);background:var(--prw);}
+.dpi-opt.sel{border-color:var(--pr);background:var(--prw);color:var(--pr);}
+.dpi-opt.sel span{color:var(--pr);}
+.dpi-opt .rec{position:absolute;top:-8px;right:6px;font-size:9.5px;font-weight:800;color:#fff;background:var(--pr);padding:1px 6px;border-radius:999px;}
+.dpi-hint{font-size:11px;color:var(--t3);margin-top:6px;text-align:center;}
+.res-box{width:420px;}
+.res-box .mo-btns button{white-space:nowrap;}
+.res-ic{width:44px;height:44px;margin:0 auto 10px;border-radius:50%;background:#ECFDF5;color:#059669;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;}
+.res-title{font-size:17px;font-weight:800;color:var(--t1);text-align:center;margin-bottom:4px;}
+.res-sub{font-size:12px;color:var(--t3);text-align:center;margin-bottom:16px;word-break:break-all;}
+.res-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:12px;}
+.res-tbl th{width:84px;text-align:left;font-weight:700;color:var(--t3);padding:7px 0;vertical-align:top;border-top:1px solid var(--bd);}
+.res-tbl td{color:var(--t1);padding:7px 0;border-top:1px solid var(--bd);line-height:1.5;}
+.res-tbl td small{color:var(--t3);}
+.res-check{font-size:12px;line-height:1.5;padding:8px 10px;border-radius:var(--r8);margin-bottom:14px;}
+.res-check.ok{background:#ECFDF5;color:#047857;border:1px solid #A7F3D0;}
+.res-check.warn{background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;}
 .sec.sec-spot{animation:secSpot 1.8s ease-out;}
 @keyframes secSpot{0%,40%{background:var(--prw);box-shadow:inset 3px 0 0 var(--pr);}100%{background:transparent;box-shadow:inset 3px 0 0 transparent;}}
 @media (max-width:640px){.gd-box{grid-template-columns:1fr;grid-template-rows:auto 1fr;}.gd-nav{flex-direction:row;overflow-x:auto;padding:12px;border-right:none;border-bottom:1px solid var(--bd);}.gd-nav-title,.gd-nav-sub{display:none;}#gd-nav-items{display:flex;gap:2px;padding-right:36px;}.gd-nav-item{white-space:nowrap;}.gd-body{padding:20px 16px 8px;}.gd-foot{padding:12px 16px;}.gi-flow{grid-template-columns:1fr 1fr;}}
@@ -631,8 +673,9 @@ body.sb-dragging{cursor:col-resize;user-select:none;}
   <button class="up-all" onclick="closeUpdateModal();openReleases();">전체 릴리즈 노트 보기</button>
   <div class="up-btns"><button class="mo-ghost" onclick="closeUpdateModal();openGuide(0);">사용 가이드 보기</button><button class="mo-close" onclick="closeUpdateModal()">확인</button></div>
 </div></div>
-<div class="mo" id="pdf-modal"><div class="mo-box"><div class="mo-title">PDF 생성</div><div class="mo-desc">생성할 명찰을 선택하세요</div><div class="mo-opts"><div class="mo-opt sel" id="opt-cur" onclick="selOpt('cur')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M63 14C66.3 14 69 16.7 69 20V72C69 75.3 66.3 78 63 78H28C24.7 78 22 75.3 22 72V20C22 16.7 24.7 14 28 14H63ZM40 19C38.9 19 38 19.9 38 21C38 22.1 38.9 23 40 23H51C52.1 23 53 22.1 53 21C53 19.9 52.1 19 51 19H40Z" fill="white"/></svg></div><div><div class="mo-lbl">현재 명찰</div><div class="mo-sub" id="opt-cur-sub">선택된 1명</div></div></div><div class="mo-opt" id="opt-all" onclick="selOpt('all')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M70 26C73.3 26 76 28.7 76 32V74C76 77.3 73.3 80 70 80H40C36.7 80 34 77.3 34 74V32C34 28.7 36.7 26 40 26H70Z" fill="white" opacity=".45"/><path d="M52 14C55.3 14 58 16.7 58 20V62C58 65.3 55.3 68 52 68H22C18.7 68 16 65.3 16 62V20C16 16.7 18.7 14 22 14H52ZM32 19C30.9 19 30 19.9 30 21C30 22.1 30.9 23 32 23H42C43.1 23 44 22.1 44 21C44 19.9 43.1 19 42 19H32Z" fill="white"/></svg></div><div><div class="mo-lbl">전체 명찰</div><div class="mo-sub" id="opt-all-sub">전체 명 일괄 생성</div></div></div></div><div class="mo-sub-wrap" id="all-sub-opts"><div class="mo-sub-inner"><div class="mo-sub-pad"><div class="mo-sub-lbl">출력 레이아웃</div><div class="mo-sub-grid"><button class="mo-sub-opt sel" id="layout-single" onclick="selLayout('single')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="45" y="14" width="30" height="52" fill="#E5E8EB"/><rect x="52" y="22" width="16" height="2.5" rx="1" fill="#C5CDD4"/><rect x="50" y="32" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="48" y="38" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="55" y="58" width="10" height="2" rx="1" fill="#C5CDD4"/><g stroke="#3182F6" stroke-width="1.4" stroke-linecap="round"><line x1="40" y1="14" x2="48" y2="14"/><line x1="45" y1="9" x2="45" y2="17"/><line x1="72" y1="14" x2="80" y2="14"/><line x1="75" y1="9" x2="75" y2="17"/><line x1="40" y1="66" x2="48" y2="66"/><line x1="45" y1="63" x2="45" y2="71"/><line x1="72" y1="66" x2="80" y2="66"/><line x1="75" y1="63" x2="75" y2="71"/></g></svg></div>하나씩 출력</button><button class="mo-sub-opt" id="layout-duo" onclick="selLayout('duo')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="60" rx="1" stroke="#3182F6" stroke-width="1.5" fill="none"/><rect x="22" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="30" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="26" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="28" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="34" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/><rect x="62" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="70" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="66" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="68" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="74" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/></svg></div>A4에 두 개씩 출력</button></div></div></div></div><div class="mo-btns"><button class="mo-cancel" onclick="closeModal()">취소</button><button class="mo-confirm" onclick="confirmExport()">생성하기</button></div></div></div>
+<div class="mo" id="pdf-modal"><div class="mo-box"><div class="mo-title">PDF 생성</div><div class="mo-desc">생성할 명찰을 선택하세요</div><div class="mo-opts"><div class="mo-opt sel" id="opt-cur" onclick="selOpt('cur')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M63 14C66.3 14 69 16.7 69 20V72C69 75.3 66.3 78 63 78H28C24.7 78 22 75.3 22 72V20C22 16.7 24.7 14 28 14H63ZM40 19C38.9 19 38 19.9 38 21C38 22.1 38.9 23 40 23H51C52.1 23 53 22.1 53 21C53 19.9 52.1 19 51 19H40Z" fill="white"/></svg></div><div><div class="mo-lbl">현재 명찰</div><div class="mo-sub" id="opt-cur-sub">선택된 1명</div></div></div><div class="mo-opt" id="opt-all" onclick="selOpt('all')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M70 26C73.3 26 76 28.7 76 32V74C76 77.3 73.3 80 70 80H40C36.7 80 34 77.3 34 74V32C34 28.7 36.7 26 40 26H70Z" fill="white" opacity=".45"/><path d="M52 14C55.3 14 58 16.7 58 20V62C58 65.3 55.3 68 52 68H22C18.7 68 16 65.3 16 62V20C16 16.7 18.7 14 22 14H52ZM32 19C30.9 19 30 19.9 30 21C30 22.1 30.9 23 32 23H42C43.1 23 44 22.1 44 21C44 19.9 43.1 19 42 19H32Z" fill="white"/></svg></div><div><div class="mo-lbl">전체 명찰</div><div class="mo-sub" id="opt-all-sub">전체 명 일괄 생성</div></div></div></div><div class="mo-sub-wrap" id="all-sub-opts"><div class="mo-sub-inner"><div class="mo-sub-pad"><div class="mo-sub-lbl">출력 레이아웃</div><div class="mo-sub-grid"><button class="mo-sub-opt sel" id="layout-single" onclick="selLayout('single')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="45" y="14" width="30" height="52" fill="#E5E8EB"/><rect x="52" y="22" width="16" height="2.5" rx="1" fill="#C5CDD4"/><rect x="50" y="32" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="48" y="38" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="55" y="58" width="10" height="2" rx="1" fill="#C5CDD4"/><g stroke="#3182F6" stroke-width="1.4" stroke-linecap="round"><line x1="40" y1="14" x2="48" y2="14"/><line x1="45" y1="9" x2="45" y2="17"/><line x1="72" y1="14" x2="80" y2="14"/><line x1="75" y1="9" x2="75" y2="17"/><line x1="40" y1="66" x2="48" y2="66"/><line x1="45" y1="63" x2="45" y2="71"/><line x1="72" y1="66" x2="80" y2="66"/><line x1="75" y1="63" x2="75" y2="71"/></g></svg></div>하나씩 출력</button><button class="mo-sub-opt" id="layout-duo" onclick="selLayout('duo')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="60" rx="1" stroke="#3182F6" stroke-width="1.5" fill="none"/><rect x="22" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="30" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="26" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="28" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="34" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/><rect x="62" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="70" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="66" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="68" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="74" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/></svg></div>A4에 두 개씩 출력</button></div></div></div></div><div class="mo-dpi"><div class="mo-sub-lbl">해상도 (DPI)</div><div class="dpi-grid"><button class="dpi-opt" data-dpi="150" onclick="selDpi(150)"><b>150</b><span>빠름 · 화면 확인용</span></button><button class="dpi-opt" data-dpi="300" onclick="selDpi(300)"><span class="rec">추천</span><b>300</b><span>인쇄용</span></button><button class="dpi-opt" data-dpi="600" onclick="selDpi(600)"><b>600</b><span>고품질 · 용량 큼</span></button></div><div class="dpi-hint" id="dpi-hint"></div></div><div class="mo-btns"><button class="mo-cancel" onclick="closeModal()">취소</button><button class="mo-confirm" onclick="confirmExport()">생성하기</button></div></div></div>
 <div class="mo" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="gd-h"><div class="gd-box"><button class="gd-x" onclick="closeGuide()" aria-label="닫기">✕</button><nav class="gd-nav"><div class="gd-nav-title">사용 가이드</div><div class="gd-nav-sub">처음이라면 순서대로 따라 해 보세요</div><div id="gd-nav-items"></div></nav><div class="gd-main"><div class="gd-body" id="gd-body"></div><div class="gd-foot"><div class="gd-dots" id="gd-dots"></div><button class="gd-prev" id="gd-prev" onclick="guideGo(gdIdx-1)">이전</button><button class="gd-next" id="gd-next" onclick="guideNext()">다음</button></div></div></div></div>
+<div class="mo" id="res-modal" role="dialog" aria-modal="true"><div class="mo-box res-box"><div class="res-ic">✓</div><div class="res-title">PDF를 만들었어요</div><div class="res-sub" id="res-sub"></div><table class="res-tbl" id="res-tbl"></table><div id="res-check"></div><div class="mo-btns"><button class="mo-cancel" onclick="redownloadPDF()">다시 다운로드</button><button class="mo-confirm" onclick="closeResult()">확인</button></div></div></div>
 <div class="mo" id="rel-modal" role="dialog" aria-modal="true" aria-labelledby="rel-h"><div class="rel-box"><button class="gd-x" onclick="closeReleases()" aria-label="닫기">✕</button><div class="rel-hd"><h2 id="rel-h">릴리즈 노트</h2><p>명찰 생성기가 업데이트된 내용이에요</p></div><div class="rel-body" id="rel-body"></div></div></div>
 <div id="toast"></div>
 <div class="sb-resizer" id="sb-resizer" role="separator" aria-orientation="vertical" aria-label="왼쪽 패널 너비 조절" tabindex="0" title="끌어서 너비 조절 · 더블클릭하면 기본 너비"></div>
@@ -1610,62 +1653,115 @@ function calcEvFs(txt){const m=document.getElementById('ME');m.style.fontFamily=
 function updNav(){const n=rows.length;document.getElementById('nav-pill').textContent=n?(ci+1)+' / '+n:'- / -';document.getElementById('prev-btn').disabled=ci<=0;document.getElementById('next-btn').disabled=ci>=n-1||n===0;}
 function goNav(d){ci=Math.max(0,Math.min(rows.length-1,ci+d));render();updNav();if(mode==='direct')renderDir();}
 
-function openModal(){if(!rows.length){toast('먼저 데이터를 입력하세요');return;}selOpt('cur');selLayout('single');document.getElementById('opt-cur-sub').textContent=rows[ci].first+' '+rows[ci].last;document.getElementById('opt-all-sub').textContent='전체 '+rows.length+'명 일괄 생성';document.getElementById('pdf-modal').classList.add('show');}
+function openModal(){if(!rows.length){toast('먼저 데이터를 입력하세요');return;}selDpi(pdfDpi,true);selOpt('cur');selLayout('single');document.getElementById('opt-cur-sub').textContent=rows[ci].first+' '+rows[ci].last;document.getElementById('opt-all-sub').textContent='전체 '+rows.length+'명 일괄 생성';document.getElementById('pdf-modal').classList.add('show');}
 function closeModal(){document.getElementById('pdf-modal').classList.remove('show');}
 function selOpt(m){pmode=m;document.getElementById('opt-cur').classList.toggle('sel',m==='cur');document.getElementById('opt-all').classList.toggle('sel',m==='all');const sub=document.getElementById('all-sub-opts');sub.classList.toggle('show',m==='all');if(m==='all')animatePanel(sub.querySelector('.mo-sub-grid'));}
 function selLayout(l){playout=l;document.getElementById('layout-single').classList.toggle('sel',l==='single');document.getElementById('layout-duo').classList.toggle('sel',l==='duo');}
-async function confirmExport(){
-  closeModal();const btn=document.getElementById('export-btn');btn.disabled=true;btn.textContent='폰트 확인 중...';
-  try{
-    const list=pmode==='all'?rows:[rows[ci]];
-    const missing=await prepareFontsFor(list);
-    if(missing.length){
-      const lines=missing.slice(0,8).map(m=>`· ${m.i+1}번 ${m.name}: ${m.bad.join(' ')}`).join('\n')+(missing.length>8?`\n· 외 ${missing.length-8}명`:'');
-      const ok=confirm(`지정한 폰트에 없는 글자가 있어요. 이 글자들은 PC 기본 폰트로 대체되어 인쇄돼요.\n\n${lines}\n\n그래도 PDF를 만들까요? (취소하고 ‘폰트’에서 다른 폰트를 고를 수 있어요)`);
-      if(!ok)return;
-    }
-    btn.textContent='생성 중...';
-    await exportPDF(pmode==='all',playout);
-  }finally{btn.disabled=false;btn.textContent='PDF 생성하기';}
-}
 document.getElementById('pdf-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
 document.getElementById('update-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeUpdateModal();});
 
 function setProg(k,n){const b=document.getElementById('export-btn');if(b)b.textContent='생성 중… '+k+' / '+n;}
+// ── PDF 해상도 ──
+const DPI_KEY='badge-pdf-dpi';
+let pdfDpi=300;
+try{const v=+localStorage.getItem(DPI_KEY);if([150,300,600].includes(v))pdfDpi=v;}catch(e){}
+const dpiPx=()=>[Math.round(cWm/25.4*pdfDpi),Math.round(cHm/25.4*pdfDpi)];
+function selDpi(d,silent){
+  pdfDpi=d;try{localStorage.setItem(DPI_KEY,String(d));}catch(e){}
+  document.querySelectorAll('.dpi-opt').forEach(b=>b.classList.toggle('sel',+b.dataset.dpi===d));
+  const [w,h]=dpiPx();
+  document.getElementById('dpi-hint').textContent=`명찰 1장 = ${w.toLocaleString()} × ${h.toLocaleString()} px`+(d===600?' · 인원이 많으면 생성이 오래 걸려요':'');
+}
+let lastPdf=null; // {url,name}
+const fmtBytes=b=>b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';
+const PAPER={'105x148':'A6','148x210':'A5','210x297':'A4','74x105':'A7','90x55':'명함','55x90':'명함'};
+function badgeSizeLabel(){const k=`${Math.round(cWm)}x${Math.round(cHm)}`;return `${+cWm.toFixed(1)} × ${+cHm.toFixed(1)} mm`+(PAPER[k]?` (${PAPER[k]})`:'');}
+async function confirmExport(){
+  closeModal();const btn=document.getElementById('export-btn');btn.disabled=true;btn.textContent='생성 전 검사 중...';
+  try{
+    const list=pmode==='all'?rows:[rows[ci]];
+    // 생성 전 검사: 폰트 로딩 + 없는 글자 + 이름이 빈 명찰
+    const missing=await prepareFontsFor(list);
+    const noName=list.map((r,i)=>({r,i:pmode==='all'?i:ci})).filter(x=>!(x.r.first||'').trim()&&!(x.r.last||'').trim());
+    const warns=[];
+    if(missing.length){
+      warns.push(`■ 지정한 폰트에 없는 글자 (PC 기본 폰트로 대체돼요)\n`+missing.slice(0,8).map(m=>`· ${m.i+1}번 ${m.name}: ${m.bad.join(' ')}`).join('\n')+(missing.length>8?`\n· 외 ${missing.length-8}명`:''));
+    }
+    if(noName.length){
+      warns.push(`■ 이름이 비어 있는 명찰 ${noName.length}장\n· `+noName.slice(0,10).map(x=>`${x.i+1}번`).join(', ')+(noName.length>10?' 외':''));
+    }
+    if(warns.length&&!confirm(`생성 전 검사에서 확인할 내용이 있어요.\n\n${warns.join('\n\n')}\n\n그래도 PDF를 만들까요?`))return;
+    btn.textContent='생성 중...';
+    const t0=performance.now();
+    const res=await exportPDF(pmode==='all',playout);
+    showResult({...res,sec:(performance.now()-t0)/1000,missing:missing.length,noName:noName.length,list});
+  }finally{btn.disabled=false;btn.textContent='PDF 생성하기';}
+}
 async function exportPDF(all=false, layout='single'){
   const {jsPDF}=window.jspdf;
+  const list=all?rows:[rows[ci]];
+  let pdf,name;
   if(all && layout==='duo'){
     // A4 가로(297×210mm) 대지에 명찰 2장을 좌우로, 1px 간격
     const A4W=297, A4H=210;
     const gap=25.4/96; // 1px → mm (≈0.265mm)
-    const pdf=new jsPDF({unit:'mm',format:'a4',orientation:'landscape'});
+    pdf=new jsPDF({unit:'mm',format:'a4',orientation:'landscape'});
     const perPage=2;
     const totalW=cWm*2+gap;
     const x0=Math.max(0,(A4W-totalW)/2);
     const y0=Math.max(0,(A4H-cHm)/2);
-    for(let k=0;k<rows.length;k++){
+    for(let k=0;k<list.length;k++){
       const slot=k%perPage;
       if(k>0 && slot===0) pdf.addPage();
-      setProg(k+1,rows.length);const img=await renderCanvasImage(rows[k]);
+      setProg(k+1,list.length);const img=await renderCanvasImage(list[k]);
       const x=x0+slot*(cWm+gap);
       pdf.addImage(img,'PNG',x,y0,cWm,cHm,undefined,'FAST');
     }
-    pdf.save('badges_all_A4.pdf');
-  } else if(all){
-    // 하나씩 출력: 명찰 사이즈 페이지에 1장씩 (기존 방식)
-    const pdf=new jsPDF({unit:'mm',format:[cWm,cHm],orientation:'portrait'});
-    for(let k=0;k<rows.length;k++){
+    name='badges_all_A4.pdf';
+  } else {
+    // 명찰 사이즈 페이지에 1장씩
+    pdf=new jsPDF({unit:'mm',format:[cWm,cHm],orientation:cWm>cHm?'landscape':'portrait'});
+    for(let k=0;k<list.length;k++){
       if(k>0) pdf.addPage();
-      setProg(k+1,rows.length);const img=await renderCanvasImage(rows[k]);
+      if(all)setProg(k+1,list.length);
+      const img=await renderCanvasImage(list[k]);
       pdf.addImage(img,'PNG',0,0,cWm,cHm,undefined,'FAST');
     }
-    pdf.save('badges_all.pdf');
-  } else {
-    const pdf=new jsPDF({unit:'mm',format:[cWm,cHm],orientation:'portrait'});
-    const img=await renderCanvasImage(rows[ci]);
-    pdf.addImage(img,'PNG',0,0,cWm,cHm,undefined,'FAST');
-    pdf.save('badge_'+rows[ci].first+'.pdf');
+    name=all?'badges_all.pdf':('badge_'+((list[0].last||'')+(list[0].first||'')||'1')+'.pdf');
   }
+  const blob=pdf.output('blob');
+  if(lastPdf)URL.revokeObjectURL(lastPdf.url);
+  lastPdf={url:URL.createObjectURL(blob),name};
+  redownloadPDF();
+  return {name,bytes:blob.size,pages:pdf.getNumberOfPages(),count:list.length,layout:all&&layout==='duo'?'duo':'single'};
+}
+function redownloadPDF(){if(!lastPdf)return;const a=document.createElement('a');a.href=lastPdf.url;a.download=lastPdf.name;document.body.appendChild(a);a.click();a.remove();}
+function closeResult(){document.getElementById('res-modal').classList.remove('show');}
+function showResult(r){
+  const [w,h]=dpiPx();
+  const evs=[...new Set(r.list.map(x=>x.event).filter(Boolean))];
+  const styleLbl=nameStyle==='kr'?'국문 (성이름 한 줄)':(nmOrd==='lf'?'외국어 (성 이름 한 줄)':'외국어 (이름 / 성 두 줄)');
+  const bgLbl=bgMode==='custom'?'직접 업로드한 배경':`템플릿 ${bgT}-${bgI+1}`;
+  const cjkUsed=r.list.some(x=>CJK_RUN.test(x.first+x.last+x.affil+x.event));
+  const rowsH=[
+    ['명찰',`<b>${r.count.toLocaleString()}명</b> <small>· ${r.pages.toLocaleString()}페이지${r.layout==='duo'?' (A4 가로에 2장씩)':' (명찰 크기 페이지에 1장씩)'}</small>`],
+    ['사이즈',badgeSizeLabel()+(r.layout==='duo'?' <small>· 용지 A4 가로 297 × 210 mm</small>':'')],
+    ['해상도',`${pdfDpi} DPI <small>· 명찰 1장 ${w.toLocaleString()} × ${h.toLocaleString()} px</small>`],
+    ['폰트',`한글·영문 <b>${escH(fontCfg.main)}</b> <small>(굵기 ${nameWt()})</small><br>한자 <b>${escH(fontCfg.cjk)}</b>${cjkUsed?'':' <small>(이번 명단엔 한자 없음)</small>'}`],
+    ['표기 방식',styleLbl],
+    ['배경',bgLbl],
+    ['행사명',evs.length>1?`${evs.length}종 <small>(${escH(evs.slice(0,3).join(', '))}${evs.length>3?' 외':''})</small>`:escH(evs[0]||'(없음)')],
+    ['파일',`${escH(r.name)} <small>· ${fmtBytes(r.bytes)} · ${r.sec<60?Math.max(1,Math.round(r.sec))+'초':Math.floor(r.sec/60)+'분 '+Math.round(r.sec%60)+'초'} 걸림</small>`],
+  ];
+  document.getElementById('res-sub').textContent=`${r.name} 파일이 다운로드 폴더에 저장됐어요`;
+  document.getElementById('res-tbl').innerHTML=rowsH.map(([k,v])=>`<tr><th>${k}</th><td>${v}</td></tr>`).join('');
+  const issues=[];
+  if(r.missing)issues.push(`폰트에 없어 대체된 글자가 있는 명찰 ${r.missing}장`);
+  if(r.noName)issues.push(`이름이 빈 명찰 ${r.noName}장`);
+  document.getElementById('res-check').innerHTML=issues.length
+    ?`<div class="res-check warn">⚠ 확인 필요: ${issues.join(' · ')}</div>`
+    :`<div class="res-check ok">✓ 생성 전 검사 통과 — 모든 글자가 지정한 폰트로 출력됐어요</div>`;
+  document.getElementById('res-modal').classList.add('show');
 }
 
 // -------------------------------------------------------------
@@ -1842,8 +1938,8 @@ async function renderCanvasImage(r) {
   // SVG DOM 렌더링을 보장하기 위해 딜레이를 살짝 줌
   await new Promise(res => setTimeout(res, 300)); 
   
-  // 인쇄용 300dpi: 명찰 실제 크기(mm) 기준으로 배율 계산
-  const scale = Math.max(2, (cWm / 25.4 * 300) / cW);
+  // 선택한 DPI(기본 300): 명찰 실제 크기(mm) 기준으로 배율 계산
+  const scale = (cWm / 25.4 * pdfDpi) / cW;
   const cvs = await html2canvas(wrap, { scale, useCORS: true, backgroundColor: null });
   document.body.removeChild(wrap);
   
@@ -2032,7 +2128,9 @@ const GUIDE=[
   <div class="gi-row"><div class="gi-cap">하나씩 출력 — 명찰 크기 페이지</div><div class="gi-cap">A4에 두 개씩 출력</div></div>`,
  items:[['A','미리보기 아래 <b>‹ ›</b> 버튼으로 한 명씩 넘겨볼 수 있어요. 왼쪽 표에서 줄을 클릭해도 그 사람으로 이동해요.'],
   ['B','<b>PDF 생성하기</b> → <b>현재 명찰</b>(지금 보이는 한 장) 또는 <b>전체 명찰</b>을 고르세요.'],
-  ['C','전체 명찰은 <b>하나씩 출력</b>(명찰 크기 페이지)과 <b>A4에 두 개씩 출력</b> 중에서 고를 수 있어요.']],
+  ['C','전체 명찰은 <b>하나씩 출력</b>(명찰 크기 페이지)과 <b>A4에 두 개씩 출력</b> 중에서 고를 수 있어요.'],
+  ['D','<b>해상도(DPI)</b>는 인쇄용 <b>300</b>을 추천해요. 확인용은 150, 아주 선명하게 뽑으려면 600(용량 큼)을 고르세요.'],
+  ['✓','만들기 전에 폰트에 없는 글자·이름이 빈 명찰을 검사하고, 다 만들면 인원·폰트·DPI·사이즈 요약을 보여줘요.']],
  tips:[['warn','인원이 많으면 생성에 몇 분 걸릴 수 있어요. 버튼에 진행 상황(예: 120 / 300)이 표시되니 <b>끝날 때까지 창을 닫지 마세요</b>.']]},
 {nav:'자주 묻는 질문',title:'자주 묻는 질문',lead:'막히는 부분이 있다면 여기를 먼저 확인해 보세요.',
  ill:'',
@@ -2080,6 +2178,7 @@ function guideGoto(label){
 }
 document.getElementById('guide-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeGuide();});
 document.getElementById('rel-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeReleases();});
+document.getElementById('res-modal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeResult();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeReleases();});
 document.addEventListener('keydown',e=>{
   if(!document.getElementById('guide-modal').classList.contains('show'))return;
