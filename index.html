@@ -723,7 +723,7 @@ function renderDir(){
     dv.className='cn-val';dv.textContent=i+1;td0.appendChild(dv);tr.appendChild(td0);
     [['first',phMap.first],['last',phMap.last],['affil',phMap.affil]].forEach(([k,ph])=>{
       const td=document.createElement('td'),inp=document.createElement('input');
-      inp.className='ci';inp.placeholder=ph;inp.value=r[k]||'';
+      inp.className='ci';inp.placeholder=(!r.first&&!r.last&&!r.affil)?ph:'';inp.value=r[k]||'';
       inp.addEventListener('focus',()=>selDir(i));
       inp.addEventListener('input',e=>{dir[i][k]=e.target.value;syncRows();});
       inp.addEventListener('paste',e=>{
@@ -778,11 +778,11 @@ const normH=h=>String(h??'').toLowerCase().replace(/[\s_\-.()\[\]:*·/]/g,'');
 const H_SUF='(영문|국문|한글|eng|kor|english|korean)?$';
 function classifyHeader(h){
   const n=normH(h);if(!n)return null;
-  if(new RegExp('^(성|lastname|surname|familyname|last)'+H_SUF).test(n))return 'last';
-  if(new RegExp('^(성명|성함|fullname|name|참석자|참석자명|참석자성명|이름성명)'+H_SUF).test(n))return 'full';
-  if(new RegExp('^(이름|firstname|givenname|first)'+H_SUF).test(n))return 'first';
-  if(/^소속/.test(n)||new RegExp('^(회사|회사명|기관|기관명|단체|단체명|학교|학교명|company|companyname|affiliation|organization|organisation|org|institution)'+H_SUF).test(n))return 'affil';
-  if(new RegExp('^(행사|행사명|event|eventname)'+H_SUF).test(n))return 'event';
+  if(new RegExp('^(성|姓|姓氏|lastname|surname|familyname|last)'+H_SUF).test(n))return 'last';
+  if(new RegExp('^(성명|성함|姓名|氏名|名前|fullname|name|참석자|참석자명|참석자성명|이름성명)'+H_SUF).test(n))return 'full';
+  if(new RegExp('^(이름|名|名字|firstname|givenname|first)'+H_SUF).test(n))return 'first';
+  if(/^(소속|所屬|所属)/.test(n)||new RegExp('^(회사|회사명|기관|기관명|단체|단체명|학교|학교명|公司|公司名稱|公司名称|單位|单位|單位名稱|单位名称|服務單位|服务单位|機構|机构|機關|机关|會社|会社|会社名|學校|学校|company|companyname|affiliation|organization|organisation|org|institution)'+H_SUF).test(n))return 'affil';
+  if(new RegExp('^(행사|행사명|活動|活动|活動名稱|活动名称|イベント|event|eventname)'+H_SUF).test(n))return 'event';
   return null;
 }
 // 같은 종류의 열이 여러 개면(예: 이름(국문)/이름(영문)) 현재 표기 방식에 맞는 쪽을 고른다
@@ -822,14 +822,16 @@ function impDetect(aoa){
   return {hdr:best,map:{first,last,affil:pickCol(types,hdrs,'affil'),event:pickCol(types,hdrs,'event')}};
 }
 // "손흥민" → 손/흥민, "남궁민수" → 남궁/민수, "Heung Min Son" → Heung Min/Son, "Son, Heung Min" → Heung Min/Son
-const KR_DOUBLE=['남궁','황보','제갈','사공','선우','서문','독고','동방','어금','망절'];
+const KR_DOUBLE=['남궁','황보','제갈','사공','선우','서문','독고','동방','어금','망절',
+  '歐陽','欧阳','司馬','司马','諸葛','诸葛','上官','東方','东方','皇甫','尉遲','尉迟','公孫','公孙','令狐','長孫','长孙','慕容','司徒','張簡','张简','范姜','夏侯','軒轅','轩辕'];
+const CJK_NAME=/[가-힣一-鿿㐀-䶿぀-ヿ]/;
 function splitName(s){
   s=String(s||'').replace(/\s+/g,' ').trim();
   if(!s)return {first:'',last:''};
   if(s.includes(',')){const [l,...f]=s.split(',');return {last:l.trim(),first:f.join(',').trim()};}
-  if(/^[가-힣]/.test(s)){
+  if(/^[가-힣一-鿿㐀-䶿]/.test(s)){ // 한글·한자 이름: 앞 글자가 성
     if(s.includes(' ')){const p=s.split(' ');return {last:p[0],first:p.slice(1).join(' ')};}
-    if(s.length>=4&&KR_DOUBLE.some(d=>s.startsWith(d)))return {last:s.slice(0,2),first:s.slice(2)};
+    if(s.length>=3&&KR_DOUBLE.some(d=>s.startsWith(d))&&!(/^[가-힣]/.test(s)&&s.length<4))return {last:s.slice(0,2),first:s.slice(2)};
     if(s.length>=2)return {last:s[0],first:s.slice(1)};
     return {first:s,last:''};
   }
@@ -943,10 +945,10 @@ function impApply(){
   ci=0;switchMode('direct');syncRows();
   // 명단 대부분이 한글 이름이면 국문, 아니면 외국어 표기로 맞춘다
   const named=recs.filter(r=>r.first||r.last);
-  const krRatio=named.length?named.filter(r=>/[가-힣]/.test(r.first+r.last)).length/named.length:0;
+  const krRatio=named.length?named.filter(r=>CJK_NAME.test(r.first+r.last)).length/named.length:0;
   const want=krRatio>=0.5?'kr':'foreign';
   let msg=recs.length+'명을 명단에 넣었어요'+(multiEv?` · 행사 ${evs.length}종`:'');
-  if(named.length&&want!==nameStyle){switchNameStyle(want);msg+=want==='kr'?' · 국문 표기로 전환':' · 외국어 표기로 전환';}
+  if(named.length&&want!==nameStyle){switchNameStyle(want);msg+=want==='kr'?' · 국문(한 줄) 표기로 전환':' · 외국어 표기로 전환';}
   toast(msg);
 }
 
@@ -1321,12 +1323,13 @@ function render(){
   const ev=getEv()||'MIDAS SQUARE 1991';
   const ph=getPlaceholders();
   const r=rows.length?rows[ci]:{event:ev,first:ph.first,last:ph.last,affil:ph.affil};
-  // 빈 필드는 표기 방식에 맞는 더미로 폴백 (실제 입력 시 자동 대체됨)
+  // 행 전체가 비어 있을 때만 표기 방식에 맞는 예시로 채운다 (일부만 입력된 행에 예시 이름이 섞이지 않게)
+  const tr=v=>(v||'').trim(),blank=!tr(r.first)&&!tr(r.last)&&!tr(r.affil);
   const d={
     event:r.event||ev,
-    first:(r.first&&r.first.trim())||ph.first,
-    last:(r.last&&r.last.trim())||ph.last,
-    affil:(r.affil&&r.affil.trim())||ph.affil
+    first:blank?ph.first:tr(r.first),
+    last:blank?ph.last:tr(r.last),
+    affil:blank?ph.affil:tr(r.affil)
   };
 
   const inner = document.getElementById('badge-card-inner');
@@ -1422,7 +1425,9 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
     const nameBlock = (color, lnExtraGap) => {
       const mt = nyKr ? `margin-top:${nyKr}px;` : '';
       if(isKR) return `<div style="${stFn} color:${color}; ${mt}">${krCombined}</div>`;
-      if(isLF) return `<div style="${stFn} color:${color}; ${mt}">${lastText} ${firstText}</div>`;
+      if(isLF) return `<div style="${stFn} color:${color}; ${mt}">${`${lastText} ${firstText}`.trim()}</div>`;
+      // 이름·성 중 하나만 있으면(예: 성 칸에 성명 전체) 두 줄로 나누지 않고 한 줄로
+      if(!firstText||!lastText) return `<div style="${stFn} color:${color}; ${mt}">${firstText||lastText}</div>`;
       const lnStyle = lnExtraGap!==undefined ? `${stFn} margin-top:${lnExtraGap}px;` : stFn;
       return `<div style="${stFn} color:${color}; ${mt}">${firstText}</div>`
         + `<div style="${lnStyle} color:${color};">${lastText}</div>`;
