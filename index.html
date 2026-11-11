@@ -9,6 +9,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- 방문 집계: Vercel Web Analytics (Vercel 프로젝트 > Analytics 탭에서 확인) -->
+<script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
 <style>
 :root{--bg:#F2F4F6;--sf:#fff;--sf2:#F9FAFB;--bd:#E5E8EB;--bds:#D1D6DB;--pr:#3182F6;--prh:#1B6EF3;--prw:#E8F0FE;--er:#F04452;--t1:#191F28;--t2:#4E5968;--t3:#8B95A1;--t4:#B0B8C1;--r16:16px;--r12:12px;--r8:8px;--r6:6px;}
@@ -352,6 +355,8 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 .up-check input{width:14px;height:14px;accent-color:var(--pr);cursor:pointer;margin:0;}
 .mo-close{padding:9px 22px;background:var(--pr);border:none;border-radius:var(--r8);font-size:13px;font-weight:700;font-family:'Pretendard',sans-serif;color:#fff;cursor:pointer;transition:background .15s;}
 .mo-close:hover{background:var(--prh);}
+.mo-ghost{padding:9px 14px;background:transparent;border:1.5px solid var(--bd);border-radius:var(--r8);font-size:13px;font-weight:700;font-family:'Pretendard',sans-serif;color:var(--t2);cursor:pointer;transition:all .15s;}
+.mo-ghost:hover{border-color:var(--pr);color:var(--pr);background:var(--prw);}
 #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(10px);background:#191F28;color:#fff;padding:9px 18px;border-radius:999px;font-size:13px;font-weight:600;font-family:'Pretendard',sans-serif;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 #M{position:fixed;left:-9999px;top:0;white-space:nowrap;visibility:hidden;pointer-events:none;}
@@ -362,51 +367,41 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 <span id="M"></span><div id="ME"></div>
 <div class="mo" id="update-modal"><div class="mo-box mo-box-wide">
   <div class="onboarding">
-    <div class="onboarding-icon"><svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="26" height="22" rx="2.5" fill="#107C41"/><path d="M11 11l4 5-4 5h2.5l2.75-3.5L19 21h2.5l-4-5 4-5H19l-2.75 3.5L13.5 11H11z" fill="#fff"/></svg></div>
-    <div class="onboarding-title">엑셀 데이터를 간편하게 붙여넣으세요</div>
-    <div class="onboarding-subtitle">행, 열을 인식해 자동으로 입력합니다</div>
+    <div class="onboarding-icon"><svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="22" height="26" rx="2.5" fill="#0F9D58"/><rect x="9" y="10" width="14" height="12" rx="1" fill="#fff"/><path d="M9 14h14M9 18h14M15 10v12" stroke="#0F9D58" stroke-width="1.4"/></svg></div>
+    <div class="onboarding-title">참석자 명단을 한 번에 불러오세요</div>
+    <div class="onboarding-subtitle">구글 시트 링크나 엑셀 파일만 있으면 수백 명의 명찰도 한 번에 만들어요</div>
     <svg class="onboarding-demo" viewBox="0 0 400 170" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <!-- Excel sheet (left) -->
-      <rect x="10" y="10" width="170" height="150" rx="8" fill="#fff" stroke="#E5E8EB"/>
-      <rect x="10" y="10" width="22" height="150" fill="#F9FAFB"/>
-      <rect x="10" y="10" width="170" height="18" fill="#F9FAFB"/>
-      <text x="62" y="22" font-size="9" fill="#8B95A1" text-anchor="middle" font-family="Pretendard,sans-serif">A</text>
-      <text x="110" y="22" font-size="9" fill="#8B95A1" text-anchor="middle" font-family="Pretendard,sans-serif">B</text>
-      <text x="155" y="22" font-size="9" fill="#8B95A1" text-anchor="middle" font-family="Pretendard,sans-serif">C</text>
-      <g stroke="#F0F2F4"><line x1="32" y1="46" x2="180" y2="46"/><line x1="32" y1="68" x2="180" y2="68"/><line x1="32" y1="90" x2="180" y2="90"/><line x1="32" y1="112" x2="180" y2="112"/><line x1="32" y1="134" x2="180" y2="134"/><line x1="32" y1="28" x2="32" y2="160"/><line x1="92" y1="28" x2="92" y2="160"/><line x1="135" y1="28" x2="135" y2="160"/></g>
-      <g font-size="8" fill="#8B95A1" text-anchor="middle" font-family="Pretendard,sans-serif"><text x="21" y="42">1</text><text x="21" y="64">2</text><text x="21" y="86">3</text><text x="21" y="108">4</text><text x="21" y="130">5</text><text x="21" y="152">6</text></g>
-      <g font-size="8" fill="#4E5968" font-family="Pretendard,sans-serif"><text x="36" y="42">CHENG OO</text><text x="96" y="42">ONG</text><text x="139" y="42">AECOM</text><text x="36" y="64">Mohd Afiq</text><text x="96" y="64">Tayib</text><text x="139" y="64">ARUP</text><text x="36" y="86">Muhamad</text><text x="96" y="86">Ramali</text><text x="139" y="86">Aurecon</text><text x="36" y="108">Mohamad</text><text x="96" y="108">Rusdi</text><text x="139" y="108">Aurecon</text><text x="36" y="130">Saifuallah</text><text x="96" y="130">Sarwan</text><text x="139" y="130">AECOM</text><text x="36" y="152">Shahkander</text><text x="96" y="152">Singh</text><text x="139" y="152">ARUP</text></g>
-      <rect x="32" y="32" width="148" height="124" fill="#3182F6" fill-opacity="0.05" stroke="#3182F6" stroke-width="1" stroke-dasharray="3 2"/>
-      <rect x="29.5" y="29.5" width="5" height="5" fill="#3182F6"/>
-      <rect x="177.5" y="153.5" width="5" height="5" fill="#3182F6"/>
-      <!-- Arrow -->
-      <path d="M192 85 L208 85 M203 79 L208 85 L203 91" stroke="#3182F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-      <!-- App table (right) -->
-      <rect x="220" y="10" width="170" height="150" rx="8" fill="#fff" stroke="#E5E8EB"/>
-      <rect x="220" y="10" width="170" height="22" fill="#F9FAFB"/>
-      <text x="232" y="25" font-size="9" fill="#8B95A1" font-family="Pretendard,sans-serif">#</text>
-      <text x="253" y="25" font-size="9" fill="#8B95A1" font-family="Pretendard,sans-serif">이름</text>
-      <text x="298" y="25" font-size="9" fill="#8B95A1" font-family="Pretendard,sans-serif">성</text>
-      <text x="340" y="25" font-size="9" fill="#8B95A1" font-family="Pretendard,sans-serif">소속</text>
-      <rect x="221" y="32" width="168" height="22" fill="#E8F0FE"/>
-      <text x="232" y="47" font-size="9" fill="#191F28" font-family="Pretendard,sans-serif" font-weight="500">1</text>
-      <text x="253" y="47" font-size="9" fill="#191F28" font-family="Pretendard,sans-serif" font-weight="500">Heung Min</text>
-      <text x="298" y="47" font-size="9" fill="#191F28" font-family="Pretendard,sans-serif" font-weight="500">Son</text>
-      <text x="340" y="47" font-size="9" fill="#191F28" font-family="Pretendard,sans-serif" font-weight="500">MIDAS IT</text>
-      <rect x="225" y="64" width="160" height="22" rx="4" fill="none" stroke="#D1D6DB" stroke-width="1" stroke-dasharray="3 2"/>
-      <text x="305" y="79" font-size="9" fill="#8B95A1" text-anchor="middle" font-family="Pretendard,sans-serif" font-weight="600">+ 행 추가</text>
-      <rect x="343" y="98" width="42" height="20" rx="4" fill="#fff" stroke="#E5E8EB"/>
-      <text x="364" y="111" font-size="8" fill="#8B95A1" text-anchor="middle" font-family="Pretendard,sans-serif">초기화</text>
-      <!-- Copy button (화살표의 좌측 아래) -->
-      <g transform="translate(178,108)"><rect x="-22" y="-9" width="44" height="18" rx="9" fill="#3182F6"/><text x="0" y="4" font-size="9" fill="#fff" text-anchor="middle" font-family="Pretendard,sans-serif" font-weight="700">복사</text></g>
-      <!-- Paste button (행 추가의 우측 위) -->
-      <g transform="translate(370,62)"><rect x="-28" y="-9" width="56" height="18" rx="9" fill="#3182F6"/><text x="0" y="4" font-size="9" fill="#fff" text-anchor="middle" font-family="Pretendard,sans-serif" font-weight="700">붙여넣기</text></g>
+      <!-- 명단 (left) -->
+      <rect x="10" y="14" width="170" height="142" rx="8" fill="#fff" stroke="#E5E8EB"/>
+      <rect x="10" y="14" width="170" height="20" rx="8" fill="#F9FAFB"/><rect x="10" y="26" width="170" height="8" fill="#F9FAFB"/>
+      <text x="26" y="28" font-size="9" fill="#8B95A1" font-family="Pretendard,sans-serif" font-weight="700">성</text>
+      <text x="62" y="28" font-size="9" fill="#8B95A1" font-family="Pretendard,sans-serif" font-weight="700">이름</text>
+      <text x="112" y="28" font-size="9" fill="#8B95A1" font-family="Pretendard,sans-serif" font-weight="700">소속</text>
+      <g font-size="9" fill="#191F28" font-family="Pretendard,sans-serif" font-weight="500">
+        <text x="26" y="51">손</text><text x="62" y="51">흥민</text><text x="112" y="51">마이다스</text>
+        <text x="26" y="73">김</text><text x="62" y="73">민재</text><text x="112" y="73">MIDAS IT</text>
+        <text x="26" y="95">이</text><text x="62" y="95">강인</text><text x="112" y="95">마이다스</text>
+        <text x="26" y="117">황</text><text x="62" y="117">희찬</text><text x="112" y="117">MIDAS IT</text>
+      </g>
+      <g stroke="#F0F2F4"><line x1="10" y1="34" x2="180" y2="34"/><line x1="10" y1="58" x2="180" y2="58"/><line x1="10" y1="80" x2="180" y2="80"/><line x1="10" y1="102" x2="180" y2="102"/><line x1="10" y1="124" x2="180" y2="124"/></g>
+      <g transform="translate(24,134)"><rect width="58" height="16" rx="8" fill="#E8F0FE"/><text x="29" y="11" font-size="8.5" fill="#3182F6" text-anchor="middle" font-family="Pretendard,sans-serif" font-weight="700">구글 시트</text></g>
+      <g transform="translate(88,134)"><rect width="66" height="16" rx="8" fill="#E8F0FE"/><text x="33" y="11" font-size="8.5" fill="#3182F6" text-anchor="middle" font-family="Pretendard,sans-serif" font-weight="700">.xlsx · .csv</text></g>
+      <!-- arrow -->
+      <path d="M192 85 L212 85 M206 79 L212 85 L206 91" stroke="#3182F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      <!-- 명찰 (right) -->
+      <defs><radialGradient id="upg" cx="50%" cy="50%" r="70%"><stop offset="55%" stop-color="#0B1220"/><stop offset="100%" stop-color="#10B981"/></radialGradient></defs>
+      <rect x="300" y="22" width="76" height="108" rx="4" fill="url(#upg)" opacity=".45"/>
+      <rect x="276" y="32" width="76" height="108" rx="4" fill="url(#upg)" opacity=".7"/>
+      <rect x="236" y="42" width="84" height="118" rx="4" fill="url(#upg)"/>
+      <text x="278" y="98" font-size="17" fill="#fff" text-anchor="middle" font-family="Pretendard,sans-serif" font-weight="800">손흥민</text>
+      <text x="278" y="114" font-size="7.5" fill="#fff" fill-opacity=".85" text-anchor="middle" font-family="Pretendard,sans-serif">마이다스</text>
+      <g transform="translate(352,142)"><rect x="-26" y="-9" width="52" height="18" rx="9" fill="#3182F6"/><text x="0" y="4" font-size="9" fill="#fff" text-anchor="middle" font-family="Pretendard,sans-serif" font-weight="700">× 300명</text></g>
     </svg>
   </div>
   <div class="onboarding-divider"></div>
-  <div class="up-ver">v1.02 업데이트 내역</div>
-  <ul class="up-list"><li>배경 직접 업로드 기능 추가</li><li>국문 표기 방식 추가</li><li>A4 한 면에 2장씩 출력 옵션 추가</li></ul>
-  <div class="up-btns"><label class="up-check"><input type="checkbox" id="up-dismiss">오늘 다시 보지 않기</label><button class="mo-close" onclick="closeUpdateModal()">확인</button></div>
+  <div class="up-ver">v1.1 업데이트 내역</div>
+  <ul class="up-list"><li>구글 시트 공유 링크로 명단 불러오기</li><li>엑셀·CSV 파일 업로드 (성·이름·소속 열 자동 인식)</li><li>전체 PDF 생성 시 진행률 표시</li><li>오른쪽 위 ‘사용 가이드’ 추가</li></ul>
+  <div class="up-btns"><button class="mo-ghost" onclick="closeUpdateModal();openGuide(0);">사용 가이드 보기</button><button class="mo-close" onclick="closeUpdateModal()">확인</button></div>
 </div></div>
 <div class="mo" id="pdf-modal"><div class="mo-box"><div class="mo-title">PDF 생성</div><div class="mo-desc">생성할 명찰을 선택하세요</div><div class="mo-opts"><div class="mo-opt sel" id="opt-cur" onclick="selOpt('cur')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M63 14C66.3 14 69 16.7 69 20V72C69 75.3 66.3 78 63 78H28C24.7 78 22 75.3 22 72V20C22 16.7 24.7 14 28 14H63ZM40 19C38.9 19 38 19.9 38 21C38 22.1 38.9 23 40 23H51C52.1 23 53 22.1 53 21C53 19.9 52.1 19 51 19H40Z" fill="white"/></svg></div><div><div class="mo-lbl">현재 명찰</div><div class="mo-sub" id="opt-cur-sub">선택된 1명</div></div></div><div class="mo-opt" id="opt-all" onclick="selOpt('all')"><div class="mo-ic"><svg width="26" height="26" viewBox="0 0 92 92" fill="none"><path d="M70 26C73.3 26 76 28.7 76 32V74C76 77.3 73.3 80 70 80H40C36.7 80 34 77.3 34 74V32C34 28.7 36.7 26 40 26H70Z" fill="white" opacity=".45"/><path d="M52 14C55.3 14 58 16.7 58 20V62C58 65.3 55.3 68 52 68H22C18.7 68 16 65.3 16 62V20C16 16.7 18.7 14 22 14H52ZM32 19C30.9 19 30 19.9 30 21C30 22.1 30.9 23 32 23H42C43.1 23 44 22.1 44 21C44 19.9 43.1 19 42 19H32Z" fill="white"/></svg></div><div><div class="mo-lbl">전체 명찰</div><div class="mo-sub" id="opt-all-sub">전체 명 일괄 생성</div></div></div></div><div class="mo-sub-wrap" id="all-sub-opts"><div class="mo-sub-inner"><div class="mo-sub-pad"><div class="mo-sub-lbl">출력 레이아웃</div><div class="mo-sub-grid"><button class="mo-sub-opt sel" id="layout-single" onclick="selLayout('single')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="45" y="14" width="30" height="52" fill="#E5E8EB"/><rect x="52" y="22" width="16" height="2.5" rx="1" fill="#C5CDD4"/><rect x="50" y="32" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="48" y="38" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="55" y="58" width="10" height="2" rx="1" fill="#C5CDD4"/><g stroke="#3182F6" stroke-width="1.4" stroke-linecap="round"><line x1="40" y1="14" x2="48" y2="14"/><line x1="45" y1="9" x2="45" y2="17"/><line x1="72" y1="14" x2="80" y2="14"/><line x1="75" y1="9" x2="75" y2="17"/><line x1="40" y1="66" x2="48" y2="66"/><line x1="45" y1="63" x2="45" y2="71"/><line x1="72" y1="66" x2="80" y2="66"/><line x1="75" y1="63" x2="75" y2="71"/></g></svg></div>하나씩 출력</button><button class="mo-sub-opt" id="layout-duo" onclick="selLayout('duo')"><div class="mo-sub-opt-img"><svg viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="10" width="100" height="60" rx="1" stroke="#3182F6" stroke-width="1.5" fill="none"/><rect x="22" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="30" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="26" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="28" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="34" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/><rect x="62" y="20" width="36" height="40" fill="#E5E8EB"/><rect x="70" y="28" width="20" height="2.5" rx="1" fill="#C5CDD4"/><rect x="66" y="38" width="28" height="2.5" rx="1" fill="#C5CDD4"/><rect x="68" y="44" width="24" height="2.5" rx="1" fill="#C5CDD4"/><rect x="74" y="54" width="12" height="2" rx="1" fill="#C5CDD4"/></svg></div>A4에 두 개씩 출력</button></div></div></div></div><div class="mo-btns"><button class="mo-cancel" onclick="closeModal()">취소</button><button class="mo-confirm" onclick="confirmExport()">생성하기</button></div></div></div>
 <div class="mo" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="gd-h"><div class="gd-box"><button class="gd-x" onclick="closeGuide()" aria-label="닫기">✕</button><nav class="gd-nav"><div class="gd-nav-title">사용 가이드</div><div class="gd-nav-sub">처음이라면 순서대로 따라 해 보세요</div><div id="gd-nav-items"></div></nav><div class="gd-main"><div class="gd-body" id="gd-body"></div><div class="gd-foot"><div class="gd-dots" id="gd-dots"></div><button class="gd-prev" id="gd-prev" onclick="guideGo(gdIdx-1)">이전</button><button class="gd-next" id="gd-next" onclick="guideNext()">다음</button></div></div></div></div>
@@ -532,7 +527,6 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 
 const LOGO_URI='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDciIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCA0NyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjgwNzEgNi4xNzE2NEwxMS44MDk2IDEyLjg2MUgxNS40MTMzVjIuMTIyMzhDMTUuNDA2NCAyLjEyNDAyIDEzLjAyNDggMy4yNTE4NiAxMS44MDcxIDYuMTcxNjRaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMjUuMDAwNSAwLjAyMzczODlDMTIuOTgxMiAwLjI3NzI3NyAxMC43NjM5IDEuNzIxNjMgOS42Mzg1NCAyLjgzMzExQzkuMTMwMjEgMy4zNDAxOSA4LjU2NDU0IDQuMDg4NTMgOC4wNTAyMyA1LjUzMTI1QzcuODQzMTMgNi4xMDcwMyA3LjgzMjAxIDYuMDc3NTggNy40NjgzIDcuNTU3MUM3LjEwODAyIDkuMDM1OCA2Ljg4Mjk2IDExLjczOCA2Ljc0MDA0IDEyLjg4MTRIOS44OTM1NUM5Ljk0NjYxIDEyLjI1ODIgOS45NzQgMTEuNjU0NiAxMC4xMDc1IDEwLjU1MTNIMTAuMTEwOUMxMC43ODE4IDUuNzgzOTcgMTIuNDMyNiAzLjU3MjQ2IDEzLjc0NDUgMi41NTA5NEMxNS4yNjUyIDEuMzAzNyAxOS44Mzg1IDAuMjE5MjA5IDI1LjQwNyAwLjM0ODQzMkM0Mi41Mzk1IDAuNzUwODIyIDQzLjE0NDUgNi40OTYzMyA0My4xNDQ1IDYuNDk2MzNINDYuMDkwOUM0NS41MjQ0IDMuNTM4OTMgNDIuMTc0IC0wLjMzOTM5NCAyNS4wMDA1IDAuMDIzNzM4OVoiIGZpbGw9IndoaXRlIi8+CjxwYXRoIGQ9Ik0yOC40NzA2IDYuNzc1MjJDMjguMzIxNyA2LjI0MzYxIDI4LjA4MTIgNS43Nzk4OCAyNy43NDkyIDUuMzc5OTRDMjcuNDE3MiA0Ljk4MDAxIDI2Ljk5NyA0LjY3NDEyIDI2LjQ4OTUgNC40NjA2NkMyNS45ODEyIDQuMjQ3MiAyNS4zMTM3IDQuMTM5MjQgMjQuNDg4NyA0LjEzOTI0SDIwLjI5OTdWMTIuODQxM0gyNC40ODg3QzI0Ljk4OTMgMTIuODQxMyAyNS41NTE2IDEyLjc2MiAyNi4xNjc3IDEyLjYwMjVDMjYuNjIxMyAxMi40ODggMjcuMDQzMiAxMi4yNTgyIDI3LjQzNjggMTEuOTEyMkMyNy44MzIyIDExLjU2NTUgMjguMTM5NCAxMS4xMzYxIDI4LjM2MTkgMTAuNjIzM0MyOC41ODM2IDEwLjExMTMgMjguNjk1NyA5LjM4OTk0IDI4LjY5NTcgOC40NjAwM0MyOC42OTU3IDcuODY2MjYgMjguNjIwNCA3LjMwNDM4IDI4LjQ3MDYgNi43NzQ0VjYuNzc1MjJaTTI1LjY2MiAxMC4wMjg3QzI1LjUxOTEgMTAuMzM5NSAyNS4zMjIyIDEwLjU1NzkgMjUuMDc0OSAxMC42ODE0QzI0LjgyNSAxMC44MDY1IDI0LjQwNTcgMTAuODY4NiAyMy44MTYxIDEwLjg2ODZIMjMuMTIyOVY2LjEwOTQ4SDIzLjgyODFDMjQuNTYwNiA2LjEwOTQ4IDI1LjA4MzUgNi4yNzk2IDI1LjM5OTIgNi42MTk4M0MyNS43MTQyIDYuOTYwODggMjUuODczMyA3LjU5MzA5IDI1LjgzMzMgOC41MTY0NkMyNS44NzMzIDkuMjEzMjggMjUuODAyMyA5LjcxNzkgMjUuNjYyIDEwLjAyODdaIiBmaWxsPSJ3aGl0ZSIvPgo8cGF0aCBkPSJNMzQuNDgwNyA0LjEzOTI0SDMxLjM3NzdMMjcuOTcxNyAxMi44NDEzSDMwLjg0NTRMMzIuODg5OCA2LjgzMzI5TDM0Ljg4NjMgMTIuODQzOEwzNy44ODI0IDEyLjg0MTNMMzQuNDgwNyA0LjEzOTI0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTQ1LjEwNTkgOC43MjQyQzQ0Ljg2MDMgOC4zMzg5OCA0NC40NzQ0IDguMDE3NTYgNDMuOTQxMiA3Ljc1NzQ4QzQzLjQwNTUgNy40OTkwMyA0Mi41MjA2IDcuMjQxNDEgNDEuMjg4MyA2Ljk4ODY4QzQwLjc5MDMgNi44ODk3MiA0MC40NzQ1IDYuNzgzNCA0MC4zNDAxIDYuNjY3MjZDNDAuMjA0MSA2LjU1Njg1IDQwLjEzNDcgNi40MzMzNSA0MC4xMzQ3IDYuMjk1MTNDNDAuMTM0NyA2LjEwNjIxIDQwLjIxNzggNS45NDI2MyA0MC4zODI5IDUuODEwOTZDNDAuNTUwNyA1LjY3ODQ2IDQwLjc5NTQgNS42MTIyMiA0MS4xMjMyIDUuNjEyMjJDNDEuNTIyIDUuNjEyMjIgNDEuODMzNSA1LjcwMDU1IDQyLjA2MDIgNS44NzcyMUM0Mi4wOTYyIDUuOTA1MDEgNDIuMTI3OCA1Ljk0MSA0Mi4xNjA0IDUuOTc2MTdDNDEuODI3NSA1LjM4NzMgNDEuMjY2MSA0LjU5ODg4IDQwLjQxODkgNC4wMjg4M0MzOS45MTkxIDQuMDgxOTkgMzkuNDk5OCA0LjE4MDk1IDM5LjE2IDQuMzIyNDRDMzguNjE0IDQuNTUwNjMgMzguMjA1OCA0Ljg2NDY5IDM3LjkzNDYgNS4yNjIxN0MzNy42NjE2IDUuNjYwNDcgMzcuNTI1NSA2LjA4NDEzIDM3LjUyNTUgNi41MzIzMkMzNy41MjU1IDcuMjEzNiAzNy43OTM0IDcuNzc0NjUgMzguMzIzMSA4LjIxNTQ4QzM4Ljg1MjggOC42NTYzMSAzOS43MzI1IDkuMDA4IDQwLjk3MDggOS4yNzIxN0M0MS43MjkgOS40MzA4MyA0Mi4yMTM0IDkuNTk5MzEgNDIuNDIzOSA5Ljc3Njc5QzQyLjYzNjIgOS45NTUwOSA0Mi43NDE0IDEwLjE1NzEgNDIuNzQxNCAxMC4zODJDNDIuNzQxNCAxMC42MTkyIDQyLjYzMjcgMTAuODI4NiA0Mi40MTQ1IDExLjAwODVDNDIuMTk2MyAxMS4xODg0IDQxLjg4NDggMTEuMjc3NiA0MS40NzkyIDExLjI3NzZDNDAuOTM3NSAxMS4yNzc2IDQwLjUyMDcgMTEuMTAyNiA0MC4yMzA2IDEwLjc1MTdDNDAuMDUwOSAxMC41MzUgMzkuOTMwMiAxMC4yMTg0IDM5Ljg3NDYgOS44MDQ2TDM3LjE5MzUgOS45NjQ5QzM3LjI3MzEgMTAuODQ1NyAzNy42MTExIDExLjU3MTIgMzguMjA5MyAxMi4xNDI5QzM4LjgwNTcgMTIuNzEzNyAzOS44ODA2IDEzIDQxLjQzMDQgMTNDNDIuMzE2MSAxMyA0My4wNDY5IDEyLjg3ODEgNDMuNjI3MSAxMi42MzM2QzQ0LjIwOTEgMTIuMzkwNyA0NC42NjA5IDEyLjAzMzMgNDQuOTgzNSAxMS41NjA2QzQ1LjMwODcgMTEuMDg4NiA0NS40Njg4IDEwLjU3MzQgNDUuNDY4OCAxMC4wMTRDNDUuNDY4OCA5LjUzODc5IDQ1LjM0OSA5LjEwNzc4IDQ1LjEwNTkgOC43MjQyWiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTE5LjMyMzMgNC4xMzkyNEgxNi41MDI3VjEyLjg0MTNIMTkuMzIzM1Y0LjEzOTI0WiIgZmlsbD0id2hpdGUiLz4KPHBhdGggZD0iTTcuMzg3MDEgNC42NTIwNEM2LjE3NjA5IDIuNDI3NDUgNC45ODkxNCAyLjQ3MjQzIDQuOTg5MTQgMi40NzI0M0gwVjEyLjg2MThIMy42NjM1NVY1LjE5MjY1QzQuNTA1NjMgNi42MTgxOSA1LjMxNTE5IDguNzg5NjMgNS44MTU4MSAxMi4xMDAzQzUuODU0MzIgMTIuMzU0NyA1Ljg5MjgzIDEyLjYxMTUgNS45Mjc5MiAxMi44NzczSDYuMjgwNDlDNi4yODA0OSAxMi44NzczIDYuNjQwNzcgNi44NzkwOSA3LjY0ODAyIDUuMTkxMDJDNy41MzkzMyA0Ljk1NzExIDcuNDk1NjkgNC44NDgzMyA3LjM4NzAxIDQuNjUxMjJWNC42NTIwNFoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=';
 const LOGO_URI_BLK='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDciIGhlaWdodD0iMTMiIHZpZXdCb3g9IjAgMCA0NyAxMyIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTExLjgwNzEgNi4xNzE2NEwxMS44MDk2IDEyLjg2MUgxNS40MTMzVjIuMTIyMzhDMTUuNDA2NCAyLjEyNDAyIDEzLjAyNDggMy4yNTE4NiAxMS44MDcxIDYuMTcxNjRaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMjUuMDAwNSAwLjAyMzczODlDMTIuOTgxMiAwLjI3NzI3NyAxMC43NjM5IDEuNzIxNjMgOS42Mzg1NCAyLjgzMzExQzkuMTMwMjEgMy4zNDAxOSA4LjU2NDU0IDQuMDg4NTMgOC4wNTAyMyA1LjUzMTI1QzcuODQzMTMgNi4xMDcwMyA3LjgzMjAxIDYuMDc3NTggNy40NjgzIDcuNTU3MUM3LjEwODAyIDkuMDM1OCA2Ljg4Mjk2IDExLjczOCA2Ljc0MDA0IDEyLjg4MTRIOS44OTM1NUM5Ljk0NjYxIDEyLjI1ODIgOS45NzQgMTEuNjU0NiAxMC4xMDc1IDEwLjU1MTNIMTAuMTEwOUMxMC43ODE4IDUuNzgzOTcgMTIuNDMyNiAzLjU3MjQ2IDEzLjc0NDUgMi41NTA5NEMxNS4yNjUyIDEuMzAzNyAxOS44Mzg1IDAuMjE5MjA5IDI1LjQwNyAwLjM0ODQzMkM0Mi41Mzk1IDAuNzUwODIyIDQzLjE0NDUgNi40OTYzMyA0My4xNDQ1IDYuNDk2MzNINDYuMDkwOUM0NS41MjQ0IDMuNTM4OTMgNDIuMTc0IC0wLjMzOTM5NCAyNS4wMDA1IDAuMDIzNzM4OVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik0yOC40NzA2IDYuNzc1MjJDMjguMzIxNyA2LjI0MzYxIDI4LjA4MTIgNS43Nzk4OCAyNy43NDkyIDUuMzc5OTRDMjcuNDE3MiA0Ljk4MDAxIDI2Ljk5NyA0LjY3NDEyIDI2LjQ4OTUgNC40NjA2NkMyNS45ODEyIDQuMjQ3MiAyNS4zMTM3IDQuMTM5MjQgMjQuNDg4NyA0LjEzOTI0SDIwLjI5OTdWMTIuODQxM0gyNC40ODg3QzI0Ljk4OTMgMTIuODQxMyAyNS41NTE2IDEyLjc2MiAyNi4xNjc3IDEyLjYwMjVDMjYuNjIxMyAxMi40ODggMjcuMDQzMiAxMi4yNTgyIDI3LjQzNjggMTEuOTEyMkMyNy44MzIyIDExLjU2NTUgMjguMTM5NCAxMS4xMzYxIDI4LjM2MTkgMTAuNjIzM0MyOC41ODM2IDEwLjExMTMgMjguNjk1NyA5LjM4OTk0IDI4LjY5NTcgOC40NjAwM0MyOC42OTU3IDcuODY2MjYgMjguNjIwNCA3LjMwNDM4IDI4LjQ3MDYgNi43NzQ0VjYuNzc1MjJaTTI1LjY2MiAxMC4wMjg3QzI1LjUxOTEgMTAuMzM5NSAyNS4zMjIyIDEwLjU1NzkgMjUuMDc0OSAxMC42ODE0QzI0LjgyNSAxMC44MDY1IDI0LjQwNTcgMTAuODY4NiAyMy44MTYxIDEwLjg2ODZIMjMuMTIyOVY2LjEwOTQ4SDIzLjgyODFDMjQuNTYwNiA2LjEwOTQ4IDI1LjA4MzUgNi4yNzk2IDI1LjM5OTIgNi42MTk4M0MyNS43MTQyIDYuOTYwODggMjUuODczMyA3LjU5MzA5IDI1LjgzMzMgOC41MTY0NkMyNS44NzMzIDkuMjEzMjggMjUuODAyMyA5LjcxNzkgMjUuNjYyIDEwLjAyODdaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNMzQuNDgwNyA0LjEzOTI0SDMxLjM3NzdMMjcuOTcxNyAxMi44NDEzSDMwLjg0NTRMMzIuODg5OCA2LjgzMzI5TDM0Ljg4NjMgMTIuODQzOEwzNy44ODI0IDEyLjg0MTNMMzQuNDgwNyA0LjEzOTI0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQ1LjEwNTkgOC43MjQyQzQ0Ljg2MDMgOC4zMzg5OCA0NC40NzQ0IDguMDE3NTYgNDMuOTQxMiA3Ljc1NzQ4QzQzLjQwNTUgNy40OTkwMyA0Mi41MjA2IDcuMjQxNDEgNDEuMjg4MyA2Ljk4ODY4QzQwLjc5MDMgNi44ODk3MiA0MC40NzQ1IDYuNzgzNCA0MC4zNDAxIDYuNjY3MjZDNDAuMjA0MSA2LjU1Njg1IDQwLjEzNDcgNi40MzMzNSA0MC4xMzQ3IDYuMjk1MTNDNDAuMTM0NyA2LjEwNjIxIDQwLjIxNzggNS45NDI2MyA0MC4zODI5IDUuODEwOTZDNDAuNTUwNyA1LjY3ODQ2IDQwLjc5NTQgNS42MTIyMiA0MS4xMjMyIDUuNjEyMjJDNDEuNTIyIDUuNjEyMjIgNDEuODMzNSA1LjcwMDU1IDQyLjA2MDIgNS44NzcyMUM0Mi4wOTYyIDUuOTA1MDEgNDIuMTI3OCA1Ljk0MSA0Mi4xNjA0IDUuOTc2MTdDNDEuODI3NSA1LjM4NzMgNDEuMjY2MSA0LjU5ODg4IDQwLjQxODkgNC4wMjg4M0MzOS45MTkxIDQuMDgxOTkgMzkuNDk5OCA0LjE4MDk1IDM5LjE2IDQuMzIyNDRDMzguNjE0IDQuNTUwNjMgMzguMjA1OCA0Ljg2NDY5IDM3LjkzNDYgNS4yNjIxN0MzNy42NjE2IDUuNjYwNDcgMzcuNTI1NSA2LjA4NDEzIDM3LjUyNTUgNi41MzIzMkMzNy41MjU1IDcuMjEzNiAzNy43OTM0IDcuNzc0NjUgMzguMzIzMSA4LjIxNTQ4QzM4Ljg1MjggOC42NTYzMSAzOS43MzI1IDkuMDA4IDQwLjk3MDggOS4yNzIxN0M0MS43MjkgOS40MzA4MyA0Mi4yMTM0IDkuNTk5MzEgNDIuNDIzOSA5Ljc3Njc5QzQyLjYzNjIgOS45NTUwOSA0Mi43NDE0IDEwLjE1NzEgNDIuNzQxNCAxMC4zODJDNDIuNzQxNCAxMC42MTkyIDQyLjYzMjcgMTAuODI4NiA0Mi40MTQ1IDExLjAwODVDNDIuMTk2MyAxMS4xODg0IDQxLjg4NDggMTEuMjc3NiA0MS40NzkyIDExLjI3NzZDNDAuOTM3NSAxMS4yNzc2IDQwLjUyMDcgMTEuMTAyNiA0MC4yMzA2IDEwLjc1MTdDNDAuMDUwOSAxMC41MzUgMzkuOTMwMiAxMC4yMTg0IDM5Ljg3NDYgOS44MDQ2TDM3LjE5MzUgOS45NjQ5QzM3LjI3MzEgMTAuODQ1NyAzNy42MTExIDExLjU3MTIgMzguMjA5MyAxMi4xNDI5QzM4LjgwNTcgMTIuNzEzNyAzOS44ODA2IDEzIDQxLjQzMDQgMTNDNDIuMzE2MSAxMyA0My4wNDY5IDEyLjg3ODEgNDMuNjI3MSAxMi42MzM2QzQ0LjIwOTEgMTIuMzkwNyA0NC42NjA5IDEyLjAzMzMgNDQuOTgzNSAxMS41NjA2QzQ1LjMwODcgMTEuMDg4NiA0NS40Njg4IDEwLjU3MzQgNDUuNDY4OCAxMC4wMTRDNDUuNDY4OCA5LjUzODc5IDQ1LjM0OSA5LjEwNzc4IDQ1LjEwNTkgOC43MjQyWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTE5LjMyMzMgNC4xMzkyNEgxNi41MDI3VjEyLjg0MTNIMTkuMzIzM1Y0LjEzOTI0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTcuMzg3MDEgNC42NTIwNEM2LjE3NjA5IDIuNDI3NDUgNC45ODkxNCAyLjQ3MjQzIDQuOTg5MTQgMi40NzI0M0gwVjEyLjg2MThIMy42NjM1NVY1LjE5MjY1QzQuNTA1NjMgNi42MTgxOSA1LjMxNTE5IDguNzg5NjMgNS44MTU4MSAxMi4xMDAzQzUuODU0MzIgMTIuMzU0NyA1Ljg5MjgzIDEyLjYxMTUgNS45Mjc5MiAxMi44NzczSDYuMjgwNDlDNi4yODA0OSAxMi44NzczIDYuNjQwNzcgNi44NzkwOSA3LjY0ODAyIDUuMTkxMDJDNy41MzkzMyA0Ljk1NzExIDcuNDk1NjkgNC44NDgzMyA3LjM4NzAxIDQuNjUxMjJWNC42NTIwNFoiIGZpbGw9ImJsYWNrIi8+Cjwvc3ZnPg==';
-const APPS='https://script.google.com/macros/s/AKfycbyptBSxgQ31x2321wTGVydKhfIS4lVczGMrCee1agqlse0OOrCt-XS2544XNI7mtToPKg/exec';
 let LOGO=null;
 
 /* [CSS 그라디언트용 A타입 배경 설정 - PDF 출력 깨짐 방지] */
@@ -684,15 +678,13 @@ async function init(){
 }
 
 // ── 업데이트 안내 모달 ──
+const UPDATE_KEY='badge-update-seen-v1.1';
 function showUpdateModal(){
-  const today=new Date().toISOString().slice(0,10);
-  if(localStorage.getItem('badge-update-hide-v1.02b')===today) return;
+  try{if(localStorage.getItem(UPDATE_KEY))return;}catch(e){}
   document.getElementById('update-modal').classList.add('show');
 }
 function closeUpdateModal(){
-  if(document.getElementById('up-dismiss').checked){
-    localStorage.setItem('badge-update-hide-v1.02b',new Date().toISOString().slice(0,10));
-  }
+  try{localStorage.setItem(UPDATE_KEY,'1');}catch(e){}
   document.getElementById('update-modal').classList.remove('show');
 }
 
@@ -1601,31 +1593,5 @@ document.addEventListener('keydown',e=>{
 // 처음 방문한 사람에게는 버튼에 빨간 점으로 알려준다
 (function(){let seen=false;try{seen=!!localStorage.getItem('badge-guide-seen');}catch(e){}if(!seen)document.getElementById('help-btn').classList.add('new');})();
 
-// ── 방문 집계 (Google Sheet로 전송) ──
-(function trackVisit(){
-  const TRACK_URL='https://script.google.com/macros/s/AKfycbxfSE-Om69cN46eQNppT-uEqYvChKnjqY2zUAt8pz207Kc5UMzJD8iNzA_jIXNprs9U/exec';
-  try{
-    const SESSION_KEY='badge-session-tracked';
-    if(sessionStorage.getItem(SESSION_KEY))return; // 세션당 1회만 전송
-    sessionStorage.setItem(SESSION_KEY,'1');
-    const VID_KEY='badge-visitor-id';
-    let visitorId=localStorage.getItem(VID_KEY);
-    const isNewVisitor=!visitorId;
-    if(isNewVisitor){
-      visitorId=Math.random().toString(36).slice(2,10)+Date.now().toString(36);
-      localStorage.setItem(VID_KEY,visitorId);
-    }
-    const params=new URLSearchParams({
-      visitorId,
-      isNewVisitor:String(isNewVisitor),
-      userAgent:(navigator.userAgent||'').slice(0,220),
-      referrer:(document.referrer||'direct').slice(0,220),
-      language:navigator.language||'',
-      screen:(screen&&screen.width?screen.width+'x'+screen.height:'')
-    });
-    // no-cors GET (Apps Script는 doGet에서 파라미터 파싱)
-    fetch(TRACK_URL+'?'+params.toString(),{mode:'no-cors',cache:'no-store'}).catch(()=>{});
-  }catch(e){}
-})();
 </script>
 </body></html>
