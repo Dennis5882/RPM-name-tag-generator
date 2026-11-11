@@ -32,7 +32,8 @@ def main():
         return
     md = ['# 릴리즈 노트', '', '명찰 생성기 업데이트 내역입니다. 배포 주소: https://rpm-name-tag.vercel.app/', '']
     for r in rels:
-        md += [f"## v{r['version']} — {r['title']} ({r['date']})", '', notes(r)]
+        when = r['date'] + (f" {r['time']} KST 배포" if r.get('time') else '')
+        md += [f"## v{r['version']} — {r['title']} ({when})", '', notes(r)]
     (ROOT / 'CHANGELOG.md').write_text('\n'.join(md).rstrip() + '\n', encoding='utf-8')
     print(f'CHANGELOG.md: {len(rels)} releases, latest v{rels[0]["version"]}')
 

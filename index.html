@@ -13,9 +13,22 @@
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
 <script defer src="/_vercel/insights/script.js"></script>
 <script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';}</script>
-<!-- 릴리즈 노트 원본: 배포할 때마다 맨 앞에 새 버전을 추가 (CHANGELOG.md·GitHub 릴리즈도 여기서 생성) -->
+<!-- 릴리즈 노트 원본: 배포할 때마다 맨 앞에 새 버전을 추가 (date·time = 배포 시각, 한국 시간). CHANGELOG.md·GitHub 릴리즈도 여기서 생성 -->
 <script type="application/json" id="release-data">
 [
+ {
+  "version": "1.6.2",
+  "date": "2026-11-11",
+  "time": "14:00",
+  "title": "릴리즈 노트에 배포 시간 표시",
+  "notify": false,
+  "changes": [
+   {
+    "type": "improve",
+    "text": "릴리즈 노트에 버전별 배포 시간(한국 시간)을 함께 표시해요."
+   }
+  ]
+ },
  {
   "version": "1.6.1",
   "date": "2026-11-11",
@@ -54,7 +67,8 @@
     "type": "improve",
     "text": "파일 업로드에 ‘아웃룩 메일의 첨부파일도 바로 끌어다 놓을 수 있어요’ 안내를 추가했어요."
    }
-  ]
+  ],
+  "time": "13:57"
  },
  {
   "version": "1.6.0",
@@ -74,7 +88,8 @@
     "type": "improve",
     "text": "생성 전 검사에 ‘이름이 비어 있는 명찰’ 확인을 추가했어요."
    }
-  ]
+  ],
+  "time": "13:47"
  },
  {
   "version": "1.5.0",
@@ -90,7 +105,8 @@
     "type": "improve",
     "text": "업데이트 안내 팝업이 최신 주요 업데이트 내용으로 자동으로 바뀌어요."
    }
-  ]
+  ],
+  "time": "13:38"
  },
  {
   "version": "1.4.0",
@@ -120,7 +136,8 @@
     "type": "improve",
     "text": "PDF를 만들기 전에 폰트에 없는 글자가 있으면 미리 알려줘요."
    }
-  ]
+  ],
+  "time": "13:33"
  },
  {
   "version": "1.3.1",
@@ -144,7 +161,8 @@
     "type": "improve",
     "text": "이름·성 중 하나만 있으면 두 줄로 나누지 않고 한 줄로 보여줘요."
    }
-  ]
+  ],
+  "time": "12:52"
  },
  {
   "version": "1.3.0",
@@ -160,7 +178,8 @@
     "type": "improve",
     "text": "파일을 못 읽으면 원인(업로드 차단·문서 암호화·다른 형식 파일)을 정확히 알려줘요."
    }
-  ]
+  ],
+  "time": "12:49"
  },
  {
   "version": "1.2.0",
@@ -172,7 +191,8 @@
     "type": "new",
     "text": "왼쪽 패널 경계선을 끌어 너비를 바꿀 수 있어요. 더블클릭하면 원래 너비로 돌아가요."
    }
-  ]
+  ],
+  "time": "12:44"
  },
  {
   "version": "1.1.2",
@@ -196,7 +216,8 @@
     "type": "improve",
     "text": "유니코드 텍스트(.txt) 파일을 지원하고 첫 화면 로딩을 빠르게 했어요."
    }
-  ]
+  ],
+  "time": "12:41"
  },
  {
   "version": "1.1.1",
@@ -212,7 +233,8 @@
     "type": "improve",
     "text": "업데이트 안내 팝업을 새 기능에 맞게 바꿨어요."
    }
-  ]
+  ],
+  "time": "12:27"
  },
  {
   "version": "1.1.0",
@@ -238,11 +260,12 @@
     "type": "new",
     "text": "오른쪽 위에 ‘사용 가이드’를 추가했어요."
    }
-  ]
+  ],
+  "time": "12:16"
  },
  {
   "version": "1.0.2",
-  "date": "2026-06-02",
+  "date": "2026-07-28",
   "title": "원작자 버전 (bananapallete)",
   "notify": false,
   "changes": [
@@ -250,7 +273,8 @@
     "type": "new",
     "text": "배경 직접 업로드, 국문 표기 방식, A4 한 면에 2장씩 출력."
    }
-  ]
+  ],
+  "time": "09:18"
  }
 ]
 </script>
@@ -1015,7 +1039,7 @@ function initVersionUI(){
 }
 function openReleases(){
   document.getElementById('rel-body').innerHTML=RELEASES.map((r,i)=>`
-    <div class="rel-item"><div class="rel-top"><span class="rel-ver">v${escH(r.version)}</span>${i===0?'<span class="rel-latest">현재</span>':''}<span class="rel-title">${escH(r.title)}</span><span class="rel-date">${escH(r.date)}</span></div>
+    <div class="rel-item"><div class="rel-top"><span class="rel-ver">v${escH(r.version)}</span>${i===0?'<span class="rel-latest">현재</span>':''}<span class="rel-title">${escH(r.title)}</span><span class="rel-date">${escH(r.date)}${r.time?' '+escH(r.time):''}${r.time?' <small>배포</small>':''}</span></div>
     <ul class="rel-list">${r.changes.map(c=>`<li><span class="rel-tag ${c.type}">${REL_TAG[c.type]||c.type}</span><span>${escH(c.text)}</span></li>`).join('')}</ul></div>`).join('');
   document.getElementById('rel-modal').classList.add('show');
   document.getElementById('rel-body').scrollTop=0;
