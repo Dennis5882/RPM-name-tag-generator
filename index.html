@@ -10,7 +10,7 @@
 <meta property="og:title" content="명찰 생성기 — 명단으로 명찰을 한 번에">
 <meta property="og:description" content="구글 시트·엑셀 명단만 올리면 수백 명의 명찰을 한 번에 인쇄용 PDF로 만들어요. 한글·中文·English, 300 DPI.">
 <meta property="og:url" content="https://rpm-name-tag.vercel.app/">
-<meta property="og:image" content="https://rpm-name-tag.vercel.app/og-image.jpg?v=1.7.3">
+<meta property="og:image" content="https://rpm-name-tag.vercel.app/og-image.jpg?v=1.7.4">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -19,7 +19,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="명찰 생성기 — 명단으로 명찰을 한 번에">
 <meta name="twitter:description" content="구글 시트·엑셀 명단만 올리면 수백 명의 명찰을 한 번에 인쇄용 PDF로 만들어요. 한글·中文·English, 300 DPI.">
-<meta name="twitter:image" content="https://rpm-name-tag.vercel.app/og-image.jpg?v=1.7.3">
+<meta name="twitter:image" content="https://rpm-name-tag.vercel.app/og-image.jpg?v=1.7.4">
 <meta name="theme-color" content="#0B1220">
     <link rel="icon" href="favicon.png" type="image/png">
 <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
@@ -34,6 +34,23 @@
 <!-- 릴리즈 노트 원본: 배포할 때마다 맨 앞에 새 버전을 추가 (date·time = 배포 시각, 한국 시간). CHANGELOG.md·GitHub 릴리즈도 여기서 생성 -->
 <script type="application/json" id="release-data">
 [
+ {
+  "version": "1.7.4",
+  "date": "2026-11-11",
+  "time": "14:28",
+  "title": "예시 데이터 정리 (개인정보)",
+  "notify": false,
+  "changes": [
+   {
+    "type": "improve",
+    "text": "링크 미리보기 이미지의 회사명을 마이다스아이티 · MIDASIT · 邁達斯로 바꿨어요."
+   },
+   {
+    "type": "fix",
+    "text": "폰트 샘플과 릴리즈 노트에 쓰인 예시 이름을 가상의 이름으로 바꿨어요. 화면·이미지·문서에 실제 고객 정보가 들어가지 않도록 정리했어요."
+   }
+  ]
+ },
  {
   "version": "1.7.3",
   "date": "2026-11-11",
@@ -263,7 +280,7 @@
    },
    {
     "type": "improve",
-    "text": "한자 이름의 성을 나누고(梅西 → 梅 / 西), 한자 명단은 한 줄 표기로 자동 전환해요."
+    "text": "한자 이름의 성을 나누고(예: 梅西 → 梅 / 西), 한자 명단은 한 줄 표기로 자동 전환해요."
    },
    {
     "type": "improve",

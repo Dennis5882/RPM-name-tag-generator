@@ -6,7 +6,7 @@ const {chromium}=require('playwright-core');const fs=require('fs');
   await p.goto(process.argv[2]);await p.waitForTimeout(2500);await p.evaluate(()=>{try{closeUpdateModal()}catch(e){}});
   const url=await p.evaluate(async()=>{
     document.getElementById('ev-inp').value='MIDAS SQUARE 2026';
-    const people=[{bg:2,style:'foreign',r:{first:'Heung Min',last:'Son',affil:'MIDAS IT'}},
+    const people=[{bg:2,style:'foreign',r:{first:'Heung Min',last:'Son',affil:'MIDASIT'}},
                   {bg:1,style:'kr',r:{first:'西',last:'梅',affil:'邁達斯'}},
                   {bg:0,style:'kr',r:{first:'민재',last:'김',affil:'마이다스아이티'}}];
     pdfDpi=200;const imgs=[];
