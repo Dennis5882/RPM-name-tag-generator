@@ -8,7 +8,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- 방문 집계: Vercel Web Analytics (Vercel 프로젝트 > Analytics 탭에서 확인) -->
 <script>window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments);};</script>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -60,15 +60,6 @@ body{font-family:'Pretendard',sans-serif;background:var(--bg);color:var(--t1);mi
 .sh-st.ok{display:block;background:#ECFDF5;color:#059669;border:1px solid #A7F3D0;}
 .sh-st.err{display:block;background:#FEF2F2;color:#DC2626;border:1px solid #FECACA;}
 .sh-st.info{display:block;background:var(--prw);color:var(--pr);border:1px solid #BFDBFE;}
-.list-wrap{border:1px solid var(--bd);border-radius:var(--r12);overflow:hidden;}
-.list-hdr{display:grid;grid-template-columns:28px 1fr 1fr 1.4fr;background:var(--sf2);border-bottom:1px solid var(--bd);}
-.list-hdr div{padding:7px 8px;font-size:10px;font-weight:700;color:var(--t3);}
-.list-body{max-height:180px;overflow-y:auto;}
-.list-row{display:grid;grid-template-columns:28px 1fr 1fr 1.4fr;border-top:1px solid var(--bd);cursor:pointer;transition:background .1s;}
-.list-row.sel{background:var(--prw);}.list-row:hover:not(.sel){background:var(--sf2);}
-.lc{padding:8px;font-size:11px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ln{text-align:center;font-weight:700;color:var(--t3);}
-.list-empty{padding:20px;text-align:center;font-size:12px;color:var(--t3);}
 /* ── 명단 가져오기 (구글 시트 / 파일) ── */
 .imp-btn{height:36px;padding:0 14px;border:none;border-radius:var(--r8);background:var(--pr);color:#fff;font-size:12px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;flex-shrink:0;transition:background .15s;}
 .imp-btn:hover{background:var(--prh);}
@@ -759,7 +750,7 @@ function doPaste(txt,sr,sf){
   });
   renderDir();syncRows();toast('붙여넣기 완료');
 }
-function syncRows(){const ev=getEv();rows=dir.map(r=>({event:ev,first:r.first||'',last:r.last||'',affil:r.affil||''}));if(ci>=rows.length)ci=Math.max(0,rows.length-1);render();updNav();}
+function syncRows(){const ev=getEv();rows=dir.map(r=>({event:r.event||ev,first:r.first||'',last:r.last||'',affil:r.affil||''}));if(ci>=rows.length)ci=Math.max(0,rows.length-1);render();updNav();}
 
 // ── 참석자 명단 가져오기 (구글 시트 링크 / 엑셀·CSV 파일) ──
 // 불러온 데이터는 열 매핑을 거쳐 '직접 입력' 표(dir)로 들어가므로, 넣은 뒤에도 표에서 바로 수정할 수 있다.
@@ -769,13 +760,14 @@ const colLetter=i=>{let s='';i++;while(i>0){const r=(i-1)%26;s=String.fromCharCo
 const normH=h=>String(h??'').toLowerCase().replace(/[\s_\-.()\[\]:*·/]/g,'');
 
 // 제목 셀 → 필드 종류 추정
+const H_SUF='(영문|국문|한글|eng|kor|english|korean)?$';
 function classifyHeader(h){
   const n=normH(h);if(!n)return null;
-  if(/^성(영문|국문|한글|eng|kor)?$/.test(n)||/^(lastname|surname|familyname|last)/.test(n))return 'last';
-  if(/^(성명|성함|fullname|name$|참석자|이름성명)/.test(n))return 'full';
-  if(/^이름/.test(n)||/^(firstname|givenname|first)/.test(n))return 'first';
-  if(/(소속|회사|기관|단체|학교|company|affil|organi|institution)/.test(n))return 'affil';
-  if(/(행사|event)/.test(n))return 'event';
+  if(new RegExp('^(성|lastname|surname|familyname|last)'+H_SUF).test(n))return 'last';
+  if(new RegExp('^(성명|성함|fullname|name|참석자|참석자명|참석자성명|이름성명)'+H_SUF).test(n))return 'full';
+  if(new RegExp('^(이름|firstname|givenname|first)'+H_SUF).test(n))return 'first';
+  if(/^소속/.test(n)||new RegExp('^(회사|회사명|기관|기관명|단체|단체명|학교|학교명|company|companyname|affiliation|organization|organisation|org|institution)'+H_SUF).test(n))return 'affil';
+  if(new RegExp('^(행사|행사명|event|eventname)'+H_SUF).test(n))return 'event';
   return null;
 }
 // 같은 종류의 열이 여러 개면(예: 이름(국문)/이름(영문)) 현재 표기 방식에 맞는 쪽을 고른다
@@ -789,13 +781,18 @@ function pickCol(types,hdrs,t){
   }
   return c[0];
 }
+const maxLen=aoa=>aoa.reduce((m,r)=>Math.max(m,r?r.length:0),0);
 function impDetect(aoa){
+  // 제목 행 후보: 이름 계열(성·이름·성명) 제목이 있어야 하고, 성(姓)처럼 데이터로도 흔한 '성' 한 칸만으로는 인정하지 않는다
   let best=-1,bestScore=0;
   for(let r=0;r<Math.min(aoa.length,15);r++){
-    const s=new Set((aoa[r]||[]).map(classifyHeader).filter(Boolean)).size;
+    const cells=aoa[r]||[],types=cells.map(classifyHeader);
+    const kinds=new Set(types.filter(Boolean)),s=kinds.size;
+    if(!['first','last','full'].some(k=>kinds.has(k)))continue;
+    if(s===1&&kinds.has('last'))continue;
     if(s>bestScore){bestScore=s;best=r;}
   }
-  const nCol=Math.max(0,...aoa.map(r=>r.length));
+  const nCol=maxLen(aoa);
   if(best<0){ // 제목 행이 없으면 A·B·C열을 성·이름·소속으로 가정
     if(nCol>=3)return {hdr:-1,map:{last:0,first:1,affil:2,event:-1}};
     return {hdr:-1,map:{first:0,last:'split',affil:nCol>1?1:-1,event:-1}};
@@ -837,10 +834,23 @@ function impBuild(){
   }
   return out;
 }
+const IMP_MAX_ROWS=5000;
+// 시트에 선언된 범위(!ref)는 서식 때문에 수십만 행일 수 있으므로, 실제 값이 있는 셀 범위만 읽는다
 function sheetAoa(ws){
-  if(!ws||!ws['!ref'])return {aoa:[],r0:0,c0:0};
-  const rg=XLSX.utils.decode_range(ws['!ref']);
-  return {aoa:XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,blankrows:true}),r0:rg.s.r,c0:rg.s.c};
+  const empty={aoa:[],r0:0,c0:0,truncated:false};
+  if(!ws||!ws['!ref'])return empty;
+  let r0=Infinity,c0=Infinity,r1=-1,c1=-1;
+  for(const k in ws){
+    if(k[0]==='!')continue;
+    const v=ws[k]&&ws[k].v;
+    if(v==null||String(v).trim()==='')continue;
+    const a=XLSX.utils.decode_cell(k);
+    if(a.r<r0)r0=a.r;if(a.c<c0)c0=a.c;if(a.r>r1)r1=a.r;if(a.c>c1)c1=a.c;
+  }
+  if(r1<0)return empty;
+  const truncated=r1-r0+1>IMP_MAX_ROWS;
+  const range={s:{r:r0,c:c0},e:{r:truncated?r0+IMP_MAX_ROWS-1:r1,c:c1}};
+  return {aoa:XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,blankrows:true,range}),r0,c0,truncated};
 }
 function impLoadWorkbook(wb,label,src){
   const names=wb.SheetNames;
@@ -857,7 +867,7 @@ function impLoadWorkbook(wb,label,src){
 }
 function impSelectSheet(n){
   const s=sheetAoa(imp.wb.Sheets[n]);
-  Object.assign(imp,{sheet:n,aoa:s.aoa,r0:s.r0,c0:s.c0});
+  Object.assign(imp,{sheet:n,aoa:s.aoa,r0:s.r0,c0:s.c0,truncated:s.truncated});
   const d=impDetect(imp.aoa);imp.hdr=d.hdr;imp.map=d.map;
   impRender();
 }
@@ -867,7 +877,7 @@ function impRender(){
   const box=document.getElementById('imp-box');
   if(!imp){box.innerHTML='';updImpBox();return;}
   const {aoa,hdr,map,c0}=imp;
-  const nCol=Math.max(1,...aoa.map(r=>r.length));
+  const nCol=Math.max(1,maxLen(aoa));
   const hdrs=hdr>=0?aoa[hdr]:[];
   const sample=i=>{for(let r=hdr+1;r<aoa.length;r++){const v=String(aoa[r]?.[i]??'').trim();if(v)return v;}return '';};
   const colOpts=sel=>{
@@ -888,9 +898,12 @@ function impRender(){
   if(hdr<0)warn+=`<div class="imp-w">제목 행(성·이름·소속)을 찾지 못해 A·B·C열 순서로 가정했어요. 아래 열 지정을 확인해 주세요.</div>`;
   if(noName.length)warn+=`<div class="imp-w">이름이 비어 있는 행 ${noName.length}개 — ${lines(noName)}행</div>`;
   if(dup.length)warn+=`<div class="imp-w">중복으로 보이는 행 ${dup.length}개 — ${lines(dup)}행</div>`;
+  const evKinds=new Set(recs.map(r=>r.event).filter(Boolean));
+  if(evKinds.size>1)warn+=`<div class="imp-w">행사명이 ${evKinds.size}종류예요. 각 사람의 행사명으로 출력되고, 행사명이 빈 사람만 ‘행사명’ 칸의 값을 써요.</div>`;
+  if(imp.truncated)warn+=`<div class="imp-w">한 번에 ${IMP_MAX_ROWS.toLocaleString()}행까지만 불러와요. 나머지는 시트를 나눠서 불러와 주세요.</div>`;
   const prev=recs.slice(0,4).map(r=>`<tr><td>${escH(r.first)}</td><td>${escH(r.last)}</td><td>${escH(r.affil)}</td></tr>`).join('');
   const names=imp.wb.SheetNames;
-  const sheetSel=names.length>1?`<select class="imp-sel" onchange="impSelectSheet(this.value)">${names.map(n=>`<option${n===imp.sheet?' selected':''}>${escH(n)}</option>`).join('')}</select>`:'';
+  const sheetSel=names.length>1?`<select class="imp-sel" onchange="impSelectSheet(imp.wb.SheetNames[+this.value])">${names.map((n,i)=>`<option value="${i}"${n===imp.sheet?' selected':''}>${escH(n)}</option>`).join('')}</select>`:'';
   box.innerHTML=`
     <div class="imp-hd"><div class="imp-src">${escH(imp.label)}</div>${sheetSel}</div>
     <div class="imp-map">
@@ -907,17 +920,17 @@ function impRender(){
 }
 function impApply(){
   const recs=impBuild();if(!recs.length)return;
-  dir=recs.map(r=>({first:r.first,last:r.last,affil:r.affil}));
-  // 행사명 열이 있으면 가장 많이 쓰인 값을 행사명 칸에 넣는다
+  // 행사명 열이 있으면 가장 많이 쓰인 값을 행사명 칸에 넣고, 행사명이 여러 종류면 사람마다 자기 행사명을 유지한다
   const cnt={};recs.forEach(r=>{if(r.event)cnt[r.event]=(cnt[r.event]||0)+1;});
-  const top=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0];
-  if(top)document.getElementById('ev-inp').value=top;
+  const evs=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]),multiEv=evs.length>1;
+  dir=recs.map(r=>multiEv&&r.event?{first:r.first,last:r.last,affil:r.affil,event:r.event}:{first:r.first,last:r.last,affil:r.affil});
+  if(evs.length)document.getElementById('ev-inp').value=evs[0];
   ci=0;switchMode('direct');syncRows();
   // 명단 대부분이 한글 이름이면 국문, 아니면 외국어 표기로 맞춘다
   const named=recs.filter(r=>r.first||r.last);
   const krRatio=named.length?named.filter(r=>/[가-힣]/.test(r.first+r.last)).length/named.length:0;
   const want=krRatio>=0.5?'kr':'foreign';
-  let msg=recs.length+'명을 명단에 넣었어요';
+  let msg=recs.length+'명을 명단에 넣었어요'+(multiEv?` · 행사 ${evs.length}종`:'');
   if(named.length&&want!==nameStyle){switchNameStyle(want);msg+=want==='kr'?' · 국문 표기로 전환':' · 외국어 표기로 전환';}
   toast(msg);
 }
@@ -929,7 +942,7 @@ function parseSheetUrl(u){
   m=u.match(/\/spreadsheets\/d\/([\w-]+)/);
   if(!m)return null;
   const base='https://docs.google.com/spreadsheets/d/'+m[1];
-  return [`${base}/gviz/tq?tqx=out:csv&headers=0${q}`,`${base}/export?format=csv${q}`];
+  return [`${base}/export?format=csv${q}`,`${base}/gviz/tq?tqx=out:csv&headers=0${q}`];
 }
 async function loadSheet(){
   const url=document.getElementById('sheet-url').value.trim();
@@ -945,7 +958,9 @@ async function loadSheet(){
     try{const res=await fetch(u);if(!res.ok)continue;const t=await res.text();if(/^\s*</.test(t))continue;text=t;break;}catch(e){}
   }
   if(text==null){imp=null;impRender();showSt('시트를 읽지 못했어요. 공유 설정이 ‘링크가 있는 모든 사용자 · 뷰어’인지 확인해 주세요','err');return;}
-  impLoadWorkbook(XLSX.read(text.replace(/^﻿/,''),{type:'string',raw:true}),'구글 시트','sheet');
+  try{
+    impLoadWorkbook(XLSX.read(text.replace(/^﻿/,''),{type:'string',raw:true}),'구글 시트','sheet');
+  }catch(e){imp=null;impRender();showSt('시트 내용을 처리하지 못했어요: '+e.message,'err');return;}
   if(!imp.aoa.length){showSt('시트가 비어 있어요','err');return;}
   showSt('✓ 불러왔어요. 열 지정을 확인하고 명단에 넣어주세요','ok');
 }
@@ -960,8 +975,11 @@ async function handleImpFile(file){
     const buf=await file.arrayBuffer();
     let wb;
     if(['csv','tsv','txt'].includes(ext)){
-      // 엑셀에서 저장한 한글 CSV는 EUC-KR(CP949)인 경우가 많다
-      let t;try{t=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch(e){t=new TextDecoder('euc-kr').decode(buf);}
+      // 엑셀 '유니코드 텍스트'는 UTF-16, 엑셀에서 저장한 한글 CSV는 EUC-KR(CP949)인 경우가 많다
+      const b=new Uint8Array(buf.slice(0,2));let t;
+      if(b[0]===0xFF&&b[1]===0xFE)t=new TextDecoder('utf-16le').decode(buf);
+      else if(b[0]===0xFE&&b[1]===0xFF)t=new TextDecoder('utf-16be').decode(buf);
+      else{try{t=new TextDecoder('utf-8',{fatal:true}).decode(buf);}catch(e){t=new TextDecoder('euc-kr').decode(buf);}}
       wb=XLSX.read(t.replace(/^﻿/,''),{type:'string',raw:true});
     }else wb=XLSX.read(buf,{type:'array'});
     impLoadWorkbook(wb,file.name,'file');
@@ -981,19 +999,14 @@ function downloadTemplate(){
   ['dragenter','dragover'].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.add('over');}));
   ['dragleave','drop'].forEach(ev=>z.addEventListener(ev,e=>{e.preventDefault();z.classList.remove('over');}));
   z.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)handleImpFile(f);});
-  // 영역 밖에 떨어뜨려도 브라우저가 파일을 열어버리지 않게
-  ['dragover','drop'].forEach(ev=>window.addEventListener(ev,e=>e.preventDefault()));
+  // 파일을 영역 밖에 떨어뜨려도 브라우저가 파일을 열어버리지 않게 (텍스트 끌어다 놓기는 막지 않음)
+  const isFile=e=>e.dataTransfer&&[...e.dataTransfer.types].includes('Files');
+  ['dragover','drop'].forEach(ev=>window.addEventListener(ev,e=>{if(isFile(e))e.preventDefault();}));
 })();
 function showSt(msg,type,id='sheet-status'){const el=document.getElementById(id);el.textContent=msg;el.className='sh-st '+type;}
-function renderList(){
-  const body=document.getElementById('list-body');
-  if(!rows.length){body.innerHTML='<div class="list-empty">데이터 없음</div>';return;}
-  body.innerHTML=rows.map((r,i)=>`<div class="list-row${i===ci?' sel':''}" onclick="selRow(${i})"><div class="lc ln">${i+1}</div><div class="lc">${r.first}</div><div class="lc">${r.last}</div><div class="lc">${r.affil}</div></div>`).join('');
-}
-function selRow(i){ci=i;renderList();render();updNav();toast(rows[i].first+' '+rows[i].last+' 선택됨');}
 
 function getEv(){return document.getElementById('ev-inp').value.trim();}
-function applyEv(silent=false){const ev=getEv();if(mode==='direct')syncRows();else rows=rows.map(r=>({...r,event:ev}));render();if(!silent)toast(ev?'"'+ev+'" 적용됨':'행사명 초기화');}
+function applyEv(silent=false){syncRows();const ev=getEv();if(!silent)toast(ev?'"'+ev+'" 적용됨':'행사명 초기화');}
 
 function initGrid(){
   const set=BGS[bgT],grid=document.getElementById('bg-grid');grid.innerHTML='';
