@@ -17,6 +17,46 @@
 <script type="application/json" id="release-data">
 [
  {
+  "version": "1.6.1",
+  "date": "2026-11-11",
+  "title": "폰트·표기 방식 정리와 붙여넣기 개선",
+  "notify": false,
+  "changes": [
+   {
+    "type": "improve",
+    "text": "‘한글·영문’과 ‘한자’로 나뉘어 있던 폰트 선택을 하나로 합쳤어요. 명단에 맞는 폰트 하나만 고르면 돼요 (번체 중국어는 Noto Sans TC 등)."
+   },
+   {
+    "type": "improve",
+    "text": "고른 폰트에 없는 글자는 PC마다 다른 기본 폰트 대신 Pretendard·Noto Sans TC로 일정하게 대체되고, 결과 요약에서 알려줘요."
+   },
+   {
+    "type": "improve",
+    "text": "어떤 폰트에도 없는 글자가 있을 때만 생성 전에 확인을 물어봐요."
+   },
+   {
+    "type": "fix",
+    "text": "‘파일 업로드’ 화면의 붙여넣기 칸에 엑셀 표를 붙여넣어도 동작하지 않던 문제를 고쳤어요 (엑셀이 함께 복사하는 표 그림을 파일로 잘못 인식)."
+   },
+   {
+    "type": "new",
+    "text": "‘직접 입력’ 표에 엑셀 표를 제목 행까지 통째로 붙여넣으면 성·이름·소속 열을 자동으로 맞춰 넣어요. 표 칸을 누르지 않고 Ctrl+V 해도 명단 끝에 추가돼요."
+   },
+   {
+    "type": "improve",
+    "text": "표기 방식 이름을 ‘외국어 / 국문’에서 ‘기본 / 상세’로 바꿨어요. 기본은 두 줄·크기 자동, 상세는 한 줄·크기와 위치 직접 조절이에요."
+   },
+   {
+    "type": "improve",
+    "text": "상세 표기에서 영문 이름은 ‘Heung Min Son’처럼 띄어서 보여줘요 (한글·한자 이름은 지금처럼 붙여서)."
+   },
+   {
+    "type": "improve",
+    "text": "파일 업로드에 ‘아웃룩 메일의 첨부파일도 바로 끌어다 놓을 수 있어요’ 안내를 추가했어요."
+   }
+  ]
+ },
+ {
   "version": "1.6.0",
   "date": "2026-11-11",
   "title": "PDF 해상도 선택과 생성 결과 요약",
@@ -686,18 +726,18 @@ body.sb-dragging{cursor:col-resize;user-select:none;}
 <path d="M8.42329 14.25H6.125V11.9517L12.319 5.75771C12.4205 5.65617 12.5583 5.59912 12.7019 5.59912C12.8455 5.59912 12.9833 5.65617 13.0849 5.75771L14.6173 7.29009C14.7188 7.39167 14.7758 7.52942 14.7758 7.67305C14.7758 7.81668 14.7188 7.95443 14.6173 8.05601L8.42329 14.25ZM6.125 15.3333H15.875V16.4166H6.125V15.3333Z" fill="currentColor"/>
 </svg></div><div class="mode-label">직접 입력</div></div><div class="mode-card" id="mode-sheet" onclick="switchMode('sheet')"><div class="mode-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M9.9167 7.75V8.83333H7.2083V14.7917H13.1667V12.0833H14.25V15.3333C14.25 15.477 14.1929 15.6148 14.0914 15.7164C13.9898 15.8179 13.852 15.875 13.7083 15.875H6.6667C6.523 15.875 6.3852 15.8179 6.2837 15.7164C6.1821 15.6148 6.125 15.477 6.125 15.3333V8.29167C6.125 8.14801 6.1821 8.01023 6.2837 7.90865C6.3852 7.80707 6.523 7.75 6.6667 7.75H9.9167ZM15.875 6.125V10.4583H14.7917V7.97371L10.5705 12.1955L9.8045 11.4295L14.0252 7.20833H11.5417V6.125H15.875Z" fill="currentColor"/>
-</svg></div><div class="mode-label">구글 시트</div></div><div class="mode-card" id="mode-file" onclick="switchMode('file')"><div class="mode-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.46 14.5V8.07L8.06 10.47L7.29 9.7L11 5.99L14.71 9.7L13.94 10.47L11.54 8.07V14.5H10.46ZM6.125 15.33H15.875V16.42H6.125V15.33Z" fill="currentColor"/></svg></div><div class="mode-label">파일 업로드</div></div></div><div id="panel-direct"><div class="dt-wrap"><table class="dt"><thead><tr><th class="cn">#</th><th>이름</th><th>성</th><th>소속</th><th class="cx"></th></tr></thead><tbody id="dt-body"></tbody></table></div><div class="row-btns"><button class="add-row" onclick="addRow()">+ 행 추가</button><button class="reset-row" onclick="resetRows()">초기화</button></div></div><div id="panel-sheet" style="display:none"><div class="sh-row"><input class="sh-inp" id="sheet-url" type="text" placeholder="구글 시트 공유 링크 붙여넣기" onkeydown="if(event.key==='Enter')loadSheet()"><button class="imp-btn" onclick="loadSheet()">불러오기</button></div><div class="imp-hint">시트 공유 설정을 <b>‘링크가 있는 모든 사용자 · 뷰어’</b>로 바꿔주세요. 원하는 탭을 연 상태에서 링크를 복사하면 그 탭을 불러옵니다.</div><div id="sheet-status" class="sh-st"></div></div><div id="panel-file" style="display:none"><label class="drop-zone" id="drop-zone"><input type="file" id="imp-file" accept=".xlsx,.xls,.xlsm,.csv,.tsv,.txt" style="display:none" onchange="handleImpFile(this.files[0]);this.value=''"><svg width="26" height="26" viewBox="0 0 22 22" fill="none"><path d="M10.46 14.5V8.07L8.06 10.47L7.29 9.7L11 5.99L14.71 9.7L13.94 10.47L11.54 8.07V14.5H10.46ZM6.125 15.33H15.875V16.42H6.125V15.33Z" fill="currentColor"/></svg><div class="dz-t">엑셀·CSV 파일을 끌어다 놓거나 클릭</div><div class="dz-s">.xlsx · .xls · .csv</div></label><button class="imp-tpl" onclick="downloadTemplate()">양식 파일 받기 (성 · 이름 · 소속)</button><div id="file-status" class="sh-st"></div><div class="paste-or">또는 엑셀에서 복사해서 붙여넣기</div><div class="paste-lbl">회사 보안 때문에 파일이 안 올라가면 <kbd>Ctrl</kbd>+<kbd>C</kbd> → <kbd>Ctrl</kbd>+<kbd>V</kbd></div><textarea class="paste-box" id="paste-box" rows="3" placeholder="엑셀에서 제목 행(성·이름·소속)을 포함해 표를 드래그해 복사한 뒤, 여기를 클릭하고 붙여넣으세요"></textarea></div><div id="imp-box" class="imp-box" style="display:none"></div></div>
+</svg></div><div class="mode-label">구글 시트</div></div><div class="mode-card" id="mode-file" onclick="switchMode('file')"><div class="mode-icon"><svg width="18" height="18" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.46 14.5V8.07L8.06 10.47L7.29 9.7L11 5.99L14.71 9.7L13.94 10.47L11.54 8.07V14.5H10.46ZM6.125 15.33H15.875V16.42H6.125V15.33Z" fill="currentColor"/></svg></div><div class="mode-label">파일 업로드</div></div></div><div id="panel-direct"><div class="dt-wrap"><table class="dt"><thead><tr><th class="cn">#</th><th>이름</th><th>성</th><th>소속</th><th class="cx"></th></tr></thead><tbody id="dt-body"></tbody></table></div><div class="row-btns"><button class="add-row" onclick="addRow()">+ 행 추가</button><button class="reset-row" onclick="resetRows()">초기화</button></div></div><div id="panel-sheet" style="display:none"><div class="sh-row"><input class="sh-inp" id="sheet-url" type="text" placeholder="구글 시트 공유 링크 붙여넣기" onkeydown="if(event.key==='Enter')loadSheet()"><button class="imp-btn" onclick="loadSheet()">불러오기</button></div><div class="imp-hint">시트 공유 설정을 <b>‘링크가 있는 모든 사용자 · 뷰어’</b>로 바꿔주세요. 원하는 탭을 연 상태에서 링크를 복사하면 그 탭을 불러옵니다.</div><div id="sheet-status" class="sh-st"></div></div><div id="panel-file" style="display:none"><label class="drop-zone" id="drop-zone"><input type="file" id="imp-file" accept=".xlsx,.xls,.xlsm,.csv,.tsv,.txt" style="display:none" onchange="handleImpFile(this.files[0]);this.value=''"><svg width="26" height="26" viewBox="0 0 22 22" fill="none"><path d="M10.46 14.5V8.07L8.06 10.47L7.29 9.7L11 5.99L14.71 9.7L13.94 10.47L11.54 8.07V14.5H10.46ZM6.125 15.33H15.875V16.42H6.125V15.33Z" fill="currentColor"/></svg><div class="dz-t">엑셀·CSV 파일을 끌어다 놓거나 클릭</div><div class="dz-s">.xlsx · .xls · .csv</div><div class="dz-s">아웃룩 메일의 첨부파일도 바로 끌어다 놓을 수 있어요</div></label><button class="imp-tpl" onclick="downloadTemplate()">양식 파일 받기 (성 · 이름 · 소속)</button><div id="file-status" class="sh-st"></div><div class="paste-or">또는 엑셀에서 복사해서 붙여넣기</div><div class="paste-lbl">회사 보안 때문에 파일이 안 올라가면 <kbd>Ctrl</kbd>+<kbd>C</kbd> → <kbd>Ctrl</kbd>+<kbd>V</kbd></div><textarea class="paste-box" id="paste-box" rows="3" placeholder="엑셀에서 제목 행(성·이름·소속)을 포함해 표를 드래그해 복사한 뒤, 여기를 클릭하고 붙여넣으세요"></textarea></div><div id="imp-box" class="imp-box" style="display:none"></div></div>
   <div class="sec"><div class="sec-lbl">표기 방식</div>
-    <div class="mode-tabs"><button class="mode-tab active" id="ns-foreign" onclick="switchNameStyle('foreign')">외국어</button><button class="mode-tab" id="ns-kr" onclick="switchNameStyle('kr')">국문</button></div>
-    <div id="ns-panel-foreign" class="panel-collapse open"><div class="panel-inner"><button class="name-order-btn" id="name-order-btn" onclick="toggleNameOrder()">이름 배치 변경</button></div></div>
-    <div id="ns-panel-kr" class="panel-collapse"><div class="panel-inner">
+    <div class="mode-tabs"><button class="mode-tab active" id="ns-foreign" onclick="switchNameStyle('foreign')">기본</button><button class="mode-tab" id="ns-kr" onclick="switchNameStyle('kr')">상세</button></div>
+    <div id="ns-panel-foreign" class="panel-collapse open"><div class="panel-inner"><div class="ft-hint" style="margin-bottom:8px">이름·성을 두 줄로 크게, 글자 크기는 명찰 폭에 맞춰 자동이에요.</div><button class="name-order-btn" id="name-order-btn" onclick="toggleNameOrder()">이름 배치 변경</button></div></div>
+    <div id="ns-panel-kr" class="panel-collapse"><div class="panel-inner"><div class="ft-hint" style="margin-bottom:8px">이름을 한 줄로, 이름·소속의 크기와 위치를 직접 조절해요.</div>
       <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">이름 크기</label><button class="kr-reset-btn" onclick="resetKrCtrl('nameFs')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="16" max="80" step="1" id="kr-name-fs" oninput="setKrCtrl('nameFs',this.value)"><input type="number" min="16" max="80" id="kr-name-fs-n" oninput="setKrCtrl('nameFs',this.value)"></div></div>
       <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">소속 크기</label><button class="kr-reset-btn" onclick="resetKrCtrl('affilFs')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="8" max="32" step="1" id="kr-affil-fs" oninput="setKrCtrl('affilFs',this.value)"><input type="number" min="8" max="32" id="kr-affil-fs-n" oninput="setKrCtrl('affilFs',this.value)"></div></div>
       <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">이름 위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('nameY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-name-y" oninput="setKrCtrl('nameY',this.value)"><input type="number" min="-120" max="120" id="kr-name-y-n" oninput="setKrCtrl('nameY',this.value)"></div></div>
       <div class="kr-ctrl"><div class="kr-lbl-row"><label class="kr-lbl">소속 위치</label><button class="kr-reset-btn" onclick="resetKrCtrl('affilY')" title="초기화"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8a6 6 0 1 0 6-6 6.5 6.5 0 0 0-4.5 1.8L2 5.3"/><path d="M2 2v3.3h3.3"/></svg></button></div><div class="kr-row"><input type="range" min="-120" max="120" step="1" id="kr-affil-y" oninput="setKrCtrl('affilY',this.value)"><input type="number" min="-120" max="120" id="kr-affil-y-n" oninput="setKrCtrl('affilY',this.value)"></div></div>
     </div></div>
   </div>
-  <div class="sec"><div class="sec-lbl">폰트</div><div class="ft-grid"><label for="ft-main">한글·영문</label><select class="ft-sel" id="ft-main" onchange="setFont('main',this.value)"></select><label for="ft-cjk">한자</label><select class="ft-sel" id="ft-cjk" onchange="setFont('cjk',this.value)"></select><label for="ft-wt">이름 굵기</label><select class="ft-sel" id="ft-wt" onchange="setFont('weight',+this.value)"></select></div><div class="ft-sample" id="ft-sample"><span>홍길동 Name</span><span>梅西</span></div><div class="ft-hint">한자(중국어·일본어)는 ‘한자’ 폰트로, 나머지는 ‘한글·영문’ 폰트로 출력돼요. 미리보기와 PDF는 같은 폰트를 써요.</div><div class="ft-actions"><button class="ft-btn" onclick="loadLocalFonts()">PC에 설치된 폰트 불러오기</button></div><div class="ft-manual" id="ft-manual"><input class="sh-inp" id="ft-manual-inp" placeholder="폰트 이름 (예: 맑은 고딕, Malgun Gothic)" onkeydown="if(event.key==='Enter')addManualFont()"><button class="imp-btn" onclick="addManualFont()">추가</button></div><div id="font-status" class="sh-st"></div></div>
+  <div class="sec"><div class="sec-lbl">폰트</div><div class="ft-grid"><label for="ft-main">폰트</label><select class="ft-sel" id="ft-main" onchange="setFont('main',this.value)"></select><label for="ft-wt">이름 굵기</label><select class="ft-sel" id="ft-wt" onchange="setFont('weight',+this.value)"></select></div><div class="ft-sample" id="ft-sample"><span>홍길동 Name</span><span>梅西</span></div><div class="ft-hint">고른 폰트에 없는 글자(예: 영문 폰트의 한글, 한글 폰트에 없는 한자)는 Pretendard·Noto Sans TC로 대체돼요. 미리보기와 PDF는 같은 폰트를 써요.</div><div class="ft-actions"><button class="ft-btn" onclick="loadLocalFonts()">PC에 설치된 폰트 불러오기</button></div><div class="ft-manual" id="ft-manual"><input class="sh-inp" id="ft-manual-inp" placeholder="폰트 이름 (예: 맑은 고딕, Malgun Gothic)" onkeydown="if(event.key==='Enter')addManualFont()"><button class="imp-btn" onclick="addManualFont()">추가</button></div><div id="font-status" class="sh-st"></div></div>
 <div class="sec"><div class="sec-lbl">배경 선택</div>
     <div class="mode-tabs"><button class="mode-tab active" id="bgm-template" onclick="switchBgMode('template')">템플릿</button><button class="mode-tab" id="bgm-custom" onclick="switchBgMode('custom')">직접 업로드</button></div>
     <div id="bg-panel-template" class="panel-collapse open"><div class="panel-inner">
@@ -944,7 +984,7 @@ let cW=298,cH=420,cWm=105,cHm=148;
 
 async function init(){
   LOGO=LOGO_URI;
-  ensureFontCss('main',fontCfg.main);ensureFontCss('cjk',fontCfg.cjk);fillFontSelects();
+  ensureFontCss(fontCfg.main);FALLBACK_FONTS.forEach(ensureFontCss);fillFontSelects();
   if(document.fonts)document.fonts.addEventListener('loadingdone',()=>render());
   initVersionUI();
   renderDir(); syncRows(); initGrid(); selBg(0,true); setTpl('A');
@@ -1025,8 +1065,8 @@ function renderDir(){
       inp.addEventListener('focus',()=>selDir(i));
       inp.addEventListener('input',e=>{dir[i][k]=e.target.value;syncRows();});
       inp.addEventListener('paste',e=>{
-        const t=(e.clipboardData||window.clipboardData).getData('text');
-        if(t.includes('\t')||t.includes('\n')){e.preventDefault();doPaste(t,i,k);}
+        const aoa=clipToAoa(e.clipboardData);
+        if(aoa&&(aoa.length>1||aoa[0].length>1)){e.preventDefault();doPaste(aoa,i,k);}
       });
       td.appendChild(inp);tr.appendChild(td);
     });
@@ -1054,14 +1094,62 @@ const DEFAULT_DIR=[{first:'',last:'',affil:''}];
 function resetRows(){dir=DEFAULT_DIR.map(r=>({...r}));ci=0;renderDir();syncRows();toast('데이터 초기화');}
 function delRow(i){if(dir.length<=1)dir=[{first:'',last:'',affil:''}];else dir.splice(i,1);if(ci>=dir.length)ci=dir.length-1;renderDir();syncRows();}
 function selDir(i){ci=i;document.querySelectorAll('#dt-body tr').forEach((tr,j)=>tr.classList.toggle('sel',j===i));render();updNav();}
+// 엑셀 복사 형식(행=줄바꿈, 칸=탭)을 2차원 배열로. 쉼표는 이름의 일부일 수 있으므로 구분자로 쓰지 않는다
+function tsvToAoa(text){
+  const t=String(text||'').replace(/\r\n?/g,'\n').replace(/\n+$/,'');
+  if(!t.trim())return [];
+  return t.split('\n').map(line=>line.split('\t').map(c=>c.replace(/^"([\s\S]*)"$/,'$1').replace(/""/g,'"')));
+}
+// 클립보드에서 표 읽기: 일반 텍스트 → (없으면) 엑셀이 함께 넣는 HTML 표
+function clipToAoa(cd){
+  if(!cd)return null;
+  const t=cd.getData('text/plain');
+  if(t&&t.trim())return tsvToAoa(t);
+  const h=cd.getData('text/html');
+  if(h&&/<table/i.test(h)){
+    const trs=[...new DOMParser().parseFromString(h,'text/html').querySelectorAll('tr')];
+    const aoa=trs.map(tr=>[...tr.children].map(td=>td.textContent.replace(/\s+/g,' ').trim()));
+    if(aoa.length)return aoa;
+  }
+  return null;
+}
+// 직접 입력 표에 붙여넣기. 제목 행(성·이름·소속)이 있으면 열 순서와 상관없이 맞춰 넣고, 없으면 칸 순서대로
 function doPaste(txt,sr,sf){
-  const fields=['first','last','affil'],sc=fields.indexOf(sf);
-  txt.trim().split(/\r?\n/).forEach((line,ri)=>{
-    const cols=line.split('\t'),ri2=sr+ri;
-    while(dir.length<=ri2)dir.push({first:'',last:'',affil:''});
-    cols.forEach((v,c2)=>{const fi=sc+c2;if(fi<fields.length)dir[ri2][fields[fi]]=v.trim();});
-  });
-  renderDir();syncRows();toast('붙여넣기 완료');
+  const aoa=Array.isArray(txt)?txt:tsvToAoa(txt);
+  if(!aoa.length)return;
+  const d=impDetect(aoa);
+  let msg;
+  if(d.hdr>=0){
+    const recs=impBuild({aoa,hdr:d.hdr,map:d.map,r0:0});
+    if(!recs.length){toast('붙여넣은 표에 사람이 없어요');return;}
+    const evs=[...new Set(recs.map(r=>r.event).filter(Boolean))];
+    recs.forEach((r,k)=>{
+      const row={first:r.first,last:r.last,affil:r.affil};
+      if(evs.length>1&&r.event)row.event=r.event;
+      dir[sr+k]=row;
+    });
+    if(evs.length===1)document.getElementById('ev-inp').value=evs[0];
+    msg=`제목 행을 인식해 ${recs.length}명을 넣었어요 (성·이름·소속 자동 맞춤)`+autoNameStyle(recs);
+  }else{
+    const fields=['first','last','affil'],sc=Math.max(0,fields.indexOf(sf));
+    aoa.forEach((cols,ri)=>{
+      const ri2=sr+ri;
+      while(dir.length<=ri2)dir.push({first:'',last:'',affil:''});
+      cols.forEach((v,c2)=>{const fi=sc+c2;if(fi<fields.length)dir[ri2][fields[fi]]=String(v).trim();});
+    });
+    msg=`${aoa.length}행 붙여넣기 완료`;
+  }
+  for(let i=0;i<dir.length;i++)if(!dir[i])dir[i]={first:'',last:'',affil:''};
+  renderDir();syncRows();toast(msg);
+}
+// 명단 대부분이 한글·한자 이름이면 국문(한 줄), 아니면 외국어 표기로 맞추고 안내 문구를 돌려준다
+function autoNameStyle(recs){
+  const named=recs.filter(r=>r.first||r.last);
+  if(!named.length)return '';
+  const want=named.filter(r=>CJK_NAME.test(r.first+r.last)).length/named.length>=0.5?'kr':'foreign';
+  if(want===nameStyle)return '';
+  switchNameStyle(want);
+  return want==='kr'?' · 상세(한 줄) 표기로 전환':' · 기본 표기로 전환';
 }
 function syncRows(){const ev=getEv();rows=dir.map(r=>({event:r.event||ev,first:r.first||'',last:r.last||'',affil:r.affil||''}));if(ci>=rows.length)ci=Math.max(0,rows.length-1);render();updNav();}
 
@@ -1136,8 +1224,8 @@ function splitName(s){
   const p=s.split(' ');
   return p.length>1?{first:p.slice(0,-1).join(' '),last:p[p.length-1]}:{first:s,last:''};
 }
-function impBuild(){
-  const {aoa,hdr,map,r0}=imp,out=[];
+function impBuild(o=imp){
+  const {aoa,hdr,map,r0}=o,out=[];
   const g=(row,i)=>(typeof i==='number'&&i>=0)?String(row[i]??'').replace(/\s+/g,' ').trim():'';
   for(let r=hdr+1;r<aoa.length;r++){
     const row=aoa[r]||[];
@@ -1241,13 +1329,7 @@ function impApply(){
   dir=recs.map(r=>multiEv&&r.event?{first:r.first,last:r.last,affil:r.affil,event:r.event}:{first:r.first,last:r.last,affil:r.affil});
   if(evs.length)document.getElementById('ev-inp').value=evs[0];
   ci=0;switchMode('direct');syncRows();
-  // 명단 대부분이 한글 이름이면 국문, 아니면 외국어 표기로 맞춘다
-  const named=recs.filter(r=>r.first||r.last);
-  const krRatio=named.length?named.filter(r=>CJK_NAME.test(r.first+r.last)).length/named.length:0;
-  const want=krRatio>=0.5?'kr':'foreign';
-  let msg=recs.length+'명을 명단에 넣었어요'+(multiEv?` · 행사 ${evs.length}종`:'');
-  if(named.length&&want!==nameStyle){switchNameStyle(want);msg+=want==='kr'?' · 국문(한 줄) 표기로 전환':' · 외국어 표기로 전환';}
-  toast(msg);
+  toast(recs.length+'명을 명단에 넣었어요'+(multiEv?` · 행사 ${evs.length}종`:'')+autoNameStyle(recs));
 }
 
 function parseSheetUrl(u){
@@ -1331,11 +1413,9 @@ async function handleImpFile(file){
 // 엑셀에서 복사한 표(탭으로 구분된 텍스트)를 파일과 같은 방식으로 불러온다
 function handleImpText(text){
   const st=(m,t)=>showSt(m,t,'file-status');
-  const t=String(text||'').replace(/\r\n?/g,'\n').replace(/\n+$/,'');
-  if(!t.trim()){st('붙여넣은 내용이 없어요. 엑셀에서 표를 드래그해 복사(Ctrl+C)한 뒤 다시 붙여넣어 주세요.','err');return;}
+  const aoa=Array.isArray(text)?text:tsvToAoa(text);
+  if(!aoa.length){st('붙여넣은 내용이 없어요. 엑셀에서 표를 드래그해 복사(Ctrl+C)한 뒤 다시 붙여넣어 주세요.','err');return;}
   if(!window.XLSX){st('파일 처리 모듈을 불러오지 못했어요. 새로고침 후 다시 시도해 주세요','err');return;}
-  // 엑셀 복사 형식: 행은 줄바꿈, 칸은 탭. 쉼표는 이름의 일부일 수 있으므로 구분자로 쓰지 않는다
-  const aoa=t.split('\n').map(line=>line.split('\t').map(c=>c.replace(/^"([\s\S]*)"$/,'$1').replace(/""/g,'"')));
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(aoa),'붙여넣은 표');
   impLoadWorkbook(wb,'붙여넣은 표','file');
@@ -1344,19 +1424,38 @@ function handleImpText(text){
 }
 (function initPasteImport(){
   const box=document.getElementById('paste-box');if(!box)return;
+  // 엑셀에서 셀을 복사하면 클립보드에 표 '그림(image.png)'도 함께 들어간다.
+  // 그래서 텍스트(표)를 먼저 읽고, 텍스트가 없을 때만 탐색기에서 복사한 엑셀 파일로 처리한다.
   const take=e=>{
     const cd=e.clipboardData;if(!cd)return false;
-    if(cd.files&&cd.files.length){e.preventDefault();handleImpFile(cd.files[0]);return true;}
-    const t=cd.getData('text/plain');
-    if(t){e.preventDefault();handleImpText(t);return true;}
+    const aoa=clipToAoa(cd);
+    if(aoa){e.preventDefault();handleImpText(aoa);return true;}
+    const f=cd.files&&[...cd.files].find(f=>/\.(xlsx|xls|xlsm|csv|tsv|txt)$/i.test(f.name));
+    if(f){e.preventDefault();handleImpFile(f);return true;}
     return false;
   };
-  box.addEventListener('paste',e=>{if(take(e))box.value='';});
-  // '파일 업로드' 화면에서는 입력칸 밖에서 Ctrl+V 해도 받는다
+  box.addEventListener('paste',e=>{
+    if(take(e)){box.value='';return;}
+    if(!e.clipboardData||(!e.clipboardData.types||!e.clipboardData.types.length))return; // 이벤트로 못 읽으면 아래 input 처리로
+    e.preventDefault();showSt('클립보드에서 표를 찾지 못했어요. 엑셀에서 셀을 드래그해 복사(Ctrl+C)한 뒤 붙여넣어 주세요.','err','file-status');
+  });
+  // 보안 프로그램 등으로 붙여넣기 이벤트에서 내용을 못 읽고 글자만 칸에 들어간 경우
+  box.addEventListener('input',()=>{
+    const v=box.value;
+    if(/\t/.test(v)||v.split('\n').filter(Boolean).length>1){handleImpText(v);box.value='';}
+  });
+  // 입력칸 밖에서 Ctrl+V: 파일 업로드 화면 → 불러오기 / 직접 입력 화면 → 표 끝에 추가
   document.addEventListener('paste',e=>{
-    if(mode!=='file'||e.target===box)return;
-    if(e.target.closest&&e.target.closest('input,textarea,[contenteditable="true"]'))return;
-    take(e);
+    if(e.target===box)return;
+    if(e.target.closest&&e.target.closest('input,textarea,select,[contenteditable="true"]'))return;
+    if(mode==='file'){take(e);return;}
+    if(mode==='direct'){
+      const aoa=clipToAoa(e.clipboardData);if(!aoa)return;
+      e.preventDefault();
+      while(dir.length>1&&!dir[dir.length-1].first&&!dir[dir.length-1].last&&!dir[dir.length-1].affil)dir.pop();
+      const empty=dir.every(r=>!r.first&&!r.last&&!r.affil);
+      doPaste(aoa,empty?0:dir.length,'first');
+    }
   });
 })();
 function downloadTemplate(){
@@ -1560,7 +1659,7 @@ function switchNameStyle(s){
   // 입력란 placeholder도 표기 방식 따라 갱신
   if(mode==='direct') renderDir();
   render();
-  toast(s==='kr'?'국문 표기 적용됨':'외국어 표기 적용됨');
+  toast(s==='kr'?'상세 표기 적용됨':'기본 표기 적용됨');
 }
 
 function initKrControls(){
@@ -1681,11 +1780,11 @@ async function confirmExport(){
   try{
     const list=pmode==='all'?rows:[rows[ci]];
     // 생성 전 검사: 폰트 로딩 + 없는 글자 + 이름이 빈 명찰
-    const missing=await prepareFontsFor(list);
+    const {subst,pc:missing}=await prepareFontsFor(list);
     const noName=list.map((r,i)=>({r,i:pmode==='all'?i:ci})).filter(x=>!(x.r.first||'').trim()&&!(x.r.last||'').trim());
     const warns=[];
     if(missing.length){
-      warns.push(`■ 지정한 폰트에 없는 글자 (PC 기본 폰트로 대체돼요)\n`+missing.slice(0,8).map(m=>`· ${m.i+1}번 ${m.name}: ${m.bad.join(' ')}`).join('\n')+(missing.length>8?`\n· 외 ${missing.length-8}명`:''));
+      warns.push(`■ 어떤 지정 폰트에도 없는 글자 (PC 기본 폰트로 찍혀서 PC마다 달라질 수 있어요)\n`+missing.slice(0,8).map(m=>`· ${m.i+1}번 ${m.name}: ${m.bad.join(' ')}`).join('\n')+(missing.length>8?`\n· 외 ${missing.length-8}명`:''));
     }
     if(noName.length){
       warns.push(`■ 이름이 비어 있는 명찰 ${noName.length}장\n· `+noName.slice(0,10).map(x=>`${x.i+1}번`).join(', ')+(noName.length>10?' 외':''));
@@ -1694,7 +1793,7 @@ async function confirmExport(){
     btn.textContent='생성 중...';
     const t0=performance.now();
     const res=await exportPDF(pmode==='all',playout);
-    showResult({...res,sec:(performance.now()-t0)/1000,missing:missing.length,noName:noName.length,list});
+    showResult({...res,sec:(performance.now()-t0)/1000,missing:missing.length,subst,noName:noName.length,list});
   }finally{btn.disabled=false;btn.textContent='PDF 생성하기';}
 }
 async function exportPDF(all=false, layout='single'){
@@ -1740,14 +1839,14 @@ function closeResult(){document.getElementById('res-modal').classList.remove('sh
 function showResult(r){
   const [w,h]=dpiPx();
   const evs=[...new Set(r.list.map(x=>x.event).filter(Boolean))];
-  const styleLbl=nameStyle==='kr'?'국문 (성이름 한 줄)':(nmOrd==='lf'?'외국어 (성 이름 한 줄)':'외국어 (이름 / 성 두 줄)');
+  const styleLbl=nameStyle==='kr'?'상세 (이름 한 줄 · 크기·위치 직접 조절)':(nmOrd==='lf'?'기본 (성 이름 한 줄)':'기본 (이름 / 성 두 줄)');
   const bgLbl=bgMode==='custom'?'직접 업로드한 배경':`템플릿 ${bgT}-${bgI+1}`;
-  const cjkUsed=r.list.some(x=>CJK_RUN.test(x.first+x.last+x.affil+x.event));
+
   const rowsH=[
     ['명찰',`<b>${r.count.toLocaleString()}명</b> <small>· ${r.pages.toLocaleString()}페이지${r.layout==='duo'?' (A4 가로에 2장씩)':' (명찰 크기 페이지에 1장씩)'}</small>`],
     ['사이즈',badgeSizeLabel()+(r.layout==='duo'?' <small>· 용지 A4 가로 297 × 210 mm</small>':'')],
     ['해상도',`${pdfDpi} DPI <small>· 명찰 1장 ${w.toLocaleString()} × ${h.toLocaleString()} px</small>`],
-    ['폰트',`한글·영문 <b>${escH(fontCfg.main)}</b> <small>(굵기 ${nameWt()})</small><br>한자 <b>${escH(fontCfg.cjk)}</b>${cjkUsed?'':' <small>(이번 명단엔 한자 없음)</small>'}`],
+    ['폰트',`<b>${escH(fontCfg.main)}</b> <small>(굵기 ${nameWt()})</small>`+(r.subst.length?`<br><small>폰트에 없는 글자는 Pretendard·Noto Sans TC로 대체 · ${r.subst.length}명 (예: ${escH(r.subst[0].name)} — ${escH(r.subst[0].bad.slice(0,4).join(' '))})</small>`:'')],
     ['표기 방식',styleLbl],
     ['배경',bgLbl],
     ['행사명',evs.length>1?`${evs.length}종 <small>(${escH(evs.slice(0,3).join(', '))}${evs.length>3?' 외':''})</small>`:escH(evs[0]||'(없음)')],
@@ -1756,11 +1855,11 @@ function showResult(r){
   document.getElementById('res-sub').textContent=`${r.name} 파일이 다운로드 폴더에 저장됐어요`;
   document.getElementById('res-tbl').innerHTML=rowsH.map(([k,v])=>`<tr><th>${k}</th><td>${v}</td></tr>`).join('');
   const issues=[];
-  if(r.missing)issues.push(`폰트에 없어 대체된 글자가 있는 명찰 ${r.missing}장`);
+  if(r.missing)issues.push(`PC 기본 폰트로 찍힌 글자가 있는 명찰 ${r.missing}장`);
   if(r.noName)issues.push(`이름이 빈 명찰 ${r.noName}장`);
   document.getElementById('res-check').innerHTML=issues.length
     ?`<div class="res-check warn">⚠ 확인 필요: ${issues.join(' · ')}</div>`
-    :`<div class="res-check ok">✓ 생성 전 검사 통과 — 모든 글자가 지정한 폰트로 출력됐어요</div>`;
+    :`<div class="res-check ok">✓ 생성 전 검사 통과 — 모든 글자가 지정한 웹·PC 폰트로 출력됐어요</div>`;
   document.getElementById('res-modal').classList.add('show');
 }
 
@@ -1777,7 +1876,8 @@ function buildCardHTML(evText, firstText, lastText, affilText, W, H, t, fontKey)
     const afFs = isKR ? Number(krCtrl.affilFs) : 13;
     const nyKr = isKR ? Number(krCtrl.nameY)  : 0; // +면 아래로
     const ayKr = isKR ? Number(krCtrl.affilY) : 0;
-    const krCombined = ftHTML(`${lastText}${firstText}`); // 국문: 성+이름 (간격없음)
+    // 상세(한 줄): 한글·한자 이름은 성+이름 붙여서, 영문 이름은 '이름 성' 띄어쓰기
+    const krCombined = ftHTML(CJK_NAME.test(lastText+firstText) ? `${lastText}${firstText}` : `${firstText} ${lastText}`.trim());
     const fnH = ftHTML(firstText), lnH = ftHTML(lastText), evH = ftHTML(evText), afH = ftHTML(affilText);
 
     const stFn = `font-family:${s.fam};font-size:${fs}px;font-weight:${s.wt};line-height:1.05;letter-spacing:${s.ls};white-space:nowrap;overflow:visible;padding-bottom:.05em;`;
@@ -1948,53 +2048,43 @@ async function renderCanvasImage(r) {
 
 
 // ── 폰트 선택 ──
-// 글자를 종류별로 나눠 한자·가나 구간에는 '한자' 폰트를, 나머지에는 '한글·영문' 폰트를 지정한다.
-// (폰트 순서만으로는 Noto Sans KR처럼 한자를 한국식 자형으로 가진 폰트가 먼저 잡히기 때문)
-// PDF는 화면에 그린 명찰을 이미지로 굳히므로, 여기서 지정한 폰트가 그대로 인쇄된다.
-const WEB_FONTS={
-  main:[
-    {name:'Pretendard',label:'Pretendard (기본)',wts:[400,500,600,700,800,900]},
-    {name:'Noto Sans KR',label:'Noto Sans KR (본고딕)',g:'Noto+Sans+KR:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
-    {name:'IBM Plex Sans KR',label:'IBM Plex Sans KR',g:'IBM+Plex+Sans+KR:wght@400;500;600;700',wts:[400,500,600,700]},
-    {name:'Gothic A1',label:'Gothic A1',g:'Gothic+A1:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
-    {name:'Nanum Gothic',label:'나눔고딕',g:'Nanum+Gothic:wght@400;700;800',wts:[400,700,800]},
-    {name:'Nanum Myeongjo',label:'나눔명조',g:'Nanum+Myeongjo:wght@400;700;800',wts:[400,700,800]},
-    {name:'Montserrat',label:'Montserrat (영문 전용)',g:'Montserrat:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
-    {name:'Inter',label:'Inter (영문 전용)',g:'Inter:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
-    {name:'Bebas Neue',label:'Bebas Neue (영문 전용)',g:'Bebas+Neue',wts:[400]},
-  ],
-  cjk:[
-    {name:'Noto Sans TC',label:'Noto Sans TC · 번체 (思源黑體)',g:'Noto+Sans+TC:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
-    {name:'Noto Sans SC',label:'Noto Sans SC · 간체',g:'Noto+Sans+SC:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
-    {name:'Noto Sans JP',label:'Noto Sans JP · 일본어',g:'Noto+Sans+JP:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
-    {name:'Noto Serif TC',label:'Noto Serif TC · 번체 명조',g:'Noto+Serif+TC:wght@400;500;700;900',wts:[400,500,700,900]},
-  ]
-};
+// 폰트는 하나만 고른다. 고른 폰트에 없는 글자는 PC마다 다른 기본 폰트 대신
+// 웹폰트(한글·영문 Pretendard → 한자 Noto Sans TC)로 일정하게 대체한다.
+// PDF는 화면에 그린 명찰을 이미지로 굳히므로, 여기서 정한 폰트가 그대로 인쇄된다.
+const FALLBACK_FONTS=['Pretendard','Noto Sans TC'];
+const WEB_FONTS=[
+  {name:'Pretendard',label:'Pretendard (기본)',wts:[400,500,600,700,800,900]},
+  {name:'Noto Sans KR',label:'Noto Sans KR (본고딕)',g:'Noto+Sans+KR:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+  {name:'IBM Plex Sans KR',label:'IBM Plex Sans KR',g:'IBM+Plex+Sans+KR:wght@400;500;600;700',wts:[400,500,600,700]},
+  {name:'Gothic A1',label:'Gothic A1',g:'Gothic+A1:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+  {name:'Nanum Gothic',label:'나눔고딕',g:'Nanum+Gothic:wght@400;700;800',wts:[400,700,800]},
+  {name:'Nanum Myeongjo',label:'나눔명조',g:'Nanum+Myeongjo:wght@400;700;800',wts:[400,700,800]},
+  {name:'Noto Sans TC',label:'Noto Sans TC · 번체 중국어 (思源黑體)',g:'Noto+Sans+TC:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
+  {name:'Noto Serif TC',label:'Noto Serif TC · 번체 중국어 명조',g:'Noto+Serif+TC:wght@400;500;700;900',wts:[400,500,700,900]},
+  {name:'Noto Sans SC',label:'Noto Sans SC · 간체 중국어',g:'Noto+Sans+SC:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
+  {name:'Noto Sans JP',label:'Noto Sans JP · 일본어',g:'Noto+Sans+JP:wght@400;500;700;800;900',wts:[400,500,700,800,900]},
+  {name:'Montserrat',label:'Montserrat (영문 전용)',g:'Montserrat:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+  {name:'Inter',label:'Inter (영문 전용)',g:'Inter:wght@400;500;600;700;800;900',wts:[400,500,600,700,800,900]},
+  {name:'Bebas Neue',label:'Bebas Neue (영문 전용)',g:'Bebas+Neue',wts:[400]},
+];
 const FONT_KEY='badge-font-v1';
-let fontCfg={main:'Pretendard',cjk:'Noto Sans TC',weight:800};
+let fontCfg={main:'Pretendard',weight:800};
 let localFamilies=[]; // PC에 설치된 폰트 (불러온 경우)
-try{const s=JSON.parse(localStorage.getItem(FONT_KEY)||'null');if(s)fontCfg={...fontCfg,...s};}catch(e){}
+try{const s=JSON.parse(localStorage.getItem(FONT_KEY)||'null');if(s)fontCfg={main:s.main||fontCfg.main,weight:s.weight||fontCfg.weight};}catch(e){}
 try{localFamilies=JSON.parse(localStorage.getItem(FONT_KEY+'-local')||'[]');}catch(e){}
 
 const qf=n=>`'${String(n).replace(/'/g,"\\'")}'`;
-const findWeb=(kind,n)=>WEB_FONTS[kind].find(f=>f.name===n);
-const mainStack=()=>`${qf(fontCfg.main)},'Pretendard',sans-serif`;
-const cjkStack=()=>`${qf(fontCfg.cjk)},${qf(fontCfg.main)},sans-serif`;
+const findWeb=n=>WEB_FONTS.find(f=>f.name===n);
+const mainStack=()=>[fontCfg.main,...FALLBACK_FONTS.filter(f=>f!==fontCfg.main)].map(qf).join(',')+',sans-serif';
 // 웹폰트는 실제로 있는 굵기 중 가장 가까운 값을 쓴다 (없는 굵기를 브라우저가 가짜로 두껍게 만들지 않게)
-function nearestWt(kind,n,w){const f=findWeb(kind,n);if(!f)return w;return f.wts.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);}
-const nameWt=()=>nearestWt('main',fontCfg.main,fontCfg.weight);
-const CJK_RUN=/([⺀-⿟々-〇〡-〩぀-ヿㇰ-ㇿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]+)/;
-// 텍스트 → HTML: 특수문자 이스케이프 + 한자·가나 구간만 한자 폰트로 감싼다
-function ftHTML(t){
-  return String(t??'').split(CJK_RUN).map((part,i)=>{
-    if(!part)return '';
-    const e=escH(part);
-    return i%2?`<span style="font-family:${cjkStack()};font-weight:${nearestWt('cjk',fontCfg.cjk,fontCfg.weight)};">${e}</span>`:e;
-  }).join('');
-}
+function nearestWt(n,w){const f=findWeb(n);if(!f)return w;return f.wts.reduce((a,b)=>Math.abs(b-w)<Math.abs(a-w)?b:a);}
+const nameWt=()=>nearestWt(fontCfg.main,fontCfg.weight);
+const CJK_RUN=/[⺀-⿟々-〇〡-〩぀-ヿㇰ-ㇿ㐀-䶿一-鿿豈-﫿ｦ-ﾟ]/;
+// 텍스트 → HTML (특수문자 이스케이프)
+const ftHTML=t=>escH(String(t??''));
 const loadedCss=new Set();
-function ensureFontCss(kind,n){
-  const f=findWeb(kind,n);if(!f||!f.g||loadedCss.has(f.g))return;
+function ensureFontCss(n){
+  const f=findWeb(n);if(!f||!f.g||loadedCss.has(f.g))return;
   loadedCss.add(f.g);
   const l=document.createElement('link');l.rel='stylesheet';
   l.href=`https://fonts.googleapis.com/css2?family=${f.g}&display=block`;
@@ -2003,27 +2093,25 @@ function ensureFontCss(kind,n){
 }
 function fillFontSelects(){
   const opt=(f,sel)=>`<option value="${escH(f.name)}"${f.name===sel?' selected':''}>${escH(f.label||f.name)}</option>`;
-  const localGrp=sel=>localFamilies.length?`<optgroup label="PC에 설치된 폰트">${localFamilies.map(n=>opt({name:n,label:n},sel)).join('')}</optgroup>`:'';
+  const sel=fontCfg.main;
+  const localGrp=localFamilies.length?`<optgroup label="PC에 설치된 폰트">${localFamilies.map(n=>opt({name:n},sel)).join('')}</optgroup>`:'';
   // 저장된 값이 목록에 없으면(다른 PC 등) 그대로 보이게 추가
-  const extra=(kind,sel)=>findWeb(kind,sel)||localFamilies.includes(sel)?'':`<optgroup label="직접 지정">${opt({name:sel,label:sel+' (PC 폰트)'},sel)}</optgroup>`;
-  document.getElementById('ft-main').innerHTML=`<optgroup label="웹폰트 (어느 PC에서나 동일)">${WEB_FONTS.main.map(f=>opt(f,fontCfg.main)).join('')}</optgroup>`+localGrp(fontCfg.main)+extra('main',fontCfg.main);
-  document.getElementById('ft-cjk').innerHTML=`<optgroup label="웹폰트 (어느 PC에서나 동일)">${WEB_FONTS.cjk.map(f=>opt(f,fontCfg.cjk)).join('')}</optgroup>`+localGrp(fontCfg.cjk)+extra('cjk',fontCfg.cjk);
-  const f=findWeb('main',fontCfg.main),wts=f?f.wts:[400,500,600,700,800,900];
+  const extra=findWeb(sel)||localFamilies.includes(sel)?'':`<optgroup label="직접 지정">${opt({name:sel,label:sel+' (PC 폰트)'},sel)}</optgroup>`;
+  document.getElementById('ft-main').innerHTML=`<optgroup label="웹폰트 (어느 PC에서나 동일)">${WEB_FONTS.map(f=>opt(f,sel)).join('')}</optgroup>`+localGrp+extra;
+  const f=findWeb(sel),wts=f?f.wts:[400,500,600,700,800,900];
   const L={400:'400 보통',500:'500',600:'600',700:'700 굵게',800:'800',900:'900 아주 굵게'};
   const cur=nameWt();
   document.getElementById('ft-wt').innerHTML=wts.map(w=>`<option value="${w}"${w===cur?' selected':''}>${L[w]||w}${w===800?' (기본)':''}</option>`).join('');
-  const sm=document.getElementById('ft-sample');
-  sm.children[0].style.cssText=`font-family:${mainStack()};font-weight:${cur};`;
-  sm.children[1].style.cssText=`font-family:${cjkStack()};font-weight:${nearestWt('cjk',fontCfg.cjk,fontCfg.weight)};`;
+  [...document.getElementById('ft-sample').children].forEach(s=>s.style.cssText=`font-family:${mainStack()};font-weight:${cur};`);
 }
 function setFont(k,v){
   fontCfg[k]=v;
   try{localStorage.setItem(FONT_KEY,JSON.stringify(fontCfg));}catch(e){}
-  ensureFontCss('main',fontCfg.main);ensureFontCss('cjk',fontCfg.cjk);
+  ensureFontCss(fontCfg.main);
   fillFontSelects();render();
-  if(k!=='weight')toast(`${k==='main'?'한글·영문':'한자'} 폰트: ${v}`);
+  if(k==='main')toast(`폰트: ${v}`);
 }
-// 글자가 해당 폰트 묶음에 실제로 있는지: 끝의 대체 폰트를 바꿔도 폭이 같으면 앞쪽 폰트에 있는 글자
+// 글자가 해당 폰트(묶음)에 실제로 있는지: 끝의 대체 폰트를 바꿔도 폭이 같으면 앞쪽 폰트에 있는 글자
 const glyphCtx=document.createElement('canvas').getContext('2d');
 function hasGlyph(stack,wt,ch){
   const w=fb=>{glyphCtx.font=`${wt} 40px ${stack.replace(/,\s*sans-serif$/,'')},${fb}`;return glyphCtx.measureText(ch).width;};
@@ -2035,21 +2123,26 @@ function fontInstalled(n){
   const base=fb=>{glyphCtx.font=`400 40px ${fb}`;return glyphCtx.measureText('가나Abg王').width;};
   return w('monospace')!==base('monospace')||w('serif')!==base('serif');
 }
-// PDF 생성 전: 폰트를 실제로 내려받고, 지정 폰트에 없는 글자를 찾는다
+// PDF 생성 전: 폰트를 실제로 내려받고, 고른 폰트에 없는 글자를 찾는다
+//  subst: 고른 폰트엔 없지만 대체 웹폰트(Pretendard·Noto Sans TC)로 일정하게 찍히는 글자
+//  pc:    어떤 지정 폰트에도 없어 PC 기본 폰트로 찍히는 글자 (PC마다 달라짐 → 확인 필요)
 async function prepareFontsFor(list){
   const all=list.map(r=>[r.event,r.first,r.last,r.affil].join(' ')).join(' ');
-  const cjkWt=nearestWt('cjk',fontCfg.cjk,fontCfg.weight);
-  const loads=[[fontCfg.main,nameWt()],[fontCfg.main,500],[fontCfg.main,600],['Pretendard',nameWt()],['Pretendard',500],[fontCfg.cjk,cjkWt]];
+  const wt=nameWt();
+  const loads=[[fontCfg.main,wt],[fontCfg.main,500],[fontCfg.main,600],...FALLBACK_FONTS.flatMap(n=>[[n,nearestWt(n,wt)],[n,500],[n,600]])];
   await Promise.all(loads.map(([n,w])=>document.fonts.load(`${w} 40px ${qf(n)}`,all).catch(()=>{})));
   await document.fonts.ready;
-  const missing=[];
+  const subst=[],pc=[];
   list.forEach((r,i)=>{
-    const chars=new Set([...(r.first+r.last+r.affil)].filter(c=>c.trim()));
-    const bad=[...chars].filter(c=>CJK_RUN.test(c)?!hasGlyph(cjkStack(),cjkWt,c):!hasGlyph(mainStack(),nameWt(),c));
-    CJK_RUN.lastIndex=0;
-    if(bad.length)missing.push({i,name:(r.last+r.first)||r.affil,bad});
+    const chars=[...new Set([...(r.first+r.last+r.affil)].filter(c=>c.trim()))];
+    const notMain=chars.filter(c=>!hasGlyph(qf(fontCfg.main),wt,c));
+    if(!notMain.length)return;
+    const noFont=notMain.filter(c=>!hasGlyph(mainStack(),wt,c));
+    const name=(r.last+r.first)||r.affil;
+    if(noFont.length)pc.push({i,name,bad:noFont});
+    if(notMain.length>noFont.length)subst.push({i,name,bad:notMain.filter(c=>!noFont.includes(c))});
   });
-  return missing;
+  return {subst,pc};
 }
 async function loadLocalFonts(){
   const st=(m,t)=>showSt(m,t,'font-status');
@@ -2076,7 +2169,7 @@ function addManualFont(){
   if(!localFamilies.includes(n))localFamilies.push(n);
   try{localStorage.setItem(FONT_KEY+'-local',JSON.stringify(localFamilies));}catch(e){}
   inp.value='';fillFontSelects();
-  st(`✓ ‘${n}’을(를) 목록에 추가했어요. 한글·영문 또는 한자 폰트에서 고르세요.`,'ok');
+  st(`✓ ‘${n}’을(를) 목록에 추가했어요. 폰트 목록에서 고르세요.`,'ok');
 }
 let tt=null;
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),1200);}
@@ -2097,19 +2190,19 @@ const GUIDE=[
  ill:`<div class="gi-chips"><div class="gi-chip">직접 입력</div><div class="gi-chip">구글 시트</div><div class="gi-chip on">파일 업로드</div></div>
   <table class="gi-tbl"><thead><tr><th>이름</th><th>성</th><th>소속</th></tr></thead><tbody><tr><td>흥민</td><td>손</td><td>마이다스아이티</td></tr><tr><td>민재</td><td>김</td><td>MIDAS IT</td></tr><tr class="hl"><td></td><td></td><td>회사2</td></tr></tbody></table>
   <div class="gi-cap">노란 줄처럼 이름이 비어 있으면 경고로 알려줘요</div>`,
- items:[['A','<b>직접 입력</b> — 표에 바로 입력해요. 엑셀에서 <b>이름·성·소속</b> 칸을 여러 줄 복사해 표에 붙여넣으면 한 번에 채워져요.'],
+ items:[['A','<b>직접 입력</b> — 표에 바로 입력해요. 엑셀에서 <b>제목 행(성·이름·소속)까지 표를 통째로 복사</b>해 붙여넣으면 열 순서가 달라도 알아서 맞춰 들어가요.'],
   ['B','<b>구글 시트</b> — 시트의 <b>공유</b> 설정을 ‘링크가 있는 모든 사용자 · 뷰어’로 바꾼 뒤 링크를 붙여넣고 <b>불러오기</b>를 누르세요.'],
-  ['C','<b>파일 업로드</b> — 엑셀(.xlsx, .xls)이나 CSV 파일을 끌어다 놓으세요. 회사 보안 때문에 파일이 안 올라가면 엑셀에서 표를 <b>복사(Ctrl+C)해 붙여넣기(Ctrl+V)</b> 해도 돼요.'],
+  ['C','<b>파일 업로드</b> — 엑셀(.xlsx, .xls)이나 CSV 파일을 끌어다 놓으세요. <b>아웃룩 메일의 첨부파일</b>도 바로 끌어다 놓을 수 있어요. 회사 보안 때문에 파일이 안 올라가면 엑셀에서 표를 <b>복사(Ctrl+C)해 붙여넣기(Ctrl+V)</b> 해도 돼요.'],
   ['✓','구글 시트·파일은 성·이름·소속 열을 <b>자동으로 찾아줘요</b>. 맞는지 확인하고 <b>명단에 넣기</b>를 누르면 표로 들어가고, 그 뒤에도 표에서 고칠 수 있어요.']],
  tips:[['','이름이 ‘손흥민’처럼 한 칸에 있다면 ‘성’ 항목을 <b>이름 열에서 분리</b>로 두세요. 손 / 흥민으로 나눠 줍니다.'],['warn','<b>명단에 넣기</b>를 누르면 기존 표의 명단은 새 명단으로 바뀌어요.']]},
-{nav:'표기 방식',title:'2. 이름 표기 방식 고르기',lead:'영문 이름과 한글 이름은 보기 좋은 배치가 달라요. 명단에 맞는 방식을 고르세요.',target:'표기 방식',
- ill:`<div class="gi-row"><div><div class="gi-card g" style="width:110px"><div class="nm">Heung Min<br>Son</div><div class="af">MIDAS IT</div></div><div class="gi-cap">외국어 — 이름 / 성 두 줄</div></div>
-  <div><div class="gi-card g" style="width:110px"><div class="nm">손흥민</div><div class="af">마이다스아이티</div></div><div class="gi-cap">국문 — 성이름 한 줄</div></div></div>`,
- items:[['A','<b>외국어</b> — 이름과 성을 두 줄로 크게 보여줘요. <b>이름 배치 변경</b>을 누르면 ‘성 이름’ 순서의 한 줄로 바뀌어요.'],
-  ['B','<b>국문</b> — 이름·소속의 <b>글자 크기</b>와 <b>위치</b>를 슬라이더로 조절할 수 있어요.'],
+{nav:'표기 방식',title:'2. 이름 표기 방식 고르기',lead:'자동으로 맞춰주는 ‘기본’과 크기·위치를 직접 조절하는 ‘상세’ 중에서 고르세요.',target:'표기 방식',
+ ill:`<div class="gi-row"><div><div class="gi-card g" style="width:110px"><div class="nm">Heung Min<br>Son</div><div class="af">MIDAS IT</div></div><div class="gi-cap">기본 — 이름 / 성 두 줄, 크기 자동</div></div>
+  <div><div class="gi-card g" style="width:110px"><div class="nm">손흥민</div><div class="af">마이다스아이티</div></div><div class="gi-cap">상세 — 한 줄, 크기·위치 조절</div></div></div>`,
+ items:[['A','<b>기본</b> — 이름과 성을 두 줄로 크게 보여주고, 글자 크기는 명찰 폭에 맞춰 자동이에요. <b>이름 배치 변경</b>을 누르면 ‘성 이름’ 순서의 한 줄로 바뀌어요.'],
+  ['B','<b>상세</b> — 이름을 한 줄로 보여주고, 이름·소속의 <b>글자 크기</b>와 <b>위치</b>를 슬라이더로 직접 조절해요. 한글·한자 이름은 ‘손흥민’처럼 붙여서, 영문 이름은 띄어서 보여줘요.'],
   ['✓','이름이 길면 명찰 폭에 맞게 <b>글자 크기가 자동으로 줄어들어요</b>.'],
-  ['F','<b>폰트</b> — ‘한글·영문’과 ‘한자’ 폰트를 따로 고를 수 있어요. 웹폰트는 어느 PC에서 만들어도 똑같이 나오고, <b>PC에 설치된 폰트</b>도 불러와 쓸 수 있어요. PDF를 만들기 전에 폰트에 없는 글자가 있으면 알려줘요.']],
- tips:[['','한글 이름이 대부분인 명단을 불러오면 <b>국문</b>으로 자동 전환돼요.']]},
+  ['F','<b>폰트</b> — 명단에 맞는 폰트를 하나 고르세요(번체 중국어는 Noto Sans TC 등). 웹폰트는 어느 PC에서 만들어도 똑같이 나오고, <b>PC에 설치된 폰트</b>도 불러와 쓸 수 있어요. 고른 폰트에 없는 글자는 Pretendard·Noto Sans TC로 대체돼요.']],
+ tips:[['','한글·한자 이름이 대부분인 명단을 불러오면 <b>상세</b>로 자동 전환돼요.']]},
 {nav:'배경 선택',title:'3. 배경 고르기',lead:'준비된 템플릿을 쓰거나, 디자인한 배경 파일을 직접 올릴 수 있어요.',target:'배경 선택',
  ill:`<div class="gi-chips"><div class="gi-chip on">템플릿</div><div class="gi-chip">직접 업로드</div></div>
   <div class="gi-swatches"><div class="gi-sw on" style="--c:#10B981"></div><div class="gi-sw" style="--c:#EAB308"></div><div class="gi-sw" style="--c:#7C3AED"></div><div class="gi-sw" style="--c:#F43F5E"></div><div class="gi-sw" style="--c:#3B82F6"></div><div class="gi-sw" style="--c:#F97316"></div></div>`,
